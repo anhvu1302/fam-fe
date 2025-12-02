@@ -41,21 +41,30 @@ const sanitizeError = (error: AxiosError): ApiError => {
     const status = error.response?.status || 500;
     const code = error.code || "UNKNOWN_ERROR";
 
+    // Log error for debugging
+    console.error("[API Error]", {
+        status,
+        code,
+        url: error.config?.url,
+        method: error.config?.method,
+        message: error.message,
+    });
+
     // Map status code to user-friendly message
     const messageMap: Record<number, string> = {
-        400: "Bad Request",
-        401: "Unauthorized",
-        403: "Forbidden",
-        404: "Not Found",
-        408: "Request Timeout",
-        429: "Too Many Requests",
-        500: "Internal Server Error",
-        502: "Bad Gateway",
-        503: "Service Unavailable",
-        504: "Gateway Timeout",
+        400: "Dữ liệu không hợp lệ",
+        401: "Chưa đăng nhập hoặc phiên đăng nhập hết hạn",
+        403: "Không có quyền truy cập",
+        404: "Không tìm thấy",
+        408: "Yêu cầu quá thời gian",
+        429: "Quá nhiều yêu cầu",
+        500: "Lỗi máy chủ",
+        502: "Lỗi kết nối",
+        503: "Dịch vụ không khả dụng",
+        504: "Timeout",
     };
 
-    const message = messageMap[status] || "Request Failed";
+    let message = messageMap[status] || "Yêu cầu thất bại";
 
     // Chỉ trả về data từ response nếu đã được giải mã
     let safeData: unknown = undefined;
@@ -67,7 +76,16 @@ const sanitizeError = (error: AxiosError): ApiError => {
                 error: data.error,
                 message: data.message,
             };
+            // Ưu tiên message từ server
+            if (typeof data.message === 'string') {
+                message = data.message;
+            }
         }
+    }
+
+    // Xử lý network errors
+    if (code === 'ERR_NETWORK' || code === 'ECONNREFUSED') {
+        message = "Không thể kết nối tới máy chủ";
     }
 
     return new ApiError(message, status, code, safeData);
@@ -81,11 +99,15 @@ const apiClient = axios.create({
         "Content-Type": "application/json",
     },
     timeout: 30000, // 30 seconds
+    withCredentials: true, // Important: send cookies with requests
 });
 
 // Request Interceptor: Mã hóa body trước khi gửi đi
 apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
+        // Token is automatically sent via httpOnly cookies
+        // No need to manually add Authorization header
+
         // Chỉ mã hóa nếu có data (POST, PUT, PATCH) và encryption được bật
         if (config.data && ENCRYPTION_ENABLED) {
             // encryptData trả về SecurePayload { iv, content, h }
