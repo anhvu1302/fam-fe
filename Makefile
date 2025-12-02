@@ -22,7 +22,6 @@ help:
 	@echo "======================================"
 	@echo ""
 	@echo "🐳 Docker:"
-	@echo "  docker-build       Build production image"
 	@echo "  docker-clean       Clean images and cache"
 	@echo ""
 	@echo "🚀 Production:"
@@ -47,12 +46,6 @@ help:
 # Docker Targets
 # ============================================
 
-docker-build:
-	@echo "🐳 Building Docker image..."
-	docker build -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
-	@echo "✅ Build completed!"
-	@docker images $(DOCKER_IMAGE):$(DOCKER_TAG) --format "Size: {{.Size}}"
-
 docker-clean:
 	@echo "🧹 Cleaning project images..."
 	@docker rmi $(DOCKER_IMAGE):$(DOCKER_TAG) 2>/dev/null || true
@@ -63,7 +56,7 @@ docker-clean:
 # Production Targets
 # ============================================
 
-prod-deploy: docker-build
+prod-deploy: prod-build
 	@echo "🚀 Deploying..."
 	@if [ ! -f "$(ENV_FILE)" ]; then echo "❌ $(ENV_FILE) not found"; exit 1; fi
 	docker compose -f docker-compose.yml --env-file $(ENV_FILE) up -d
