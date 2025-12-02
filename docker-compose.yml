@@ -32,11 +32,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.fam-fe.rule=Host(`vananhvu.id.vn`)"
-      - "traefik.http.services.fam-fe.loadbalancer.server.port=8001"
 
 networks:
   fam-network:
-    driver: bridge
+    external: true

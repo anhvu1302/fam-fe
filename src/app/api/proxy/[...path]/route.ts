@@ -19,19 +19,14 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
     const targetPath = path.join("/");
     const url = `${BACKEND_URL}/${targetPath}${req.nextUrl.search}`;
 
-    console.log(`[PROXY] ${req.method} ${url}`);
-    console.log(`[PROXY] ENCRYPTION_ENABLED: ${ENCRYPTION_ENABLED}`);
-
     let body: string | null = null;
     const contentType = req.headers.get("content-type");
 
     if (req.method !== "GET" && contentType?.includes("application/json")) {
         try {
             const rawBody: unknown = await req.json();
-            console.log(`[PROXY] Raw body received:`, rawBody);
 
             if (ENCRYPTION_ENABLED && isSecurePayload(rawBody)) {
-                console.log(`[PROXY] Decrypting payload...`);
                 const decrypted = decryptData(rawBody);
                 if (!decrypted) {
                     console.error(`[PROXY] Decryption failed!`);
@@ -40,10 +35,8 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
                         { status: 400 }
                     );
                 }
-                console.log(`[PROXY] Decrypted data:`, decrypted);
                 body = JSON.stringify(decrypted);
             } else {
-                console.log(`[PROXY] Sending unencrypted body`);
                 body = JSON.stringify(rawBody);
             }
         } catch (error) {
@@ -63,13 +56,11 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
 
         if (accessToken) {
             headers["Authorization"] = `Bearer ${accessToken}`;
-            console.log(`[PROXY] Using access token from cookie`);
         } else {
             // Fallback to Authorization header if provided
             const authHeader = req.headers.get("Authorization");
             if (authHeader) {
                 headers["Authorization"] = authHeader;
-                console.log(`[PROXY] Using Authorization header`);
             }
         }
 
@@ -91,11 +82,9 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
             body: body,
         });
 
-        console.log(`[PROXY] Response status: ${backendRes.status}`);
 
         // Log response body for debugging
         const responseText = await backendRes.text();
-        console.log(`[PROXY] Response body:`, responseText.substring(0, 200));
 
         const responseContentType = backendRes.headers.get("content-type");
 
