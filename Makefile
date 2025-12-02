@@ -54,9 +54,9 @@ docker-build:
 	@docker images $(DOCKER_IMAGE):$(DOCKER_TAG) --format "Size: {{.Size}}"
 
 docker-clean:
-	@echo "🧹 Cleaning..."
+	@echo "🧹 Cleaning project images..."
 	@docker rmi $(DOCKER_IMAGE):$(DOCKER_TAG) 2>/dev/null || true
-	@docker system prune -f
+	@docker images -f "dangling=true" -q | grep -q . && docker rmi $$(docker images -f "dangling=true" -q) 2>/dev/null || true
 	@echo "✅ Done!"
 
 # ============================================
@@ -69,6 +69,9 @@ prod-deploy: docker-build
 	docker compose -f docker-compose.yml --env-file $(ENV_FILE) up -d
 	@sleep 3
 	@make prod-health
+
+prod-build:
+	docker compose -f docker-compose.yml --env-file $(ENV_FILE) build
 
 prod-start:
 	docker compose -f docker-compose.yml --env-file $(ENV_FILE) start

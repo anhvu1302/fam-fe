@@ -28,6 +28,12 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
+# Build args for NEXT_PUBLIC_ variables (must be set at build time)
+ARG NEXT_PUBLIC_CRYPTO_KEY
+ARG NEXT_PUBLIC_ENABLE_ENCRYPTION
+ENV NEXT_PUBLIC_CRYPTO_KEY=$NEXT_PUBLIC_CRYPTO_KEY
+ENV NEXT_PUBLIC_ENABLE_ENCRYPTION=$NEXT_PUBLIC_ENABLE_ENCRYPTION
+
 # Build Next.js app
 RUN corepack enable && corepack prepare pnpm@latest --activate && \
     pnpm build

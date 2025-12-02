@@ -3,6 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_CRYPTO_KEY=${NEXT_PUBLIC_CRYPTO_KEY}
+        - NEXT_PUBLIC_ENABLE_ENCRYPTION=${NEXT_PUBLIC_ENABLE_ENCRYPTION:-true}
     container_name: fam-fe
     restart: unless-stopped
     ports:
