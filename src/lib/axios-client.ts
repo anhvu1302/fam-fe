@@ -38,17 +38,28 @@ export class ApiError extends Error {
  * Chuyển đổi AxiosError thành ApiError an toàn
  */
 const sanitizeError = (error: AxiosError): ApiError => {
-    const status = error.response?.status || 500;
-    const code = error.code || "UNKNOWN_ERROR";
+    // If there's no response, treat as network error (status 0)
+    const status = error.response?.status ?? 0;
+    let code = error.code || "UNKNOWN_ERROR";
 
-    // Log error for debugging
-    console.error("[API Error]", {
-        status,
-        code,
-        url: error.config?.url,
-        method: error.config?.method,
-        message: error.message,
-    });
+    // Normalize some known network/fetch error messages
+    const msgLower = (error.message || "").toLowerCase();
+    if (msgLower.includes("network error") || msgLower.includes("fetch failed") || msgLower.includes("failed to fetch")) {
+        code = code || "ERR_NETWORK";
+    }
+
+    // Log a concise error message for debugging (avoid dumping possibly circular objects)
+    console.error(
+        `[API Error] ${code} ${status} ${error.config?.method || ""} ${error.config?.url || ""} - ${error.message}`
+    );
+    if (error.response?.data) {
+        try {
+            // Log response data separately (stringify safely)
+            console.error("[API Error] response data:", JSON.stringify(error.response.data));
+        } catch (e) {
+            console.error("[API Error] response data (unserializable)");
+        }
+    }
 
     // Map status code to user-friendly message
     const messageMap: Record<number, string> = {
@@ -69,22 +80,26 @@ const sanitizeError = (error: AxiosError): ApiError => {
     // Chỉ trả về data từ response nếu đã được giải mã
     let safeData: unknown = undefined;
     if (error.response?.data) {
-        // Nếu data là object có error/message thì giữ lại
+        // Nếu data là object có error/message/detail thì giữ lại
         const data = error.response.data as Record<string, unknown>;
-        if (data.error || data.message) {
-            safeData = {
-                error: data.error,
-                message: data.message,
-            };
-            // Ưu tiên message từ server
-            if (typeof data.message === 'string') {
-                message = data.message;
-            }
+
+        // Ưu tiên detail từ server (API trả về detail field)
+        if (typeof data.detail === 'string') {
+            message = data.detail;
+        } else if (typeof data.message === 'string') {
+            message = data.message;
+        } else if (typeof data.error === 'string') {
+            message = data.error;
+        }
+
+        // Giữ lại full response data để parse error code từ errors array
+        if (data.errors || data.error || data.message || data.detail) {
+            safeData = data;
         }
     }
 
-    // Xử lý network errors
-    if (code === 'ERR_NETWORK' || code === 'ECONNREFUSED') {
+    // Xử lý network / fetch errors
+    if (code === "ERR_NETWORK" || code === "ECONNREFUSED" || msgLower.includes("fetch failed") || msgLower.includes("failed to fetch") || msgLower.includes("network error")) {
         message = "Không thể kết nối tới máy chủ";
     }
 

@@ -46,33 +46,84 @@ export interface LogoutAllRequest {
   exceptCurrentDevice?: boolean;
 }
 
+// Forgot Password Request Models
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface VerifyResetTokenRequest {
+  email: string;
+  resetToken: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  resetToken: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+// 2FA Request Models
+export interface SelectAuthenticationMethodRequest {
+  twoFactorSessionToken: string;
+  selectedMethod: string; // "authenticator" | "email" | "recovery"
+}
+
+export interface VerifyEmailOtpRequest {
+  email: string;
+  emailOtp: string;
+  emailVerificationSessionToken?: string;
+  twoFactorSessionToken?: string;
+}
+
+export interface VerifyRecoveryCodeRequest {
+  twoFactorSessionToken: string;
+  recoveryCode: string;
+}
+
 // Response Models
 export interface UserInfo {
   id: number;
   username: string | null;
   email: string | null;
   fullName: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  avatarUrl: string | null;
   isEmailVerified: boolean;
   isTwoFactorEnabled: boolean;
 }
 
-export interface LoginResponse {
+/**
+ * Shared auth response type used by:
+ * - POST /api/auth/login
+ * - POST /api/auth/verify-2fa
+ * - POST /api/auth/verify-email-otp
+ */
+export interface AuthResponse {
   accessToken: string | null;
   refreshToken: string | null;
   expiresIn: number;
   tokenType: string | null;
   user: UserInfo | null;
-  requiresTwoFactor: boolean;
-  twoFactorSessionToken: string | null;
+  // 2FA flow
+  requiresTwoFactor?: boolean;
+  twoFactorSessionToken?: string | null;
+  // Email verification flow
+  requiresEmailVerification?: boolean;
+  emailVerificationSessionToken?: string | null;
+  maskedEmail?: string;
 }
 
-export interface VerifyTwoFactorResponse {
-  accessToken: string | null;
-  refreshToken: string | null;
-  expiresIn: number;
-  tokenType: string | null;
-  user: UserInfo | null;
-}
+/**
+ * @deprecated Use AuthResponse instead
+ */
+export type LoginResponse = AuthResponse;
+
+/**
+ * @deprecated Use AuthResponse instead
+ */
+export type VerifyTwoFactorResponse = AuthResponse;
 
 export interface Enable2FAResponse {
   secret: string | null;
@@ -86,11 +137,47 @@ export interface Confirm2FAResponse {
   message: string | null;
 }
 
+export interface VerifyResetTokenResponse {
+  isValid: boolean;
+  message: string | null;
+}
+
+export interface ResetPasswordResponse {
+  success: boolean;
+  message: string | null;
+}
+
+// Device/Session Models
+export interface UserDeviceResponse {
+  id: string;
+  deviceId: string | null;
+  deviceName: string | null;
+  deviceType: string | null;
+  browser: string | null;
+  browserVersion: string | null;
+  os: string | null;
+  osVersion: string | null;
+  ipAddress: string | null;
+  location: string | null;
+  lastActiveAt: string;
+  createdAt: string;
+  isCurrent: boolean;
+  isOnline: boolean;
+}
+
 // Auth State
-export type AuthStep = "credentials" | "2fa";
+export type AuthStep = "credentials" | "2fa" | "email-otp" | "select-method";
 
 export interface AuthState {
   step: AuthStep;
   twoFactorSessionToken: string | null;
   rememberMe: boolean;
+}
+
+// Authentication Methods
+export type AuthenticationMethod = "authenticator" | "email" | "recovery";
+
+export interface AuthenticationMethodsResponse {
+  methods: AuthenticationMethod[];
+  defaultMethod: AuthenticationMethod;
 }

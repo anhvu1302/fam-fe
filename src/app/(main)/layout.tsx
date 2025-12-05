@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   DashboardOutlined,
@@ -13,7 +14,12 @@ import {
   ToolOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Dropdown, Layout, Menu, theme } from "antd";
+import { Avatar, Button, Layout, Menu, theme } from "antd";
+
+import AuthGuard from "@/components/AuthGuard";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { getMinioUrl } from "@/lib/minio-url";
+import { tokenStorage } from "@/lib/token-storage";
 
 const { Header, Sider, Content, Footer } = Layout;
 
@@ -50,25 +56,24 @@ const menuItems = [
   },
 ];
 
-const userMenuItems = [
-  {
-    key: "profile",
-    icon: <UserOutlined />,
-    label: "Thông tin cá nhân",
-  },
-  {
-    key: "logout",
-    icon: <LogoutOutlined />,
-    label: "Đăng xuất",
-    danger: true,
-  },
-];
-
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  return (
+    <AuthGuard>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
+    </AuthGuard>
+  );
+}
+
+function AdminLayoutContent({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -124,17 +129,37 @@ export default function AdminLayout({
             className="text-lg"
           />
 
-          {/* User Menu */}
-          <Dropdown
-            menu={{ items: userMenuItems }}
-            placement="bottomRight"
-            arrow
-          >
-            <div className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-1 transition-colors hover:bg-gray-100">
-              <Avatar icon={<UserOutlined />} />
-              <span className="hidden sm:inline">Admin</span>
+          {/* Language Switcher & User Menu */}
+          <div className="flex items-center gap-4">
+            <LanguageSwitcher />
+
+            <div className="flex items-center gap-3">
+              <Button
+                type="text"
+                onClick={() => router.push("/profile")}
+                className="flex items-center gap-2 rounded-lg px-3 py-1 transition-colors hover:bg-gray-100"
+              >
+                <Avatar
+                  icon={<UserOutlined />}
+                  src={getMinioUrl(
+                    (tokenStorage.getUser() as { avatarUrl?: string })?.avatarUrl
+                  )}
+                  size="small"
+                />
+                <span className="hidden sm:inline">Admin</span>
+              </Button>
+
+              <Button
+                type="text"
+                icon={<LogoutOutlined />}
+                danger
+                onClick={() => {
+                  tokenStorage.clear();
+                  router.push("/login");
+                }}
+              />
             </div>
-          </Dropdown>
+          </div>
         </Header>
 
         {/* Content */}

@@ -7,6 +7,9 @@ const envSchema = z.object({
     // Backend API URL (Server-side only)
     BACKEND_API_URL: z.string().url().optional(),
 
+    // MinIO/S3 URL for accessing files
+    NEXT_PUBLIC_MINIO_URL: z.string().url().optional(),
+
     // Crypto key for payload encryption
     NEXT_PUBLIC_CRYPTO_KEY: z.string().optional(),
 });
@@ -17,6 +20,7 @@ function parseEnv(): EnvConfig {
     const parsed = envSchema.safeParse({
         PORT: process.env.PORT,
         BACKEND_API_URL: process.env.BACKEND_API_URL,
+        NEXT_PUBLIC_MINIO_URL: process.env.NEXT_PUBLIC_MINIO_URL,
         NEXT_PUBLIC_CRYPTO_KEY: process.env.NEXT_PUBLIC_CRYPTO_KEY,
     });
 

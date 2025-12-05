@@ -81,8 +81,7 @@ export default function DashboardLayout({
     if (key === "logout") {
       handleLogout();
     } else if (key === "profile") {
-      // TODO: Navigate to profile page
-      message.info("Chức năng đang phát triển");
+      router.push("/profile");
     }
   };
 

@@ -5,6 +5,8 @@ import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ConfigProvider } from "antd";
 
 import { antdTheme } from "@/lib/antd-theme";
+import { I18nProvider } from "@/lib/i18n-context";
+import { SettingsProvider } from "@/lib/settings-context";
 
 import "./globals.css";
 
@@ -34,7 +36,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AntdRegistry>
-          <ConfigProvider theme={antdTheme}>{children}</ConfigProvider>
+          <ConfigProvider theme={antdTheme}>
+            <SettingsProvider>
+              <I18nProvider>{children}</I18nProvider>
+            </SettingsProvider>
+          </ConfigProvider>
         </AntdRegistry>
       </body>
     </html>

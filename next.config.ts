@@ -9,8 +9,28 @@ const nextConfig: NextConfig = {
 
   // Optimize images
   images: {
-    unoptimized: false,
+    unoptimized: process.env.NODE_ENV === "development",
     formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "9000",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "8001",
+      },
+      {
+        protocol: "https",
+        hostname: "**.example.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.gravatar.com",
+      }
+    ],
   },
 
   // Compress output
