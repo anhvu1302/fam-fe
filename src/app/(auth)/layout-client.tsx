@@ -51,25 +51,32 @@ export function AuthLayoutClient({
                 {/* Logo */}
                 <div className="flex-1" />
                 <div className="flex flex-col items-center">
-                    {brandingSettings["app.branding.logo"] ? (
-                        <Image
-                            src={getMinioUrl(brandingSettings["app.branding.logo"])}
-                            alt="FAM Logo"
-                            width={400}
-                            height={200}
-                            priority
-                            className="object-contain"
-                        />
-                    ) : (
-                        <Image
-                            src="/logo.png"
-                            alt="FAM Logo"
-                            width={400}
-                            height={200}
-                            priority
-                            className="object-contain"
-                        />
-                    )}
+                    {(() => {
+                        const raw = brandingSettings["app.branding.logo"];
+                        const logoUrl = getMinioUrl(raw as string | undefined);
+                        if (logoUrl) {
+                            return (
+                                <Image
+                                    src={logoUrl}
+                                    alt="FAM Logo"
+                                    width={400}
+                                    height={200}
+                                    priority
+                                    className="object-contain"
+                                />
+                            );
+                        }
+                        return (
+                            <Image
+                                src="/logo.png"
+                                alt="FAM Logo"
+                                width={400}
+                                height={200}
+                                priority
+                                className="object-contain"
+                            />
+                        );
+                    })()}
                 </div>
                 <div className="flex-1" />
 
