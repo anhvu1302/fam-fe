@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import {
@@ -15,46 +16,17 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Layout, Menu, theme } from "antd";
+import { Footer } from "antd/es/layout/layout";
 
 import AuthGuard from "@/components/AuthGuard";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useI18n } from "@/lib/i18n-context";
 import { getMinioUrl } from "@/lib/minio-url";
 import { tokenStorage } from "@/lib/token-storage";
 
-const { Header, Sider, Content, Footer } = Layout;
+const { Header, Sider, Content } = Layout;
 
-const menuItems = [
-  {
-    key: "dashboard",
-    icon: <DashboardOutlined />,
-    label: "Dashboard",
-  },
-  {
-    key: "assets",
-    icon: <ToolOutlined />,
-    label: "Tài sản",
-    children: [
-      { key: "assets-list", label: "Danh sách tài sản" },
-      { key: "assets-categories", label: "Danh mục" },
-      { key: "assets-depreciation", label: "Khấu hao" },
-    ],
-  },
-  {
-    key: "users",
-    icon: <TeamOutlined />,
-    label: "Người dùng",
-  },
-  {
-    key: "reports",
-    icon: <FileOutlined />,
-    label: "Báo cáo",
-  },
-  {
-    key: "settings",
-    icon: <SettingOutlined />,
-    label: "Cài đặt",
-  },
-];
+
 
 export default function AdminLayout({
   children,
@@ -75,117 +47,186 @@ function AdminLayoutContent({
 }) {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+  const { t } = useI18n();
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: {
+      colorBgContainer,
+      colorText,
+      colorBorder,
+      boxShadowSecondary,
+      borderRadiusLG,
+    },
   } = theme.useToken();
 
+  const menuItems = [
+    {
+      key: "dashboard",
+      icon: <DashboardOutlined />,
+      label: t("layout.nav.dashboard", "Dashboard"),
+      href: "/",
+    },
+    {
+      key: "assets",
+      icon: <ToolOutlined />,
+      label: t("layout.nav.assets", "Assets"),
+      children: [
+        { key: "assets-list", label: t("layout.nav.assetsList", "Assets List"), href: "/assets" },
+        { key: "assets-categories", label: t("layout.nav.assetsCategories", "Categories"), href: "/assets/categories" },
+        { key: "assets-depreciation", label: t("layout.nav.assetsDepreciation", "Depreciation"), href: "/assets/depreciation" },
+      ],
+    },
+    {
+      key: "users",
+      icon: <TeamOutlined />,
+      label: t("layout.nav.users", "Users"),
+      href: "/users",
+    },
+    {
+      key: "reports",
+      icon: <FileOutlined />,
+      label: t("layout.nav.reports", "Reports"),
+      href: "/reports",
+    },
+    {
+      key: "settings",
+      icon: <SettingOutlined />,
+      label: t("layout.nav.settings", "Settings"),
+      href: "/settings",
+    },
+  ];
+
   return (
-    <Layout className="min-h-screen">
+    <Layout className="h-screen overflow-hidden">
       {/* Sidebar */}
       <Sider
+        width={200}
+        collapsedWidth={80}
         trigger={null}
         collapsible
         collapsed={collapsed}
-        className="fixed! left-0 top-0 bottom-0 z-50"
+        theme="light"
+        className="scheme-light dark:scheme-dark"
         style={{
-          overflow: "auto",
-          height: "100vh",
+          overflow: 'auto',
+          height: '100vh',
+          scrollbarWidth: 'thin',
+          backgroundColor: colorBgContainer,
+          borderRight: `1px solid ${colorBorder}`,
         }}
       >
         {/* Logo */}
-        <div className="flex h-16 items-center justify-center border-b border-gray-700">
-          <span className="text-lg font-bold text-white">
-            {collapsed ? "FAM" : "Fixed Asset Mgmt"}
-          </span>
+        <div
+          className="h-16 w-full relative border-b"
+          style={{
+            borderColor: colorBorder,
+            color: colorText,
+            backgroundColor: 'transparent'
+          }}
+        >
+          <div className={`flex justify-center items-center px-4 absolute top-0 left-0 w-full h-full transition-all duration-300 ${collapsed ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+            <span className='text-4xl font-bold select-none'>{t("layout.logoShort")}</span>
+          </div>
+          <div className={`flex justify-center items-center px-4 absolute top-0 left-0 w-full h-full transition-all duration-300 ${collapsed ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>
+            <span className='text-2xl font-medium select-none'>{t("layout.logoFull")}</span>
+          </div>
         </div>
 
         {/* Menu */}
         <Menu
-          theme="dark"
+          theme="light"
           mode="inline"
           defaultSelectedKeys={["dashboard"]}
-          items={menuItems}
+          items={menuItems.map((item) => ({
+            ...item,
+            label: item.href ? <Link href={item.href}>{item.label}</Link> : item.label,
+            children: item.children?.map((child) => ({
+              ...child,
+              label: child.href ? <Link href={child.href}>{child.label}</Link> : child.label,
+            })),
+          }))}
           className="border-none"
+          style={{
+            background: 'transparent',
+            borderColor: 'transparent'
+          }}
         />
       </Sider>
 
-      {/* Main Layout */}
-      <Layout
-        style={{
-          marginLeft: collapsed ? 80 : 200,
-          transition: "margin-left 0.2s",
-        }}
-      >
+      {/* Main Content */}
+      <Layout className='h-screen flex flex-col'>
         {/* Header */}
         <Header
-          className="sticky top-0 z-40 flex items-center justify-between px-4"
-          style={{ background: colorBgContainer }}
+          className="sticky top-0 z-20 mt-3 mx-3 flex items-center justify-between"
+          style={{
+            background: colorBgContainer,
+            boxShadow: boxShadowSecondary,
+            borderRadius: borderRadiusLG,
+            paddingLeft: 8,
+            paddingRight: 16,
+          }}
         >
-          {/* Toggle Button */}
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            className="text-lg"
-          />
+          <div className='flex items-center gap-3'>
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              className="text-lg h-full aspect-square flex justify-center items-center"
+            />
+          </div>
 
-          {/* Language Switcher & User Menu */}
-          <div className="flex items-center gap-4">
+          {/* Right side actions */}
+          <div className="flex items-center gap-3">
             <LanguageSwitcher />
 
-            <div className="flex items-center gap-3">
-              <Button
-                type="text"
-                onClick={() => router.push("/profile")}
-                className="flex items-center gap-2 rounded-lg px-3 py-1 transition-colors hover:bg-gray-100"
-              >
-                <Avatar
-                  icon={<UserOutlined />}
-                  src={getMinioUrl(
-                    (tokenStorage.getUser() as { avatarUrl?: string })?.avatarUrl
-                  )}
-                  size="small"
-                />
-                <span className="hidden sm:inline">Admin</span>
-              </Button>
-
-              <Button
-                type="text"
-                icon={<LogoutOutlined />}
-                danger
-                onClick={() => {
-                  tokenStorage.clear();
-                  router.push("/login");
-                }}
+            <Button
+              type="text"
+              onClick={() => router.push("/profile")}
+              className="flex items-center gap-2 h-auto px-2"
+            >
+              <Avatar
+                icon={<UserOutlined />}
+                src={getMinioUrl(
+                  (tokenStorage.getUser() as { avatarUrl?: string })?.avatarUrl
+                )}
+                size="small"
               />
-            </div>
+              <span className="hidden sm:inline font-medium">{t("layout.adminName", "Admin")}</span>
+            </Button>
+
+            <Button
+              type="text"
+              icon={<LogoutOutlined />}
+              danger
+              onClick={() => {
+                tokenStorage.clear();
+                router.push("/login");
+              }}
+            />
           </div>
         </Header>
 
         {/* Content */}
-        <Content className="m-4">
-          <div
-            className="min-h-[calc(100vh-224px)] p-6"
-            style={{
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
-            }}
-          >
-            {children}
-          </div>
+        <Content className="mx-3 my-6 grow overflow-auto">
+          {children}
         </Content>
 
         {/* Footer */}
+
         <Footer
-          className="text-center"
-          style={{ background: colorBgContainer }}
+          className="text-center mx-3"
+          style={{
+            background: colorBgContainer,
+            boxShadow: boxShadowSecondary,
+            borderRadius: borderRadiusLG,
+            padding: 0,
+          }}
         >
-          <div className="pt-4">
-            <p className="mb-2 text-sm text-gray-600">
-              Fixed Asset Management System © {new Date().getFullYear()}
+          <div className="py-3 px-6 text-center shrink-0">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {t("layout.footerTitle", "Fixed Asset Management System")} © {new Date().getFullYear()}
             </p>
-            <p className="text-xs text-gray-500">
-              Hệ thống quản lý tài sản cố định | Version 1.0.0
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+              {t("layout.footerSubtitle", "Version 1.0.0")}
             </p>
           </div>
         </Footer>

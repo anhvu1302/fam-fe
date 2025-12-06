@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 import { en } from "@/locales/en";
 import { vi } from "@/locales/vi";
@@ -36,19 +36,18 @@ function getNestedValue(
 }
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-    const [language, setLanguageState] = useState<LanguageCode>(() => {
-        // Initialize with stored language or default to 'vi'
+    // Start with a deterministic server-friendly default so SSR matches the HTML
+    const [language, setLanguageState] = useState<LanguageCode>("vi");
+
+    // Sync from localStorage on client after mount to avoid hydration mismatches
+    useEffect(() => {
         if (typeof window !== "undefined") {
             const savedLanguage = localStorage.getItem(LANGUAGE_KEY) as LanguageCode | null;
-            if (
-                savedLanguage &&
-                Object.keys(SUPPORTED_LANGUAGES).includes(savedLanguage)
-            ) {
-                return savedLanguage;
+            if (savedLanguage && Object.keys(SUPPORTED_LANGUAGES).includes(savedLanguage)) {
+                setLanguageState(savedLanguage);
             }
         }
-        return "vi";
-    });
+    }, []);
 
     const setLanguage = (lang: LanguageCode) => {
         if (Object.keys(SUPPORTED_LANGUAGES).includes(lang)) {

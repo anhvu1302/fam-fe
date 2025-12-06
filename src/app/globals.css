@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -10,6 +12,10 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-colorLink: var(--colorLink);
+  --color-colorPrimary: var(--colorPrimary);
+  --color-colorBgLayout: var(--colorBgLayout);
+  --color-colorBgContainer: var(--colorBgContainer);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,8 +25,51 @@
   }
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--colorBgLayout);
+  margin: 0 auto;
+  width: 100% !important;
 }
+
+/* Background Image Effects */
+.bg-image-before::before {
+  content: '';
+  position: fixed;
+  top: -6px;
+  right: -6px;
+  bottom: -6px;
+  left: -6px;
+  opacity: 1;
+  filter: blur(2px);
+  z-index: -99;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.blossom-bg::before {
+  background-image: url("/theme-assets/blossom.webp");
+}
+
+.blueJelly-bg::before {
+  background-image: url("/theme-assets/jelly.webp");
+}
+
+.leaf-bg::before {
+  background-image: url("/theme-assets/leaf.webp");
+}
+
+/* Ant Design Table Hover */
+.ant-table-cell-row-hover {
+  background: color-mix(in hsl, var(--colorPrimary) 20%, transparent) !important;
+}
+

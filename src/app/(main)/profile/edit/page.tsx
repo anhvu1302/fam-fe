@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Button, Form, Input, message, Typography } from "antd";
 
+import { useI18n } from "@/lib/i18n-context";
 import { tokenStorage } from "@/lib/token-storage";
 import type { UserInfo } from "@/types/auth";
 
@@ -19,6 +20,7 @@ interface EditProfileFormValues {
 export default function EditProfilePage() {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
+    const { t } = useI18n();
 
     const user = tokenStorage.getUser() as UserInfo | null;
 
@@ -29,7 +31,7 @@ export default function EditProfilePage() {
             // const response = await apiClient.put(`/api/users/${user?.id}`, values);
 
             // For now, just show success message
-            message.success("Cập nhật thông tin thành công!");
+            message.success(t("profile.profileUpdated", "Cập nhật thông tin thành công!"));
 
             // Update local storage
             const updatedUser = {
@@ -40,7 +42,7 @@ export default function EditProfilePage() {
             };
             tokenStorage.setUser(updatedUser);
         } catch {
-            message.error("Không thể cập nhật thông tin. Vui lòng thử lại.");
+            message.error(t("profile.updateError", "Không thể cập nhật thông tin. Vui lòng thử lại."));
         } finally {
             setLoading(false);
         }
@@ -50,9 +52,9 @@ export default function EditProfilePage() {
         <div className="max-w-2xl">
             <div className="mb-6">
                 <Title level={2} className="mb-2">
-                    Sửa thông tin cá nhân
+                    {t("profile.editProfile", "Sửa thông tin cá nhân")}
                 </Title>
-                <Text type="secondary">Cập nhật thông tin cá nhân của bạn</Text>
+                <Text type="secondary">{t("profile.updateProfile", "Cập nhật thông tin cá nhân của bạn")}</Text>
             </div>
 
             <Form
@@ -69,24 +71,24 @@ export default function EditProfilePage() {
             >
                 <Form.Item
                     name="firstName"
-                    label="Họ"
+                    label={t("profile.lastName", "Họ")}
                     rules={[
-                        { required: true, message: "Vui lòng nhập họ!" },
-                        { max: 100, message: "Họ tối đa 100 ký tự!" },
+                        { required: true, message: t("validation.required", "Trường này là bắt buộc.") },
+                        { max: 100, message: t("validation.maxLength", "Tối đa {max} ký tự.").replace("{max}", "100") },
                     ]}
                 >
-                    <Input placeholder="Họ" />
+                    <Input placeholder={t("profile.lastName", "Họ")} />
                 </Form.Item>
 
                 <Form.Item
                     name="lastName"
-                    label="Tên"
+                    label={t("profile.firstName", "Tên")}
                     rules={[
-                        { required: true, message: "Vui lòng nhập tên!" },
-                        { max: 100, message: "Tên tối đa 100 ký tự!" },
+                        { required: true, message: t("validation.required", "Trường này là bắt buộc.") },
+                        { max: 100, message: t("validation.maxLength", "Tối đa {max} ký tự.").replace("{max}", "100") },
                     ]}
                 >
-                    <Input placeholder="Tên" />
+                    <Input placeholder={t("profile.firstName", "Tên")} />
                 </Form.Item>
 
                 <Form.Item
@@ -112,7 +114,7 @@ export default function EditProfilePage() {
 
                 <Form.Item>
                     <Button type="primary" htmlType="submit" loading={loading}>
-                        Lưu thay đổi
+                        {t("common.save", "Lưu")}
                     </Button>
                 </Form.Item>
             </Form>

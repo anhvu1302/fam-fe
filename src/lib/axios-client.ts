@@ -56,7 +56,7 @@ const sanitizeError = (error: AxiosError): ApiError => {
         try {
             // Log response data separately (stringify safely)
             console.error("[API Error] response data:", JSON.stringify(error.response.data));
-        } catch (e) {
+        } catch {
             console.error("[API Error] response data (unserializable)");
         }
     }

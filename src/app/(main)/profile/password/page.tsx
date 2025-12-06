@@ -6,6 +6,7 @@ import { LockOutlined } from "@ant-design/icons";
 import { Alert, Button, Form, Input, message, Space, Switch, Typography } from "antd";
 
 import authApi from "@/lib/api/auth";
+import { useI18n } from "@/lib/i18n-context";
 import { tokenStorage } from "@/lib/token-storage";
 
 const { Title, Text } = Typography;
@@ -20,6 +21,7 @@ interface ChangePasswordFormValues {
 export default function ChangePasswordPage() {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
+    const { t } = useI18n();
 
     const onSubmit = async (values: ChangePasswordFormValues) => {
         setLoading(true);
@@ -30,7 +32,7 @@ export default function ChangePasswordPage() {
                 logoutAllDevices: values.logoutAllDevices,
             });
 
-            message.success("Đổi mật khẩu thành công!");
+            message.success(t("auth.changePasswordSuccess", "Đổi mật khẩu thành công!"));
             form.resetFields();
 
             // If logout all devices is selected, redirect to login
@@ -42,7 +44,7 @@ export default function ChangePasswordPage() {
             }
         } catch (err) {
             const errorMessage =
-                err instanceof Error ? err.message : "Không thể đổi mật khẩu. Vui lòng thử lại.";
+                err instanceof Error ? err.message : t("auth.changePasswordError", "Không thể đổi mật khẩu. Vui lòng thử lại.");
             message.error(errorMessage);
         } finally {
             setLoading(false);
@@ -53,14 +55,14 @@ export default function ChangePasswordPage() {
         <div className="max-w-2xl">
             <div className="mb-6">
                 <Title level={2} className="mb-2">
-                    Đổi mật khẩu
+                    {t("auth.changePassword", "Đổi mật khẩu")}
                 </Title>
-                <Text type="secondary">Cập nhật mật khẩu của bạn để tăng cường bảo mật</Text>
+                <Text type="secondary">{t("profile.changePasswordSubtitle", "Cập nhật mật khẩu của bạn để tăng cường bảo mật")}</Text>
             </div>
 
             <Alert
-                message="Lưu ý"
-                description="Sử dụng mật khẩu mạnh với ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số."
+                title={t("common.warning", "Lưu ý")}
+                description={t("validation.passwordWeak", "Sử dụng mật khẩu mạnh với ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số.")}
                 type="info"
                 showIcon
                 className="mb-6"
@@ -74,57 +76,57 @@ export default function ChangePasswordPage() {
             >
                 <Form.Item
                     name="currentPassword"
-                    label="Mật khẩu hiện tại"
-                    rules={[{ required: true, message: "Vui lòng nhập mật khẩu hiện tại!" }]}
+                    label={t("auth.currentPassword", "Mật khẩu hiện tại")}
+                    rules={[{ required: true, message: t("validation.required", "Vui lòng nhập mật khẩu hiện tại!") }]}
                 >
                     <Input.Password
                         prefix={<LockOutlined className="text-gray-400" />}
-                        placeholder="Nhập mật khẩu hiện tại"
+                        placeholder={t("auth.currentPassword", "Nhập mật khẩu hiện tại")}
                         autoComplete="current-password"
                     />
                 </Form.Item>
 
                 <Form.Item
                     name="newPassword"
-                    label="Mật khẩu mới"
+                    label={t("auth.newPassword", "Mật khẩu mới")}
                     rules={[
-                        { required: true, message: "Vui lòng nhập mật khẩu mới!" },
-                        { min: 8, message: "Mật khẩu phải có ít nhất 8 ký tự!" },
-                        { max: 100, message: "Mật khẩu tối đa 100 ký tự!" },
+                        { required: true, message: t("validation.required", "Vui lòng nhập mật khẩu mới!") },
+                        { min: 8, message: t("validation.minLength", "Mật khẩu phải có ít nhất {min} ký tự!").replace("{min}", "8") },
+                        { max: 100, message: t("validation.maxLength", "Mật khẩu tối đa {max} ký tự!").replace("{max}", "100") },
                         {
                             pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                            message: "Mật khẩu phải có chữ hoa, chữ thường và số!",
+                            message: t("validation.passwordWeak", "Mật khẩu phải có chữ hoa, chữ thường và số!"),
                         },
                     ]}
                     hasFeedback
                 >
                     <Input.Password
                         prefix={<LockOutlined className="text-gray-400" />}
-                        placeholder="Nhập mật khẩu mới"
+                        placeholder={t("auth.newPassword", "Nhập mật khẩu mới")}
                         autoComplete="new-password"
                     />
                 </Form.Item>
 
                 <Form.Item
                     name="confirmPassword"
-                    label="Xác nhận mật khẩu mới"
+                    label={t("auth.confirmPassword", "Xác nhận mật khẩu mới")}
                     dependencies={["newPassword"]}
                     hasFeedback
                     rules={[
-                        { required: true, message: "Vui lòng xác nhận mật khẩu!" },
+                        { required: true, message: t("validation.required", "Vui lòng xác nhận mật khẩu!") },
                         ({ getFieldValue }) => ({
                             validator(_, value) {
                                 if (!value || getFieldValue("newPassword") === value) {
                                     return Promise.resolve();
                                 }
-                                return Promise.reject(new Error("Mật khẩu xác nhận không khớp!"));
+                                return Promise.reject(new Error(t("validation.passwordMismatch", "Mật khẩu xác nhận không khớp!")));
                             },
                         }),
                     ]}
                 >
                     <Input.Password
                         prefix={<LockOutlined className="text-gray-400" />}
-                        placeholder="Nhập lại mật khẩu mới"
+                        placeholder={t("auth.confirmPassword", "Nhập lại mật khẩu mới")}
                         autoComplete="new-password"
                     />
                 </Form.Item>
@@ -143,9 +145,9 @@ export default function ChangePasswordPage() {
                 <Form.Item>
                     <Space>
                         <Button type="primary" htmlType="submit" loading={loading}>
-                            Đổi mật khẩu
+                            {t("auth.changePassword", "Đổi mật khẩu")}
                         </Button>
-                        <Button onClick={() => form.resetFields()}>Hủy</Button>
+                        <Button onClick={() => form.resetFields()}>{t("common.cancel", "Hủy")}</Button>
                     </Space>
                 </Form.Item>
             </Form>

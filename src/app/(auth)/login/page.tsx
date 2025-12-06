@@ -41,6 +41,7 @@ interface ErrorState {
 export default function LoginPage() {
   const router = useRouter();
   const { t } = useI18n();
+  const [messageApi, messageContextHolder] = message.useMessage();
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
   const [step, setStep] = useState<AuthStep>("credentials");
@@ -184,10 +185,10 @@ export default function LoginPage() {
           "2fa_session_token",
           response.twoFactorSessionToken
         );
-        message.info(t("auth.twoFactorAuth"));
+        messageApi.info(t("auth.twoFactorAuth"));
       } else if (response.accessToken) {
         // Login successful without 2FA - tokens already saved in authApi
-        message.success(t("common.success"));
+        messageApi.success(t("common.success"));
         router.replace("/");
       }
     } catch (err) {
@@ -205,7 +206,7 @@ export default function LoginPage() {
         setError(errorState);
       }
 
-      message.error(errorState.message);
+      messageApi.error(errorState.message);
     } finally {
       setLoading(false);
     }
@@ -231,13 +232,13 @@ export default function LoginPage() {
 
       if (response.accessToken) {
         // Tokens already saved in authApi
-        message.success(t("common.success"));
+        messageApi.success(t("common.success"));
         router.replace("/");
       }
     } catch (err) {
       const errorState = parseApiError(err);
       setError(errorState);
-      message.error(errorState.message);
+      messageApi.error(errorState.message);
     } finally {
       setLoading(false);
     }
@@ -256,7 +257,7 @@ export default function LoginPage() {
 
       if (response.accessToken) {
         // Tokens already saved in authApi
-        message.success(t("common.success"));
+        messageApi.success(t("common.success"));
         router.replace("/");
       } else if (response.requiresTwoFactor && response.twoFactorSessionToken) {
         // After email verification, 2FA is required
@@ -266,7 +267,7 @@ export default function LoginPage() {
           "2fa_session_token",
           response.twoFactorSessionToken
         );
-        message.info(t("auth.twoFactorAuth"));
+        messageApi.info(t("auth.twoFactorAuth"));
       }
     } catch (err) {
       const errorState = parseApiError(err);
@@ -285,277 +286,280 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="rounded-2xl bg-white p-8 shadow-xl">
-      {/* Header */}
-      <div className="mb-8 text-center">
-        {/* Mobile logo */}
-        <h1 className="mb-2 text-2xl font-bold text-gray-800 lg:hidden">
-          Fixed Asset Mgmt
-        </h1>
+    <>
+      {messageContextHolder}
+      <div className="rounded-2xl bg-white p-8 shadow-xl">
+        {/* Header */}
+        <div className="mb-8 text-center">
+          {/* Mobile logo */}
+          <h1 className="mb-2 text-2xl font-bold text-gray-800 lg:hidden">
+            Fixed Asset Mgmt
+          </h1>
 
-        {step === "credentials" ? (
-          <>
-            <h2 className="text-xl font-semibold text-gray-800">{t("auth.login")}</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              {t("auth.enterEmail")}
+          {step === "credentials" ? (
+            <>
+              <h2 className="text-xl font-semibold text-gray-800">{t("auth.login")}</h2>
+              <p className="mt-1 text-sm text-gray-500">
+                {t("auth.enterEmail")}
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
+                <SafetyOutlined className="text-2xl text-blue-600" />
+              </div>
+              <h2 className="text-xl font-semibold text-gray-800">
+                {t("auth.twoFactorAuth")}
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">
+                {t("auth.enterAuthCode")}
+              </p>
+            </>
+          )}
+        </div>
+
+        {/* Error Alert */}
+        {error && (
+          <Alert
+            message={error.message}
+            type={error.type || "error"}
+            showIcon
+            closable
+            onClose={() => setError(null)}
+            className="mb-4"
+          />
+        )}
+
+        {/* Account Locked Countdown */}
+        {error?.code === "AUTH_ACCOUNT_LOCKED" && lockoutCountdown !== null && lockoutCountdown > 0 && (
+          <div className="mb-4 rounded-lg bg-blue-50 p-4">
+            <p className="mb-3 text-center text-sm font-medium text-gray-700">
+              {t("common.tryAgainIn")}
             </p>
-          </>
-        ) : (
-          <>
-            <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
-              <SafetyOutlined className="text-2xl text-blue-600" />
+            <div className="text-center">
+              <Statistic.Countdown
+                value={Date.now() + lockoutCountdown * 1000}
+                format="mm:ss"
+                valueStyle={{ color: "#1890ff", fontSize: "24px" }}
+              />
             </div>
-            <h2 className="text-xl font-semibold text-gray-800">
-              {t("auth.twoFactorAuth")}
-            </h2>
-            <p className="mt-1 text-sm text-gray-500">
-              {t("auth.enterAuthCode")}
+          </div>
+        )}
+
+        {/* Email Not Verified Message */}
+        {error?.code === "AUTH_EMAIL_NOT_VERIFIED" && step !== "email-otp" && (
+          <div className="mb-4 rounded-lg bg-yellow-50 p-4">
+            <p className="mb-3 text-sm text-gray-700">
+              {t("auth.contactAdminToVerifyEmail")}
             </p>
-          </>
+            <button
+              onClick={handleBackToLogin}
+              className="text-sm text-blue-600 hover:text-blue-700"
+            >
+              {t("common.back")}
+            </button>
+          </div>
+        )}
+
+        {/* Credentials Form */}
+        {step === "credentials" && (
+          <Form
+            name="login"
+            initialValues={{ remember: true }}
+            onFinish={onLoginSubmit}
+            layout="vertical"
+            size="large"
+            requiredMark={false}
+          >
+            {/* Username/Email */}
+            <Form.Item
+              name="identity"
+              label={t("auth.email")}
+              rules={[
+                { required: true, message: t("validation.required") },
+                { min: 3, message: t("validation.minLength").replace("{min}", "3") },
+                { max: 255, message: t("validation.maxLength").replace("{max}", "255") },
+              ]}
+            >
+              <Input
+                prefix={<UserOutlined className="text-gray-400" />}
+                placeholder={t("auth.enterEmail")}
+                autoComplete="username"
+              />
+            </Form.Item>
+
+            {/* Password */}
+            <Form.Item
+              name="password"
+              label={t("auth.password")}
+              rules={[
+                { required: true, message: t("validation.required") },
+                { min: 8, message: t("validation.minLength").replace("{min}", "8") },
+                { max: 100, message: t("validation.maxLength").replace("{max}", "100") },
+              ]}
+            >
+              <Input.Password
+                prefix={<LockOutlined className="text-gray-400" />}
+                placeholder={t("auth.enterPassword")}
+                autoComplete="current-password"
+              />
+            </Form.Item>
+
+            {/* Remember */}
+            <Form.Item>
+              <div className="flex items-center justify-between">
+                <Form.Item name="remember" valuePropName="checked" noStyle>
+                  <Checkbox>{t("auth.rememberMe")}</Checkbox>
+                </Form.Item>
+                <a
+                  href="/forgot-password"
+                  className="text-sm text-blue-600 hover:text-blue-700"
+                >
+                  {t("auth.forgotPassword")}
+                </a>
+              </div>
+            </Form.Item>
+
+            {/* Submit button */}
+            <Form.Item className="mb-0">
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                disabled={
+                  error?.code === "AUTH_ACCOUNT_LOCKED" && lockoutCountdown !== null && lockoutCountdown > 0
+                }
+                block
+              >
+                {t("auth.login")}
+              </Button>
+            </Form.Item>
+          </Form>
+        )}
+
+        {/* 2FA Form */}
+        {step === "2fa" && (
+          <Form
+            name="two-factor"
+            onFinish={onTwoFactorSubmit}
+            layout="vertical"
+            size="large"
+            requiredMark={false}
+          >
+            {/* OTP Code */}
+            <Form.Item
+              name="code"
+              label={t("auth.enterAuthCode")}
+              rules={[
+                { required: true, message: t("validation.required") },
+                {
+                  pattern: /^\d{6}$/,
+                  message: t("validation.otpLength") || "Mã xác thực phải có 6 chữ số",
+                },
+              ]}
+            >
+              <Input
+                prefix={<SafetyOutlined className="text-gray-400" />}
+                placeholder={t("auth.enterAuthCode")}
+                maxLength={6}
+                className="text-center text-lg tracking-widest"
+                autoFocus
+              />
+            </Form.Item>
+
+            {/* Submit button */}
+            <Form.Item className="mb-4">
+              <Button type="primary" htmlType="submit" loading={loading} block>
+                {t("common.confirm")}
+              </Button>
+            </Form.Item>
+
+            {/* Back button */}
+            <Button
+              type="link"
+              icon={<ArrowLeftOutlined />}
+              onClick={handleBackToLogin}
+              className="w-full"
+            >
+              {t("common.back")}
+            </Button>
+
+            {/* Backup code hint */}
+            <p className="mt-4 text-center text-xs text-gray-400">
+              {t("auth.forgotPassword")}
+              <br />
+              <a
+                href="/login/recovery"
+                className="text-blue-600 hover:text-blue-700"
+              >
+                {t("auth.recoveryCode")}
+              </a>
+            </p>
+          </Form>
+        )}
+
+        {/* Email OTP Form */}
+        {step === "email-otp" && (
+          <Form
+            name="email-otp"
+            onFinish={onEmailOtpSubmit}
+            layout="vertical"
+            size="large"
+            requiredMark={false}
+          >
+            {/* Header */}
+            <div className="mb-8 text-center">
+              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
+                <SafetyOutlined className="text-2xl text-blue-600" />
+              </div>
+              <h2 className="text-xl font-semibold text-gray-800">
+                {t("auth.verifyEmail")}
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">
+                {t("auth.otpSentTo")} <strong>{userEmail}</strong>
+              </p>
+            </div>
+
+            {/* OTP Code */}
+            <Form.Item
+              name="otp"
+              label={t("auth.enterOtpCode")}
+              rules={[
+                { required: true, message: t("validation.required") },
+                {
+                  pattern: /^\d{6}$/,
+                  message: t("validation.otpLength") || "Mã OTP phải có 6 chữ số",
+                },
+              ]}
+            >
+              <Input
+                prefix={<SafetyOutlined className="text-gray-400" />}
+                placeholder={t("auth.enterOtpCode")}
+                maxLength={6}
+                className="text-center text-lg tracking-widest"
+                autoFocus
+              />
+            </Form.Item>
+
+            {/* Submit button */}
+            <Form.Item className="mb-4">
+              <Button type="primary" htmlType="submit" loading={loading} block>
+                {t("common.confirm")}
+              </Button>
+            </Form.Item>
+
+            {/* Back button */}
+            <Button
+              type="link"
+              icon={<ArrowLeftOutlined />}
+              onClick={handleBackToLogin}
+              className="w-full"
+            >
+              {t("common.back")}
+            </Button>
+          </Form>
         )}
       </div>
-
-      {/* Error Alert */}
-      {error && (
-        <Alert
-          message={error.message}
-          type={error.type || "error"}
-          showIcon
-          closable
-          onClose={() => setError(null)}
-          className="mb-4"
-        />
-      )}
-
-      {/* Account Locked Countdown */}
-      {error?.code === "AUTH_ACCOUNT_LOCKED" && lockoutCountdown !== null && lockoutCountdown > 0 && (
-        <div className="mb-4 rounded-lg bg-blue-50 p-4">
-          <p className="mb-3 text-center text-sm font-medium text-gray-700">
-            {t("common.tryAgainIn")}
-          </p>
-          <div className="text-center">
-            <Statistic.Countdown
-              value={Date.now() + lockoutCountdown * 1000}
-              format="mm:ss"
-              valueStyle={{ color: "#1890ff", fontSize: "24px" }}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Email Not Verified Message */}
-      {error?.code === "AUTH_EMAIL_NOT_VERIFIED" && step !== "email-otp" && (
-        <div className="mb-4 rounded-lg bg-yellow-50 p-4">
-          <p className="mb-3 text-sm text-gray-700">
-            {t("auth.contactAdminToVerifyEmail")}
-          </p>
-          <button
-            onClick={handleBackToLogin}
-            className="text-sm text-blue-600 hover:text-blue-700"
-          >
-            {t("common.back")}
-          </button>
-        </div>
-      )}
-
-      {/* Credentials Form */}
-      {step === "credentials" && (
-        <Form
-          name="login"
-          initialValues={{ remember: true }}
-          onFinish={onLoginSubmit}
-          layout="vertical"
-          size="large"
-          requiredMark={false}
-        >
-          {/* Username/Email */}
-          <Form.Item
-            name="identity"
-            label={t("auth.email")}
-            rules={[
-              { required: true, message: t("validation.required") },
-              { min: 3, message: t("validation.minLength").replace("{min}", "3") },
-              { max: 255, message: t("validation.maxLength").replace("{max}", "255") },
-            ]}
-          >
-            <Input
-              prefix={<UserOutlined className="text-gray-400" />}
-              placeholder={t("auth.enterEmail")}
-              autoComplete="username"
-            />
-          </Form.Item>
-
-          {/* Password */}
-          <Form.Item
-            name="password"
-            label={t("auth.password")}
-            rules={[
-              { required: true, message: t("validation.required") },
-              { min: 8, message: t("validation.minLength").replace("{min}", "8") },
-              { max: 100, message: t("validation.maxLength").replace("{max}", "100") },
-            ]}
-          >
-            <Input.Password
-              prefix={<LockOutlined className="text-gray-400" />}
-              placeholder={t("auth.enterPassword")}
-              autoComplete="current-password"
-            />
-          </Form.Item>
-
-          {/* Remember */}
-          <Form.Item>
-            <div className="flex items-center justify-between">
-              <Form.Item name="remember" valuePropName="checked" noStyle>
-                <Checkbox>{t("auth.rememberMe")}</Checkbox>
-              </Form.Item>
-              <a
-                href="/forgot-password"
-                className="text-sm text-blue-600 hover:text-blue-700"
-              >
-                {t("auth.forgotPassword")}
-              </a>
-            </div>
-          </Form.Item>
-
-          {/* Submit button */}
-          <Form.Item className="mb-0">
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              disabled={
-                error?.code === "AUTH_ACCOUNT_LOCKED" && lockoutCountdown !== null && lockoutCountdown > 0
-              }
-              block
-            >
-              {t("auth.login")}
-            </Button>
-          </Form.Item>
-        </Form>
-      )}
-
-      {/* 2FA Form */}
-      {step === "2fa" && (
-        <Form
-          name="two-factor"
-          onFinish={onTwoFactorSubmit}
-          layout="vertical"
-          size="large"
-          requiredMark={false}
-        >
-          {/* OTP Code */}
-          <Form.Item
-            name="code"
-            label={t("auth.enterAuthCode")}
-            rules={[
-              { required: true, message: t("validation.required") },
-              {
-                pattern: /^\d{6}$/,
-                message: t("validation.otpLength") || "Mã xác thực phải có 6 chữ số",
-              },
-            ]}
-          >
-            <Input
-              prefix={<SafetyOutlined className="text-gray-400" />}
-              placeholder={t("auth.enterAuthCode")}
-              maxLength={6}
-              className="text-center text-lg tracking-widest"
-              autoFocus
-            />
-          </Form.Item>
-
-          {/* Submit button */}
-          <Form.Item className="mb-4">
-            <Button type="primary" htmlType="submit" loading={loading} block>
-              {t("common.confirm")}
-            </Button>
-          </Form.Item>
-
-          {/* Back button */}
-          <Button
-            type="link"
-            icon={<ArrowLeftOutlined />}
-            onClick={handleBackToLogin}
-            className="w-full"
-          >
-            {t("common.back")}
-          </Button>
-
-          {/* Backup code hint */}
-          <p className="mt-4 text-center text-xs text-gray-400">
-            {t("auth.forgotPassword")}
-            <br />
-            <a
-              href="/login/recovery"
-              className="text-blue-600 hover:text-blue-700"
-            >
-              {t("auth.recoveryCode")}
-            </a>
-          </p>
-        </Form>
-      )}
-
-      {/* Email OTP Form */}
-      {step === "email-otp" && (
-        <Form
-          name="email-otp"
-          onFinish={onEmailOtpSubmit}
-          layout="vertical"
-          size="large"
-          requiredMark={false}
-        >
-          {/* Header */}
-          <div className="mb-8 text-center">
-            <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
-              <SafetyOutlined className="text-2xl text-blue-600" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-800">
-              {t("auth.verifyEmail")}
-            </h2>
-            <p className="mt-1 text-sm text-gray-500">
-              {t("auth.otpSentTo")} <strong>{userEmail}</strong>
-            </p>
-          </div>
-
-          {/* OTP Code */}
-          <Form.Item
-            name="otp"
-            label={t("auth.enterOtpCode")}
-            rules={[
-              { required: true, message: t("validation.required") },
-              {
-                pattern: /^\d{6}$/,
-                message: t("validation.otpLength") || "Mã OTP phải có 6 chữ số",
-              },
-            ]}
-          >
-            <Input
-              prefix={<SafetyOutlined className="text-gray-400" />}
-              placeholder={t("auth.enterOtpCode")}
-              maxLength={6}
-              className="text-center text-lg tracking-widest"
-              autoFocus
-            />
-          </Form.Item>
-
-          {/* Submit button */}
-          <Form.Item className="mb-4">
-            <Button type="primary" htmlType="submit" loading={loading} block>
-              {t("common.confirm")}
-            </Button>
-          </Form.Item>
-
-          {/* Back button */}
-          <Button
-            type="link"
-            icon={<ArrowLeftOutlined />}
-            onClick={handleBackToLogin}
-            className="w-full"
-          >
-            {t("common.back")}
-          </Button>
-        </Form>
-      )}
-    </div>
+    </>
   );
 }

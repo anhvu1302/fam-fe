@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -10,50 +10,50 @@ import {
     SafetyOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu } from "antd";
+import { Card, Col, Menu, Row } from "antd";
 
-const { Sider, Content } = Layout;
+import { useI18n } from "@/lib/i18n-context";
 
 interface ProfileLayoutProps {
     children: ReactNode;
 }
 
-const menuItems = [
+const menuItems = (t: (key: string, fallback?: string) => string) => [
     {
         key: "profile",
         icon: <UserOutlined />,
-        label: "Thông tin cá nhân",
+        label: t("profile.profile", "Thông tin cá nhân"),
         href: "/profile",
     },
     {
         key: "edit",
         icon: <UserOutlined />,
-        label: "Sửa thông tin",
+        label: t("profile.editProfile", "Sửa thông tin"),
         href: "/profile/edit",
     },
     {
         key: "avatar",
         icon: <CameraOutlined />,
-        label: "Đổi ảnh đại diện",
+        label: t("profile.changeAvatar", "Đổi ảnh đại diện"),
         href: "/profile/avatar",
     },
     {
         key: "password",
         icon: <LockOutlined />,
-        label: "Đổi mật khẩu",
+        label: t("auth.changePassword", "Đổi mật khẩu"),
         href: "/profile/password",
     },
     {
         key: "security",
         icon: <SafetyOutlined />,
-        label: "Bảo mật & 2FA",
+        label: t("settings.security", "Bảo mật & 2FA"),
         href: "/settings/security",
     },
 ];
 
 export default function ProfileLayout({ children }: ProfileLayoutProps) {
     const pathname = usePathname();
-    const [collapsed, setCollapsed] = useState(false);
+    const { t } = useI18n();
 
     // Determine active menu key
     const getActiveKey = () => {
@@ -66,36 +66,31 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
     };
 
     return (
-        <Layout className="min-h-screen">
-            {/* Sidebar */}
-            <Sider
-                collapsed={collapsed}
-                onCollapse={setCollapsed}
-                width={250}
-                theme="light"
-                className="border-r border-gray-200"
-            >
-                <div className="flex h-16 items-center justify-center border-b border-gray-200 px-4">
-                    <h2 className="text-center font-semibold text-gray-800">
-                        {collapsed ? "Hồ sơ" : "Hồ sơ cá nhân"}
-                    </h2>
-                </div>
-                <Menu
-                    mode="inline"
-                    selectedKeys={[getActiveKey()]}
-                    items={menuItems.map((item) => ({
-                        ...item,
-                        label: <Link href={item.href}>{item.label}</Link>,
-                    }))}
-                />
-            </Sider>
+        <Row gutter={16}>
+            {/* Sidebar Menu */}
+            <Col xs={24} md={6}>
+                <Card
+                    title={t("profile.profile", "Hồ sơ cá nhân")}
+                    variant="borderless"
+                >
+                    <Menu
+                        mode="inline"
+                        selectedKeys={[getActiveKey()]}
+                        style={{ background: 'transparent', border: 'none' }}
+                        items={menuItems(t).map((item) => ({
+                            ...item,
+                            label: <Link href={item.href}>{item.label}</Link>,
+                        }))}
+                    />
+                </Card>
+            </Col>
 
             {/* Content */}
-            <Layout>
-                <Content className="p-6">
-                    <div className="rounded-lg bg-white p-6 shadow-sm">{children}</div>
-                </Content>
-            </Layout>
-        </Layout>
+            <Col xs={24} md={18}>
+                <Card variant="borderless">
+                    {children}
+                </Card>
+            </Col>
+        </Row>
     );
 }

@@ -14,4 +14,7 @@ export interface TranslationResource {
     settings: I18nMessage;
     devices: I18nMessage;
     validation: I18nMessage;
+    layout?: I18nMessage;
+    dashboard?: I18nMessage;
+    avatar?: I18nMessage;
 }

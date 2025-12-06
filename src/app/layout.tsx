@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { ConfigProvider } from "antd";
 
-import { antdTheme } from "@/lib/antd-theme";
+import ThemeConfigProvider from "@/components/ThemeConfigProvider";
+import ThemeFloatButton from "@/components/ThemeFloatButton";
 import { I18nProvider } from "@/lib/i18n-context";
 import { SettingsProvider } from "@/lib/settings-context";
+import { ThemeProvider } from "@/lib/theme-context";
 
 import "./globals.css";
 
@@ -36,11 +37,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AntdRegistry>
-          <ConfigProvider theme={antdTheme}>
-            <SettingsProvider>
-              <I18nProvider>{children}</I18nProvider>
-            </SettingsProvider>
-          </ConfigProvider>
+          <ThemeProvider>
+            <ThemeConfigProvider>
+              <SettingsProvider>
+                <I18nProvider>
+                  {children}
+                  <ThemeFloatButton />
+                </I18nProvider>
+              </SettingsProvider>
+            </ThemeConfigProvider>
+          </ThemeProvider>
         </AntdRegistry>
       </body>
     </html>
