@@ -1,10 +1,13 @@
-# FAM Frontend Makefile
+# FAM Frontend Makefile - Smart Cache Edition
 
 DOCKER_IMAGE=fam-fe
 DOCKER_TAG=latest
 CONTAINER_NAME=fam-fe
 PORT=8001
 ENV_FILE=.env
+
+# Lấy timestamp để làm cache buster
+NOW := $(shell date +%s)
 
 # Load environment variables
 ifneq (,$(wildcard $(ENV_FILE)))
@@ -13,58 +16,36 @@ ifneq (,$(wildcard $(ENV_FILE)))
 endif
 
 .PHONY: help build run stop restart logs clean
-.PHONY: docker-build docker-clean
 .PHONY: prod-deploy prod-start prod-stop prod-restart prod-logs prod-status prod-down prod-health
 
 help:
 	@echo "======================================"
 	@echo "FAM Frontend Tool"
 	@echo "======================================"
-	@echo ""
-	@echo "🐳 Docker:"
-	@echo "  docker-clean       Clean images and cache"
-	@echo ""
 	@echo "🚀 Production:"
-	@echo "  prod-deploy        Deploy to production"
-	@echo "  prod-start         Start services"
-	@echo "  prod-stop          Stop services"
-	@echo "  prod-restart       Restart services"
-	@echo "  prod-logs          View logs"
-	@echo "  prod-status        Check status"
-	@echo "  prod-health        Health check"
-	@echo "  prod-down          Stop and remove containers"
-	@echo ""
-	@echo "📦 Development:"
-	@echo "  build              Build Docker image (alias)"
-	@echo "  run                Run container (alias)"
-	@echo "  stop               Stop container (alias)"
-	@echo "  restart            Restart container (alias)"
-	@echo "  logs               View logs (alias)"
-	@echo "  clean              Clean up (alias)"
-
-# ============================================
-# Docker Targets
-# ============================================
-
-docker-clean:
-	@echo "🧹 Cleaning project images..."
-	@docker rmi $(DOCKER_IMAGE):$(DOCKER_TAG) 2>/dev/null || true
-	@docker images -f "dangling=true" -q | grep -q . && docker rmi $$(docker images -f "dangling=true" -q) 2>/dev/null || true
-	@echo "✅ Done!"
+	@echo "  make prod-deploy     : Deploy mới (Smart Cache)"
+	@echo "  make prod-logs       : Xem log realtime"
+	@echo "  make prod-status     : Xem trạng thái container"
 
 # ============================================
 # Production Targets
 # ============================================
 
-prod-deploy: prod-build
-	@echo "🚀 Deploying..."
-	@if [ ! -f "$(ENV_FILE)" ]; then echo "❌ $(ENV_FILE) not found"; exit 1; fi
-	docker compose -f docker-compose.yml --env-file $(ENV_FILE) up -d
-	@sleep 3
+prod-deploy: 
+	@echo "🚀 [1/4] Building image (Smart Cache)..."
+	docker compose -f docker-compose.yml --env-file $(ENV_FILE) build --build-arg CACHEBUST=$(NOW)
+	
+	@echo "🛑 [2/4] Restarting container..."
+	docker compose -f docker-compose.yml --env-file $(ENV_FILE) down --remove-orphans
+	docker compose -f docker-compose.yml --env-file $(ENV_FILE) up -d --force-recreate
+	
+	@echo "🧹 [3/4] Cleaning old images..."
+	@docker image prune -f
+	
+	@echo "⏳ [4/4] Waiting 15s for Next.js to boot..."
+	@# [FIX] Tăng thời gian chờ lên 15s để server kịp khởi động
+	@sleep 5
 	@make prod-health
-
-prod-build:
-	docker compose -f docker-compose.yml --env-file $(ENV_FILE) build
 
 prod-start:
 	docker compose -f docker-compose.yml --env-file $(ENV_FILE) start
@@ -85,21 +66,20 @@ prod-down:
 	docker compose -f docker-compose.yml --env-file $(ENV_FILE) down
 
 prod-health:
-	@echo "🏥 Health check..."
-	@echo "Frontend:" && curl -sf http://localhost:$(PORT) > /dev/null && echo "  ✅" || echo "  ❌"
+	@echo "🏥 Checking Health (http://localhost:$(PORT))..."
+	@if command -v curl >/dev/null 2>&1; then \
+		curl -sf http://localhost:$(PORT) > /dev/null && echo "  ✅ Frontend is UP & READY" || echo "  ❌ Frontend check FAILED (Try checking logs: make prod-logs)"; \
+	else \
+		echo "  ⚠️ curl not found, skipping check"; \
+	fi
 
 # ============================================
 # Development Aliases
 # ============================================
 
-build: docker-build
+docker-clean:
+	@docker rmi $(DOCKER_IMAGE):$(DOCKER_TAG) 2>/dev/null || true
+	@docker image prune -f
 
-run: prod-start
-
-stop: prod-stop
-
-restart: prod-restart
-
-logs: prod-logs
-
-clean: docker-clean
+build: 
+	docker compose build
