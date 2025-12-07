@@ -24,11 +24,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "**.example.com",
+        hostname: "**.gravatar.com",
       },
       {
         protocol: "https",
-        hostname: "**.gravatar.com",
+        hostname: "**.fam.codes",
       }
     ],
   },
