@@ -118,7 +118,10 @@ export function AuthLayoutClient({
             </div>
 
             {/* Right side - Form */}
-            <div className="flex flex-1 flex-col items-center justify-center bg-gray-50 p-8">
+            <div
+                className="flex flex-1 flex-col items-center justify-center p-8"
+                style={{ backgroundColor: "var(--colorBgLayout)" }}
+            >
                 {/* Language Switcher */}
                 <div className="absolute right-8 top-8">
                     <LanguageSwitcher />

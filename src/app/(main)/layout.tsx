@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -10,7 +11,6 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  SettingOutlined,
   TeamOutlined,
   ToolOutlined,
   UserOutlined,
@@ -20,9 +20,11 @@ import { Footer } from "antd/es/layout/layout";
 
 import AuthGuard from "@/components/AuthGuard";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useAppSettingsByGroup } from "@/hooks/use-app-settings";
 import { useI18n } from "@/lib/i18n-context";
-import { getMinioUrl } from "@/lib/minio-url";
+import { getMinioUrl, getUserAvatarUrl } from "@/lib/minio-url";
 import { tokenStorage } from "@/lib/token-storage";
+import type { UserInfo } from "@/types/auth";
 
 const { Header, Sider, Content } = Layout;
 
@@ -58,6 +60,11 @@ function AdminLayoutContent({
     },
   } = theme.useToken();
 
+  const { settings: brandingSettings } = useAppSettingsByGroup("branding");
+
+  const rawLogo = brandingSettings["app.branding.logo"] as string | undefined;
+  const logoUrl = getMinioUrl(rawLogo);
+
   const menuItems = [
     {
       key: "dashboard",
@@ -87,12 +94,6 @@ function AdminLayoutContent({
       label: t("layout.nav.reports", "Reports"),
       href: "/reports",
     },
-    {
-      key: "settings",
-      icon: <SettingOutlined />,
-      label: t("layout.nav.settings", "Settings"),
-      href: "/settings",
-    },
   ];
 
   return (
@@ -116,19 +117,32 @@ function AdminLayoutContent({
       >
         {/* Logo */}
         <div
-          className="h-16 w-full relative border-b"
+          className="h-16 w-full relative border-b flex items-center justify-center"
           style={{
             borderColor: colorBorder,
             color: colorText,
             backgroundColor: 'transparent'
           }}
         >
-          <div className={`flex justify-center items-center px-4 absolute top-0 left-0 w-full h-full transition-all duration-300 ${collapsed ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-            <span className='text-4xl font-bold select-none'>{t("layout.logoShort")}</span>
-          </div>
-          <div className={`flex justify-center items-center px-4 absolute top-0 left-0 w-full h-full transition-all duration-300 ${collapsed ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>
-            <span className='text-2xl font-medium select-none'>{t("layout.logoFull")}</span>
-          </div>
+          {logoUrl ? (
+            <>
+              <div className={`absolute top-0 left-0 w-full h-full flex items-center justify-center transition-all duration-300 ${collapsed ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                <Image src={logoUrl} alt="logo" width={40} height={40} className="object-contain" />
+              </div>
+              <div className={`absolute top-0 left-0 w-full h-full flex items-center justify-center transition-all duration-300 ${collapsed ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>
+                <Image src={logoUrl} alt="logo-full" width={140} height={48} className="object-contain" />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className={`absolute top-0 left-0 w-full h-full flex items-center justify-center transition-all duration-300 ${collapsed ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                <span className='text-4xl font-bold select-none'>{t("layout.logoShort")}</span>
+              </div>
+              <div className={`absolute top-0 left-0 w-full h-full flex items-center justify-center transition-all duration-300 ${collapsed ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>
+                <span className='text-2xl font-medium select-none'>{t("layout.logoFull")}</span>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Menu */}
@@ -185,9 +199,7 @@ function AdminLayoutContent({
             >
               <Avatar
                 icon={<UserOutlined />}
-                src={getMinioUrl(
-                  (tokenStorage.getUser() as { avatarUrl?: string })?.avatarUrl
-                )}
+                src={getUserAvatarUrl(tokenStorage.getUser() as UserInfo | null)}
                 size="small"
               />
               <span className="hidden sm:inline font-medium">{t("layout.adminName", "Admin")}</span>

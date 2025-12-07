@@ -80,7 +80,7 @@ export default function SecuritySettingsPage() {
       });
       message.success("Đã đổi mật khẩu thành công!");
       setShowChangePasswordModal(false);
-      
+
       if (values.logoutAllDevices) {
         message.info("Đang đăng xuất...");
         tokenStorage.clear();
@@ -139,7 +139,7 @@ export default function SecuritySettingsPage() {
                 Tắt 2FA
               </Button>
             ) : (
-              <Button type="primary" onClick={() => router.push("/settings/security/2fa-setup")}>
+              <Button type="primary" onClick={() => router.push("/settings/security/authentication")}>
                 Bật 2FA
               </Button>
             )}
@@ -185,7 +185,7 @@ export default function SecuritySettingsPage() {
               </Paragraph>
             </div>
           </div>
-          <Button onClick={() => router.push("/settings/security/devices")}>
+          <Button onClick={() => router.push("/settings/security/sessions")}>
             Quản lý thiết bị
           </Button>
         </div>

@@ -11,7 +11,7 @@ import {
 import { Avatar, Button, Card, Descriptions, Empty, Skeleton, Space, Tag, Typography } from "antd";
 
 import { useI18n } from "@/lib/i18n-context";
-import { getMinioUrl } from "@/lib/minio-url";
+import { getUserAvatarUrl } from "@/lib/minio-url";
 import { tokenStorage } from "@/lib/token-storage";
 import type { UserInfo } from "@/types/auth";
 
@@ -50,8 +50,8 @@ export default function ProfilePage() {
             <Card className="mb-6">
                 <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
                     <div className="flex flex-col items-center gap-3">
-                        <Avatar size={120} icon={<UserOutlined />} src={getMinioUrl(user.avatarUrl)} />
-                        <Button type="primary" href="/profile/avatar">
+                        <Avatar size={120} icon={<UserOutlined />} src={getUserAvatarUrl(user)} />
+                        <Button type="primary" href="/settings/profile">
                             {t("profile.changeAvatar", "Thay đổi ảnh")}
                         </Button>
                     </div>
@@ -153,10 +153,10 @@ export default function ProfilePage() {
                 />
 
                 <div className="mt-6 flex gap-2">
-                    <Button type="primary" href="/profile/edit">
+                    <Button type="primary" href="/settings/profile">
                         {t("profile.editProfile", "Sửa thông tin")}
                     </Button>
-                    <Button href="/profile/password">{t("auth.changePassword", "Đổi mật khẩu")}</Button>
+                    <Button href="/settings/account">{t("auth.changePassword", "Đổi mật khẩu")}</Button>
                 </div>
             </Card>
         </div>

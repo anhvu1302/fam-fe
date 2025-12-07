@@ -1,4 +1,5 @@
 import { envConfig } from "@/lib/env-config";
+import type { UserInfo } from "@/types/auth";
 
 /**
  * Utility function để tạo full MinIO/S3 URL từ file path
@@ -26,6 +27,21 @@ export function getMinioUrl(filePath: string | null | undefined): string | undef
 
     // Fallback: trả về file path như cũ
     return filePath;
+}
+
+/**
+ * Get avatar URL from user object, handling both old (avatarUrl) and new (avatar) field names
+ * @param user - User object
+ * @returns Avatar URL or undefined
+ */
+export function getUserAvatarUrl(user: UserInfo | null | undefined): string | undefined {
+    if (!user) {
+        return undefined;
+    }
+
+    // Prefer new 'avatar' field, fallback to old 'avatarUrl' field
+    const avatarPath = user.avatar || user.avatarUrl;
+    return getMinioUrl(avatarPath);
 }
 
 /**

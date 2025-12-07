@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 import { en } from "@/locales/en";
 import { vi } from "@/locales/vi";
@@ -44,7 +44,11 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
         if (typeof window !== "undefined") {
             const savedLanguage = localStorage.getItem(LANGUAGE_KEY) as LanguageCode | null;
             if (savedLanguage && Object.keys(SUPPORTED_LANGUAGES).includes(savedLanguage)) {
-                setLanguageState(savedLanguage);
+                // Defer the state update to avoid synchronous setState in effect
+                // which can trigger cascading renders and is flagged by ESLint.
+                // Using queueMicrotask keeps it lightweight and runs after the
+                // current call stack.
+                queueMicrotask(() => setLanguageState(savedLanguage));
             }
         }
     }, []);

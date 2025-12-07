@@ -33,6 +33,7 @@ import {
 } from "antd";
 
 import authApi from "@/lib/api/auth";
+import { useI18n } from "@/lib/i18n-context";
 import type { UserDeviceResponse } from "@/types/auth";
 
 const { Title, Text } = Typography;
@@ -90,6 +91,7 @@ const mockDevices: UserDeviceResponse[] = [
 ];
 
 export default function DevicesPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const [devices, setDevices] = useState<UserDeviceResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,12 +104,12 @@ export default function DevicesPage() {
       // TODO: Replace with real API call when available
       // const response = await apiClient.get('/api/auth/devices');
       // setDevices(response.data);
-      
+
       // Using mock data for now
       await new Promise((resolve) => setTimeout(resolve, 500));
       setDevices(mockDevices);
     } catch {
-      message.error("Không thể tải danh sách thiết bị");
+      message.error(t("common.error", "An error occurred"));
     } finally {
       setLoading(false);
     }
@@ -120,23 +122,23 @@ export default function DevicesPage() {
   // Revoke device session
   const revokeDevice = async (deviceId: string) => {
     Modal.confirm({
-      title: "Thu hồi phiên đăng nhập?",
+      title: t("settings.revokeAccess", "Revoke access"),
       icon: <ExclamationCircleOutlined />,
-      content: "Thiết bị này sẽ bị đăng xuất và cần đăng nhập lại để tiếp tục sử dụng.",
-      okText: "Thu hồi",
+      content: t("common.description", "This device will be logged out and need to login again to continue using."),
+      okText: t("settings.revokeAccess", "Revoke access"),
       okType: "danger",
-      cancelText: "Hủy",
+      cancelText: t("common.cancel", "Cancel"),
       onOk: async () => {
         setRevoking(deviceId);
         try {
           // TODO: Replace with real API call
           // await apiClient.delete(`/api/auth/devices/${deviceId}`);
           await new Promise((resolve) => setTimeout(resolve, 500));
-          
+
           setDevices((prev) => prev.filter((d) => d.id !== deviceId));
-          message.success("Đã thu hồi phiên đăng nhập!");
+          message.success(t("common.success", "Success"));
         } catch {
-          message.error("Không thể thu hồi phiên đăng nhập");
+          message.error(t("common.error", "An error occurred"));
         } finally {
           setRevoking(null);
         }
@@ -147,19 +149,19 @@ export default function DevicesPage() {
   // Logout all other devices
   const logoutAllOther = async () => {
     Modal.confirm({
-      title: "Đăng xuất tất cả thiết bị khác?",
+      title: t("common.confirm", "Are you sure?"),
       icon: <ExclamationCircleOutlined />,
-      content: "Tất cả thiết bị khác sẽ bị đăng xuất. Chỉ giữ lại phiên hiện tại.",
-      okText: "Đăng xuất tất cả",
+      content: t("common.description", "All other devices will be logged out. Only keep the current session."),
+      okText: t("common.logoutAll", "Logout all"),
       okType: "danger",
-      cancelText: "Hủy",
+      cancelText: t("common.cancel", "Cancel"),
       onOk: async () => {
         try {
           await authApi.logoutAll(true);
           setDevices((prev) => prev.filter((d) => d.isCurrent));
-          message.success("Đã đăng xuất tất cả thiết bị khác!");
+          message.success(t("common.success", "Success"));
         } catch {
-          message.error("Không thể đăng xuất các thiết bị khác");
+          message.error(t("common.error", "An error occurred"));
         }
       },
     });
@@ -239,7 +241,7 @@ export default function DevicesPage() {
 
       {/* Alert */}
       <Alert
-        message="Bảo mật tài khoản"
+        title="Bảo mật tài khoản"
         description="Nếu bạn thấy thiết bị lạ, hãy thu hồi phiên đăng nhập và đổi mật khẩu ngay lập tức."
         type="info"
         showIcon
@@ -249,14 +251,13 @@ export default function DevicesPage() {
       {/* Devices List */}
       <Card>
         {loading ? (
-          <List
-            dataSource={[1, 2, 3]}
-            renderItem={() => (
-              <List.Item>
+          <div>
+            {[1, 2, 3].map((item) => (
+              <div key={item} className="mb-4">
                 <Skeleton active avatar paragraph={{ rows: 2 }} />
-              </List.Item>
-            )}
-          />
+              </div>
+            ))}
+          </div>
         ) : devices.length === 0 ? (
           <Empty description="Không có thiết bị nào" />
         ) : (

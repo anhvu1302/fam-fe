@@ -288,18 +288,18 @@ export default function LoginPage() {
   return (
     <>
       {messageContextHolder}
-      <div className="rounded-2xl bg-white p-8 shadow-xl">
+      <div className="rounded-2xl p-8 shadow-xl" style={{ backgroundColor: "var(--colorBgContainer)" }}>
         {/* Header */}
         <div className="mb-8 text-center">
           {/* Mobile logo */}
-          <h1 className="mb-2 text-2xl font-bold text-gray-800 lg:hidden">
+          <h1 className="mb-2 text-2xl font-bold text-gray-800 dark:text-gray-100 lg:hidden">
             Fixed Asset Mgmt
           </h1>
 
           {step === "credentials" ? (
             <>
-              <h2 className="text-xl font-semibold text-gray-800">{t("auth.login")}</h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">{t("auth.login")}</h2>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {t("auth.enterEmail")}
               </p>
             </>
@@ -308,10 +308,10 @@ export default function LoginPage() {
               <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
                 <SafetyOutlined className="text-2xl text-blue-600" />
               </div>
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
                 {t("auth.twoFactorAuth")}
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {t("auth.enterAuthCode")}
               </p>
             </>
@@ -512,10 +512,10 @@ export default function LoginPage() {
               <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
                 <SafetyOutlined className="text-2xl text-blue-600" />
               </div>
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
                 {t("auth.verifyEmail")}
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {t("auth.otpSentTo")} <strong>{userEmail}</strong>
               </p>
             </div>

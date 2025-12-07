@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import {
-    CameraOutlined,
+    BellOutlined,
     LockOutlined,
     SafetyOutlined,
     UserOutlined,
@@ -14,7 +14,7 @@ import { Card, Col, Menu, Row } from "antd";
 
 import { useI18n } from "@/lib/i18n-context";
 
-interface ProfileLayoutProps {
+interface SettingsLayoutProps {
     children: ReactNode;
 }
 
@@ -22,45 +22,47 @@ const menuItems = (t: (key: string, fallback?: string) => string) => [
     {
         key: "profile",
         icon: <UserOutlined />,
-        label: t("profile.profile", "Thông tin cá nhân"),
-        href: "/profile",
+        label: t("settings.publicProfile", "Public profile"),
+        href: "/settings/profile",
     },
     {
-        key: "edit",
+        key: "account",
         icon: <UserOutlined />,
-        label: t("profile.editProfile", "Sửa thông tin"),
-        href: "/settings/profile",
-    },
-    {
-        key: "avatar",
-        icon: <CameraOutlined />,
-        label: t("profile.changeAvatar", "Đổi ảnh đại diện"),
-        href: "/settings/profile",
-    },
-    {
-        key: "password",
-        icon: <LockOutlined />,
-        label: t("auth.changePassword", "Đổi mật khẩu"),
+        label: t("settings.account", "Account"),
         href: "/settings/account",
+    },
+    {
+        key: "appearance",
+        icon: <BellOutlined />,
+        label: t("settings.appearance", "Appearance"),
+        href: "/settings/appearance",
     },
     {
         key: "security",
         icon: <SafetyOutlined />,
-        label: t("settings.security", "Bảo mật & 2FA"),
+        label: t("settings.passwordAndAuthentication", "Password and authentication"),
         href: "/settings/security",
+    },
+    {
+        key: "sessions",
+        icon: <LockOutlined />,
+        label: t("settings.sessions", "Sessions"),
+        href: "/settings/security/sessions",
     },
 ];
 
-export default function ProfileLayout({ children }: ProfileLayoutProps) {
+export default function SettingsLayout({ children }: SettingsLayoutProps) {
     const pathname = usePathname();
     const { t } = useI18n();
 
     // Determine active menu key
     const getActiveKey = () => {
-        if (pathname === "/profile") return "profile";
-        if (pathname.startsWith("/settings/profile")) return "edit";
-        if (pathname.startsWith("/settings/account")) return "password";
-        if (pathname.startsWith("/settings/security")) return "security";
+        if (pathname === "/settings/profile") return "profile";
+        if (pathname === "/settings/account") return "account";
+        if (pathname === "/settings/appearance") return "appearance";
+        if (pathname === "/settings/security") return "security";
+        if (pathname.startsWith("/settings/security/sessions")) return "sessions";
+        if (pathname.startsWith("/settings/security/authentication")) return "security";
         return "profile";
     };
 
@@ -68,10 +70,7 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
         <Row gutter={16}>
             {/* Sidebar Menu */}
             <Col xs={24} md={6}>
-                <Card
-                    title={t("profile.profile", "Hồ sơ cá nhân")}
-                    variant="borderless"
-                >
+                <Card variant="borderless">
                     <Menu
                         mode="inline"
                         selectedKeys={[getActiveKey()]}

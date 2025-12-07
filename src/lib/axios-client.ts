@@ -4,6 +4,8 @@ import axios, {
     InternalAxiosRequestConfig,
 } from "axios";
 
+import type { ApiSuccessResponse } from "@/types/api-response";
+
 import {
     decryptData,
     encryptData,
@@ -83,8 +85,22 @@ const sanitizeError = (error: AxiosError): ApiError => {
         // Nếu data là object có error/message/detail thì giữ lại
         const data = error.response.data as Record<string, unknown>;
 
-        // Ưu tiên detail từ server (API trả về detail field)
-        if (typeof data.detail === 'string') {
+        // Handle new API error format: {success: false, message: "...", errors: [{message: "...", code: "..."}]}
+        if (data.success === false) {
+            // Ưu tiên message từ response
+            if (typeof data.message === 'string') {
+                message = data.message;
+            }
+            // Nếu có errors array, lấy message từ lỗi đầu tiên
+            else if (Array.isArray(data.errors) && data.errors.length > 0) {
+                const firstError = data.errors[0] as Record<string, unknown>;
+                if (typeof firstError.message === 'string') {
+                    message = firstError.message;
+                }
+            }
+        }
+        // Handle old error format
+        else if (typeof data.detail === 'string') {
             message = data.detail;
         } else if (typeof data.message === 'string') {
             message = data.message;
@@ -136,7 +152,7 @@ apiClient.interceptors.request.use(
     }
 );
 
-// Response Interceptor: Giải mã data khi nhận về
+// Response Interceptor: Giải mã data khi nhận về và unwrap API response
 apiClient.interceptors.response.use(
     (response: AxiosResponse) => {
         // Kiểm tra nếu response có đủ 3 trường iv, content, h
@@ -156,6 +172,16 @@ apiClient.interceptors.response.use(
 
             response.data = originalData;
         }
+
+        // Unwrap API response if it follows the new format {success, message, result}
+        if (response.data && typeof response.data === 'object' && 'success' in response.data) {
+            const apiResponse = response.data as ApiSuccessResponse<unknown>;
+            if (apiResponse.success === true && 'result' in apiResponse) {
+                // Unwrap the result field
+                response.data = apiResponse.result;
+            }
+        }
+
         return response;
     },
     (error: AxiosError) => {

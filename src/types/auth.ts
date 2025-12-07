@@ -89,9 +89,16 @@ export interface UserInfo {
   fullName: string | null;
   firstName: string | null;
   lastName: string | null;
-  avatarUrl: string | null;
+  avatar: string | null; // Changed from avatarUrl to match new API
+  avatarUrl?: string | null; // Keep for backward compatibility
+  phoneNumber: string | null;
+  phoneCountryCode: string | null;
+  dateOfBirth: string | null;
+  bio: string | null;
   isEmailVerified: boolean;
   isTwoFactorEnabled: boolean;
+  preferredLanguage: string | null;
+  timeZone: string | null;
 }
 
 /**
@@ -112,7 +119,7 @@ export interface AuthResponse {
   // Email verification flow
   requiresEmailVerification?: boolean;
   emailVerificationSessionToken?: string | null;
-  maskedEmail?: string;
+  maskedEmail?: string | null;
 }
 
 /**

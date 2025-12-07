@@ -25,12 +25,14 @@ import {
 } from "antd";
 
 import authApi from "@/lib/api/auth";
+import { useI18n } from "@/lib/i18n-context";
 import { tokenStorage } from "@/lib/token-storage";
 import type { Enable2FAResponse, UserInfo } from "@/types/auth";
 
 const { Text } = Typography;
 
 export default function TwoFactorSetupPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -58,7 +60,7 @@ export default function TwoFactorSetupPage() {
       setCurrentStep(1);
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Không thể bật 2FA. Vui lòng thử lại.";
+        err instanceof Error ? err.message : t("common.error", "An error occurred");
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -75,11 +77,11 @@ export default function TwoFactorSetupPage() {
       if (response.success && response.backupCodes) {
         setBackupCodes(response.backupCodes);
         setCurrentStep(2);
-        message.success("Đã bật xác thực hai lớp thành công!");
+        message.success(t("settings.twoFactorEnabled", "Two-factor authentication enabled!"));
       }
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Mã xác thực không đúng. Vui lòng thử lại.";
+        err instanceof Error ? err.message : t("common.error", "An error occurred");
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -89,14 +91,14 @@ export default function TwoFactorSetupPage() {
   // Copy secret to clipboard
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    message.success(`Đã sao chép ${label}!`);
+    message.success(t("common.copied", "Copied {text}!").replace("{text}", label));
   };
 
   // Copy all backup codes
   const copyBackupCodes = () => {
     if (backupCodes) {
       navigator.clipboard.writeText(backupCodes.join("\n"));
-      message.success("Đã sao chép tất cả mã khôi phục!");
+      message.success(t("settings.saveYourBackupCodes", "Save your backup codes below. You will need them if you lose access to your authenticator app."));
     }
   };
 
