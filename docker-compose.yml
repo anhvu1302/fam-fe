@@ -5,7 +5,8 @@ services:
       dockerfile: Dockerfile
       args:
         - NEXT_PUBLIC_CRYPTO_KEY=${NEXT_PUBLIC_CRYPTO_KEY}
-        - NEXT_PUBLIC_ENABLE_ENCRYPTION=${NEXT_PUBLIC_ENABLE_ENCRYPTION:-true}
+        - NEXT_PUBLIC_ENABLE_ENCRYPTION=${NEXT_PUBLIC_ENABLE_ENCRYPTION:-false}
+        - NEXT_PUBLIC_MINIO_URL=${NEXT_PUBLIC_MINIO_URL:-http://localhost:9000}
     container_name: fam-fe
     restart: unless-stopped
     ports:
