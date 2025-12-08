@@ -93,7 +93,7 @@ export default function ForgotPasswordPage() {
       {/* Error Alert */}
       {error && (
         <Alert
-          message={error}
+          title={error}
           type="error"
           showIcon
           closable

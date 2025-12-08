@@ -321,7 +321,7 @@ export default function LoginPage() {
         {/* Error Alert */}
         {error && (
           <Alert
-            message={error.message}
+            title={error.message}
             type={error.type || "error"}
             showIcon
             closable

@@ -4,20 +4,41 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
+        # ==================== Backend & Storage ====================
+        - BACKEND_API_URL=${BACKEND_API_URL:-http://localhost:8000}
+        - NEXT_PUBLIC_MINIO_URL=${NEXT_PUBLIC_MINIO_URL:-http://localhost:9000}
+
+        # ==================== Security: Encryption & Replay Protection ====================
         - NEXT_PUBLIC_CRYPTO_KEY=${NEXT_PUBLIC_CRYPTO_KEY}
         - NEXT_PUBLIC_ENABLE_ENCRYPTION=${NEXT_PUBLIC_ENABLE_ENCRYPTION:-false}
-        - NEXT_PUBLIC_MINIO_URL=${NEXT_PUBLIC_MINIO_URL:-http://localhost:9000}
+        - NEXT_PUBLIC_MAX_REQUEST_AGE=${NEXT_PUBLIC_MAX_REQUEST_AGE:-300000}
+
+        # ==================== Security: Direct Access Protection ====================
+        - NEXT_PUBLIC_APP_SIGNATURE_KEY=${NEXT_PUBLIC_APP_SIGNATURE_KEY}
+        - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:8001,http://localhost:3000}
+
     container_name: fam-fe
     restart: unless-stopped
     ports:
       - "${PORT:-8001}:8001"
     environment:
+      # ==================== Core ====================
       - NODE_ENV=production
       - PORT=${PORT:-8001}
+
+      # ==================== Backend & Storage ====================
       - BACKEND_API_URL=${BACKEND_API_URL:-http://localhost:8000}
       - NEXT_PUBLIC_MINIO_URL=${NEXT_PUBLIC_MINIO_URL:-http://localhost:9000}
+
+      # ==================== Security: Encryption & Replay Protection ====================
       - NEXT_PUBLIC_CRYPTO_KEY=${NEXT_PUBLIC_CRYPTO_KEY}
       - NEXT_PUBLIC_ENABLE_ENCRYPTION=${NEXT_PUBLIC_ENABLE_ENCRYPTION:-false}
+      - NEXT_PUBLIC_MAX_REQUEST_AGE=${NEXT_PUBLIC_MAX_REQUEST_AGE:-300000}
+
+      # ==================== Security: Direct Access Protection ====================
+      - NEXT_PUBLIC_APP_SIGNATURE_KEY=${NEXT_PUBLIC_APP_SIGNATURE_KEY}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:8001,http://localhost:3000}
+
     env_file:
       - .env
     networks:

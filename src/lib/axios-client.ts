@@ -6,6 +6,7 @@ import axios, {
 
 import type { ApiSuccessResponse } from "@/types/api-response";
 
+import { generateAppSignature } from "./app-signature";
 import {
     decryptData,
     encryptData,
@@ -50,17 +51,12 @@ const sanitizeError = (error: AxiosError): ApiError => {
         code = code || "ERR_NETWORK";
     }
 
-    // Log a concise error message for debugging (avoid dumping possibly circular objects)
-    console.error(
-        `[API Error] ${code} ${status} ${error.config?.method || ""} ${error.config?.url || ""} - ${error.message}`
-    );
-    if (error.response?.data) {
-        try {
-            // Log response data separately (stringify safely)
-            console.error("[API Error] response data:", JSON.stringify(error.response.data));
-        } catch {
-            console.error("[API Error] response data (unserializable)");
-        }
+    // Only log network/client errors in development
+    // In production, do not log errors to console to prevent information leakage
+    if (process.env.NODE_ENV === "development" && (status === 0 || error.code === "ERR_NETWORK")) {
+        console.error(
+            `[API Error] ${code} ${status} ${error.config?.method || ""} ${error.config?.url || ""} - ${error.message}`
+        );
     }
 
     // Map status code to user-friendly message
@@ -138,6 +134,13 @@ apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
         // Token is automatically sent via httpOnly cookies
         // No need to manually add Authorization header
+
+        // Thêm app signature headers để authenticate request
+        // Cần tính signature từ full pathname (baseURL + url)
+        const fullPathname = (config.baseURL || "") + (config.url || "");
+        const signatureHeaders = generateAppSignature(fullPathname);
+        config.headers.set("x-app-signature", signatureHeaders["x-app-signature"]);
+        config.headers.set("x-app-timestamp", signatureHeaders["x-app-timestamp"]);
 
         // Chỉ mã hóa nếu có data (POST, PUT, PATCH) và encryption được bật
         if (config.data && ENCRYPTION_ENABLED) {
