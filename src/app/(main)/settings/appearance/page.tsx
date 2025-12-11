@@ -1,37 +1,72 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { BgColorsOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
-import { Card, Radio, Space, Typography } from "antd";
+import { Card, message, Radio, Space, Spin, Typography } from "antd";
+
+import themeApi from "@/lib/api/theme";
 
 const { Title, Text } = Typography;
 
 export default function AppearanceSettingsPage() {
-    const [theme, setTheme] = useState<"light" | "dark" | "auto">(() => {
-        if (typeof window !== "undefined") {
-            return (localStorage.getItem("theme") as "light" | "dark" | "auto") || "light";
-        }
-        return "light";
-    });
-    const [language, setLanguage] = useState<"en" | "vi">(() => {
-        if (typeof window !== "undefined") {
-            return (localStorage.getItem("language") as "en" | "vi") || "vi";
-        }
-        return "vi";
-    });
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [theme, setTheme] = useState<"light" | "dark" | "auto">("light");
+    const [language, setLanguage] = useState<"en" | "vi">("vi");
 
-    const handleThemeChange = (value: "light" | "dark" | "auto") => {
-        setTheme(value);
-        localStorage.setItem("theme", value);
-        // TODO: Implement theme switching logic
+    // Load user theme on mount
+    useEffect(() => {
+        loadTheme();
+    }, []);
+
+    const loadTheme = async () => {
+        try {
+            const data = await themeApi.getUserTheme();
+            setTheme(data.theme as "light" | "dark" | "auto");
+            setLanguage(data.language as "en" | "vi");
+        } catch (_error) {
+            message.error("Không thể tải cài đặt giao diện");
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleLanguageChange = (value: "en" | "vi") => {
-        setLanguage(value);
-        localStorage.setItem("language", value);
-        // TODO: Implement language switching logic
+    const handleThemeChange = async (value: "light" | "dark" | "auto") => {
+        setSaving(true);
+        try {
+            await themeApi.updateUserTheme({ theme: value });
+            setTheme(value);
+            localStorage.setItem("theme", value);
+            message.success("Đã cập nhật theme");
+        } catch (_error) {
+            message.error("Không thể cập nhật theme");
+        } finally {
+            setSaving(false);
+        }
     };
+
+    const handleLanguageChange = async (value: "en" | "vi") => {
+        setSaving(true);
+        try {
+            await themeApi.updateUserTheme({ language: value });
+            setLanguage(value);
+            localStorage.setItem("language", value);
+            message.success("Đã cập nhật ngôn ngữ");
+        } catch (_error) {
+            message.error("Không thể cập nhật ngôn ngữ");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Spin size="large" />
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -62,6 +97,7 @@ export default function AppearanceSettingsPage() {
                         <Radio.Group
                             value={theme}
                             onChange={(e) => handleThemeChange(e.target.value)}
+                            disabled={saving}
                         >
                             <Space style={{ flexDirection: 'column' }} size="middle">
                                 <Radio value="light">
@@ -102,6 +138,7 @@ export default function AppearanceSettingsPage() {
                         <Radio.Group
                             value={language}
                             onChange={(e) => handleLanguageChange(e.target.value)}
+                            disabled={saving}
                         >
                             <Space style={{ flexDirection: 'column' }} size="middle">
                                 <Radio value="vi">Tiếng Việt</Radio>

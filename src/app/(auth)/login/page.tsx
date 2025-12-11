@@ -13,6 +13,7 @@ import { Alert, Button, Checkbox, Form, Input, message, Statistic } from "antd";
 
 import authApi from "@/lib/api/auth";
 import { ApiError } from "@/lib/axios-client";
+import { getOrCreateDeviceId } from "@/lib/device-id";
 import { useI18n } from "@/lib/i18n-context";
 import { tokenStorage } from "@/lib/token-storage";
 import type { AuthStep, LoginRequest } from "@/types/auth";
@@ -55,8 +56,8 @@ export default function LoginPage() {
 
   // Check if already authenticated
   useEffect(() => {
-    const checkAuth = async () => {
-      const isAuth = await tokenStorage.verifyAuthentication();
+    const checkAuth = () => {
+      const isAuth = tokenStorage.isAuthenticated();
       if (isAuth) {
         router.replace("/");
       } else {
@@ -165,6 +166,7 @@ export default function LoginPage() {
         identity: values.identity,
         password: values.password,
         rememberMe: values.remember,
+        deviceId: getOrCreateDeviceId(), // Add device ID to login request
       };
 
       const response = await authApi.login(loginData);

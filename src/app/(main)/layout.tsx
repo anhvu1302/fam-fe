@@ -15,12 +15,15 @@ import {
   ToolOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Layout, Menu, theme } from "antd";
+import { Avatar, Button, Layout, Menu, message, theme } from "antd";
 import { Footer } from "antd/es/layout/layout";
 
 import AuthGuard from "@/components/AuthGuard";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useAppSettingsByGroup } from "@/hooks/use-app-settings";
+import { useAuthCheck } from "@/hooks/use-auth-check";
+import { useRouteAuthSync } from "@/hooks/use-route-auth-sync";
+import authApi from "@/lib/api/auth";
 import { useI18n } from "@/lib/i18n-context";
 import { getMinioUrl, getUserAvatarUrl } from "@/lib/minio-url";
 import { tokenStorage } from "@/lib/token-storage";
@@ -50,6 +53,15 @@ function AdminLayoutContent({
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const { t } = useI18n();
+
+  // Call /auth/me to refresh user data on main layout mount
+  useAuthCheck({
+    refreshUserData: true, // This will call /auth/me
+  });
+
+  // Sync user data with backend whenever route changes
+  useRouteAuthSync();
+
   const {
     token: {
       colorBgContainer,
@@ -209,9 +221,16 @@ function AdminLayoutContent({
               type="text"
               icon={<LogoutOutlined />}
               danger
-              onClick={() => {
-                tokenStorage.clear();
-                router.push("/login");
+              onClick={async () => {
+                try {
+                  await authApi.logout();
+                  // Only navigate if logout was successful
+                  tokenStorage.clear();
+                  router.push("/login");
+                } catch (error) {
+                  console.error("Logout failed:", error);
+                  message.error("Đăng xuất thất bại. Vui lòng thử lại.");
+                }
               }}
             />
           </div>

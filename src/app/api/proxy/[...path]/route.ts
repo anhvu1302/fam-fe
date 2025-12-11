@@ -138,6 +138,70 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
 
     const { path } = await params;
     const targetPath = path.join("/");
+
+    // Special handling for auth/set-token endpoint - no forwarding to backend
+    if (targetPath === "auth/set-token") {
+        try {
+            const { accessToken, refreshToken, accessTokenExpiresAt, refreshTokenExpiresAt } = await req.json() as {
+                accessToken?: string;
+                refreshToken?: string;
+                accessTokenExpiresAt?: string;
+                refreshTokenExpiresAt?: string;
+            };
+
+            if (!accessToken || !refreshToken) {
+                console.error("[PROXY] auth/set-token: Missing tokens");
+                return NextResponse.json(
+                    { error: "Missing tokens" },
+                    { status: 400 }
+                );
+            }
+
+            const response = NextResponse.json({ success: true });
+
+            // Calculate maxAge from API timestamps
+            const now = new Date().getTime();
+            let accessTokenMaxAge = 15 * 60; // Default 15 minutes
+            let refreshTokenMaxAge = 7 * 24 * 60 * 60; // Default 7 days
+
+            if (accessTokenExpiresAt) {
+                const expiresAt = new Date(accessTokenExpiresAt).getTime();
+                accessTokenMaxAge = Math.max(0, Math.floor((expiresAt - now) / 1000));
+            }
+
+            if (refreshTokenExpiresAt) {
+                const expiresAt = new Date(refreshTokenExpiresAt).getTime();
+                refreshTokenMaxAge = Math.max(0, Math.floor((expiresAt - now) / 1000));
+            }
+
+            // Set cookies
+            response.cookies.set("access_token", accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+                maxAge: accessTokenMaxAge,
+            });
+
+            response.cookies.set("refresh_token", refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+                maxAge: refreshTokenMaxAge,
+            });
+
+            console.log("[PROXY] auth/set-token: Cookies set successfully");
+            return response;
+        } catch (error) {
+            console.error("[PROXY] auth/set-token error:", error);
+            return NextResponse.json(
+                { error: "Failed to set tokens" },
+                { status: 500 }
+            );
+        }
+    }
+
     const url = `${BACKEND_URL}/${targetPath}${req.nextUrl.search}`;
 
     let body: string | null = null;
@@ -169,9 +233,46 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
                         { status: 400 }
                     );
                 }
-                body = JSON.stringify(decrypted);
+
+                // Special handling for /auth/refresh endpoint - inject refreshToken from cookie
+                if (targetPath.includes("auth/refresh")) {
+                    const cookieStore = await cookies();
+                    const refreshToken = cookieStore.get("refresh_token")?.value;
+                    if (refreshToken) {
+                        // Inject refresh token into the decrypted payload
+                        const bodyWithToken = {
+                            ...decrypted,
+                            refreshToken: refreshToken
+                        };
+                        body = JSON.stringify(bodyWithToken);
+                        console.log("[PROXY] Injected refresh token into /auth/refresh request body");
+                    } else {
+                        console.warn("[PROXY] No refresh token in cookie for /auth/refresh");
+                        body = JSON.stringify(decrypted);
+                    }
+                } else {
+                    body = JSON.stringify(decrypted);
+                }
             } else {
-                body = JSON.stringify(rawBody);
+                // Special handling for /auth/refresh endpoint - inject refreshToken from cookie
+                if (targetPath.includes("auth/refresh")) {
+                    const cookieStore = await cookies();
+                    const refreshToken = cookieStore.get("refresh_token")?.value;
+                    if (refreshToken) {
+                        // Inject refresh token into the payload
+                        const bodyWithToken = {
+                            ...(rawBody as Record<string, unknown>),
+                            refreshToken: refreshToken
+                        };
+                        body = JSON.stringify(bodyWithToken);
+                        console.log("[PROXY] Injected refresh token into /auth/refresh request body");
+                    } else {
+                        console.warn("[PROXY] No refresh token in cookie for /auth/refresh");
+                        body = JSON.stringify(rawBody);
+                    }
+                } else {
+                    body = JSON.stringify(rawBody);
+                }
             }
         } catch (error) {
             console.error(`[PROXY] Error parsing body:`, error);
@@ -184,24 +285,40 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
             "Content-Type": "application/json",
         };
 
-        // Get token from cookies instead of Authorization header
+        // Get tokens from cookies
         const cookieStore = await cookies();
         const accessToken = cookieStore.get("access_token")?.value;
 
-        if (accessToken) {
-            headers["Authorization"] = `Bearer ${accessToken}`;
-        } else {
-            // Fallback to Authorization header if provided
-            const authHeader = req.headers.get("Authorization");
-            if (authHeader) {
-                headers["Authorization"] = authHeader;
+        if (process.env.NODE_ENV === "development") {
+            console.log("[PROXY] Token extraction:", {
+                url: url,
+                path: targetPath,
+                hasAccessToken: !!accessToken,
+                accessTokenLength: accessToken?.length || 0,
+                cookies: cookieStore.getAll().map(c => c.name)
+            });
+        }
+
+        // For /auth/refresh, we don't send Authorization header
+        // The refresh token is already injected into the body by the code above
+        if (!targetPath.includes("auth/refresh")) {
+            if (accessToken) {
+                headers["Authorization"] = `Bearer ${accessToken}`;
+            } else {
+                // Fallback to Authorization header if provided
+                const authHeader = req.headers.get("Authorization");
+                if (authHeader) {
+                    headers["Authorization"] = authHeader;
+                }
             }
         }
 
         const customHeaders = [
             "X-Request-Id",
             "X-Correlation-Id",
+            "X-Device-Id",
             "Accept-Language",
+            "User-Agent",
         ];
         customHeaders.forEach((headerName) => {
             const value = req.headers.get(headerName);
@@ -241,6 +358,16 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
                 return NextResponse.json(backendData, { status: backendRes.status });
             }
         } else {
+            // Handle 204 No Content - cannot have body
+            if (backendRes.status === 204) {
+                return new NextResponse(null, {
+                    status: 204,
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+            }
+
             return new NextResponse(responseText, {
                 status: backendRes.status,
                 headers: {
@@ -253,16 +380,31 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
         console.error("[PROXY] URL:", url);
         console.error("[PROXY] Method:", req.method);
 
+        // Provide helpful error messages
+        let message = "Failed to connect to backend service";
+        let statusCode = 500;
+
+        if (error instanceof Error) {
+            if (error.message.includes("ECONNREFUSED")) {
+                message = `Backend service unavailable at ${BACKEND_URL}. Make sure the backend server is running.`;
+                statusCode = 503;
+            } else if (error.message.includes("fetch failed")) {
+                message = `Network error connecting to backend. URL: ${BACKEND_URL}`;
+                statusCode = 502;
+            }
+        }
+
         const errorData = {
-            error: "Internal Server Error",
-            message: error instanceof Error ? error.message : "Failed to connect to backend service",
+            error: "Backend Error",
+            message: message,
+            details: process.env.NODE_ENV === "development" ? error instanceof Error ? error.message : String(error) : undefined,
         };
 
         if (ENCRYPTION_ENABLED) {
             const encryptedError = encryptData(errorData);
-            return NextResponse.json(encryptedError, { status: 500 });
+            return NextResponse.json(encryptedError, { status: statusCode });
         } else {
-            return NextResponse.json(errorData, { status: 500 });
+            return NextResponse.json(errorData, { status: statusCode });
         }
     }
 }

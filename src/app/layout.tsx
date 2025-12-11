@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 
+import AppInitializer from "@/components/AppInitializer";
 import ThemeConfigProvider from "@/components/ThemeConfigProvider";
 import ThemeFloatButton from "@/components/ThemeFloatButton";
 import { I18nProvider } from "@/lib/i18n-context";
@@ -41,7 +42,9 @@ export default function RootLayout({
             <ThemeConfigProvider>
               <SettingsProvider>
                 <I18nProvider>
-                  {children}
+                  <AppInitializer>
+                    {children}
+                  </AppInitializer>
                   <ThemeFloatButton />
                 </I18nProvider>
               </SettingsProvider>

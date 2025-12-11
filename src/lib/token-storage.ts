@@ -1,60 +1,67 @@
 /**
  * Token Storage Service
- * Handles secure storage of authentication tokens using httpOnly cookies
+ * Tokens are stored in httpOnly cookies managed by the proxy
+ * This service handles user info, device ID, and authentication state
+ * User info is kept in sync via /auth/me endpoint calls
  */
 
+import { getDeviceId as _clearDeviceId } from "./device-id";
+
 const USER_KEY = "user_info";
+const DEVICE_ID_KEY = "device_id";
+const _AUTH_STATE_KEY = "_auth_state"; // Timestamp of last auth refresh
 
 export const tokenStorage = {
   /**
    * Save authentication tokens in httpOnly cookies
+   * Calls backend endpoint to set the cookies securely
    */
-  async setTokens(accessToken: string, refreshToken: string): Promise<void> {
+  async setTokens(
+    accessToken: string,
+    refreshToken: string,
+    accessTokenExpiresAt?: string,
+    refreshTokenExpiresAt?: string
+  ): Promise<void> {
     try {
-      await fetch("/api/session", {
+      console.log("[TOKEN-STORAGE] setTokens called:", {
+        accessTokenLength: accessToken?.length || 0,
+        refreshTokenLength: refreshToken?.length || 0,
+        accessTokenExpiresAt,
+        refreshTokenExpiresAt,
+      });
+
+      // Import generateAppSignature dynamically to avoid circular dependencies
+      const { generateAppSignature } = await import("./app-signature");
+
+      // Call the proxy endpoint to store tokens in httpOnly cookies
+      // This goes through the same proxy security as all other API calls
+      const signaturePath = '/api/proxy/auth/set-token';
+      const response = await fetch(signaturePath, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...generateAppSignature(signaturePath),
+        },
         body: JSON.stringify({
-          action: "set",
           accessToken,
           refreshToken,
+          accessTokenExpiresAt,
+          refreshTokenExpiresAt,
         }),
       });
 
-      // Also store in memory for immediate access
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("_has_session", "true");
+      console.log("[TOKEN-STORAGE] set-token response:", response.status);
+
+      if (response.ok) {
+        console.info("Tokens successfully stored in httpOnly cookies");
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("_has_session", "true");
+        }
+      } else {
+        console.warn("Failed to set tokens in cookies", response.status);
       }
     } catch (error) {
       console.error("Failed to set tokens:", error);
-    }
-  },
-
-  /**
-   * Get access token from cookies
-   */
-  async getAccessToken(): Promise<string | null> {
-    try {
-      const response = await fetch("/api/session");
-      const data = await response.json();
-      return data.accessToken || null;
-    } catch (error) {
-      console.error("Failed to get access token:", error);
-      return null;
-    }
-  },
-
-  /**
-   * Get refresh token from cookies
-   */
-  async getRefreshToken(): Promise<string | null> {
-    try {
-      const response = await fetch("/api/session");
-      const data = await response.json();
-      return data.refreshToken || null;
-    } catch (error) {
-      console.error("Failed to get refresh token:", error);
-      return null;
     }
   },
 
@@ -79,23 +86,54 @@ export const tokenStorage = {
   },
 
   /**
-   * Clear all auth data
+   * Save device ID from login response
    */
-  async clear(): Promise<void> {
-    try {
-      await fetch("/api/session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "clear" }),
-      });
-
-      if (typeof window !== "undefined") {
-        localStorage.removeItem(USER_KEY);
-        sessionStorage.removeItem("_has_session");
-      }
-    } catch (error) {
-      console.error("Failed to clear tokens:", error);
+  setDeviceId(deviceId: string): void {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(DEVICE_ID_KEY, deviceId);
     }
+  },
+
+  /**
+   * Get device ID
+   */
+  getDeviceId(): string | null {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(DEVICE_ID_KEY);
+    }
+    return null;
+  },
+
+  /**
+   * Clear all auth data - clears user info and device ID from localStorage
+   * Tokens in httpOnly cookies will be cleared by backend logout
+   */
+  clear(): void {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(USER_KEY);
+      localStorage.removeItem(DEVICE_ID_KEY);
+      localStorage.removeItem(_AUTH_STATE_KEY);
+      sessionStorage.removeItem("_has_session");
+    }
+  },
+
+  /**
+   * Update auth state timestamp (called when auth is refreshed)
+   */
+  updateAuthState(): void {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(_AUTH_STATE_KEY, new Date().toISOString());
+    }
+  },
+
+  /**
+   * Get last auth refresh timestamp
+   */
+  getLastAuthRefresh(): string | null {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(_AUTH_STATE_KEY);
+    }
+    return null;
   },
 
   /**
@@ -106,30 +144,6 @@ export const tokenStorage = {
       return sessionStorage.getItem("_has_session") === "true";
     }
     return false;
-  },
-
-  /**
-   * Verify authentication with server
-   */
-  async verifyAuthentication(): Promise<boolean> {
-    try {
-      const response = await fetch("/api/session");
-      const data = await response.json();
-      const isAuth = data.isAuthenticated || false;
-
-      if (typeof window !== "undefined") {
-        if (isAuth) {
-          sessionStorage.setItem("_has_session", "true");
-        } else {
-          sessionStorage.removeItem("_has_session");
-        }
-      }
-
-      return isAuth;
-    } catch (error) {
-      console.error("Failed to verify authentication:", error);
-      return false;
-    }
   },
 };
 

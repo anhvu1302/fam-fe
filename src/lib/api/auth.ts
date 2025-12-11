@@ -23,6 +23,7 @@ import type {
 } from "@/types/auth";
 
 import apiClient from "../axios-client";
+import { getOrCreateDeviceId as _getOrCreateDeviceId } from "../device-id";
 import { tokenStorage } from "../token-storage";
 
 const AUTH_ENDPOINTS = {
@@ -64,6 +65,15 @@ export const authApi = {
       data
     );
 
+    console.log("[AUTH] Login response:", {
+      hasAccessToken: !!response.data.accessToken,
+      hasRefreshToken: !!response.data.refreshToken,
+      requiresTwoFactor: response.data.requiresTwoFactor,
+      requiresEmailVerification: response.data.requiresEmailVerification,
+      accessTokenLength: response.data.accessToken?.length || 0,
+      refreshTokenLength: response.data.refreshToken?.length || 0,
+    });
+
     // Save tokens if login successful without 2FA or email verification
     if (
       response.data.accessToken &&
@@ -71,9 +81,19 @@ export const authApi = {
       !response.data.requiresTwoFactor &&
       !response.data.requiresEmailVerification
     ) {
-      tokenStorage.setTokens(response.data.accessToken, response.data.refreshToken);
+      console.log("[AUTH] Saving tokens...");
+      await tokenStorage.setTokens(
+        response.data.accessToken,
+        response.data.refreshToken,
+        response.data.accessTokenExpiresAt,
+        response.data.refreshTokenExpiresAt
+      );
       if (response.data.user) {
         tokenStorage.setUser(response.data.user);
+      }
+      // Save device ID if provided
+      if (response.data.deviceId) {
+        tokenStorage.setDeviceId(response.data.deviceId);
       }
     }
 
@@ -89,11 +109,28 @@ export const authApi = {
       data
     );
 
+    console.log("[AUTH] Verify2FA response:", {
+      hasAccessToken: !!response.data.accessToken,
+      hasRefreshToken: !!response.data.refreshToken,
+      accessTokenLength: response.data.accessToken?.length || 0,
+      refreshTokenLength: response.data.refreshToken?.length || 0,
+    });
+
     // Save tokens after successful 2FA
     if (response.data.accessToken && response.data.refreshToken) {
-      tokenStorage.setTokens(response.data.accessToken, response.data.refreshToken);
+      console.log("[AUTH] Saving 2FA tokens...");
+      await tokenStorage.setTokens(
+        response.data.accessToken,
+        response.data.refreshToken,
+        response.data.accessTokenExpiresAt,
+        response.data.refreshTokenExpiresAt
+      );
       if (response.data.user) {
         tokenStorage.setUser(response.data.user);
+      }
+      // Save device ID if provided
+      if (response.data.deviceId) {
+        tokenStorage.setDeviceId(response.data.deviceId);
       }
     }
 
@@ -111,7 +148,12 @@ export const authApi = {
 
     // Update tokens
     if (response.data.accessToken && response.data.refreshToken) {
-      tokenStorage.setTokens(response.data.accessToken, response.data.refreshToken);
+      await tokenStorage.setTokens(
+        response.data.accessToken,
+        response.data.refreshToken,
+        response.data.accessTokenExpiresAt,
+        response.data.refreshTokenExpiresAt
+      );
     }
 
     return response.data;
@@ -119,13 +161,30 @@ export const authApi = {
 
   /**
    * Logout current session
+   * Only clears tokens after successful logout
    */
   async logout(): Promise<void> {
     try {
-      await apiClient.post(AUTH_ENDPOINTS.LOGOUT);
-    } finally {
-      // Clear tokens even if request fails
+      const deviceId = tokenStorage.getDeviceId();
+      const config: { headers: Record<string, string> } = {
+        headers: {}
+      };
+
+      // Send device ID in header for logout tracking
+      if (deviceId) {
+        config.headers["X-Device-Id"] = deviceId;
+      }
+
+      // Logout requires authentication - Authorization header will be added by axios interceptor
+      // The empty object as second parameter ensures axios includes all interceptors
+      await apiClient.post(AUTH_ENDPOINTS.LOGOUT, {}, config);
+
+      // Only clear tokens if logout was successful
       tokenStorage.clear();
+      console.info("Logout successful");
+    } catch (error) {
+      // Re-throw so caller can handle it
+      throw error;
     }
   },
 
@@ -143,16 +202,30 @@ export const authApi = {
 
   /**
    * Get current user info
-   */
-  /**
-   * Get current user info
+   * API returns: { success, message, result: UserInfo }
+   * Sends device ID in X-Device-Id header
    */
   async getCurrentUser(): Promise<unknown> {
-    const response = await apiClient.get(AUTH_ENDPOINTS.ME);
-    if (response.data) {
-      tokenStorage.setUser(response.data);
+    const deviceId = tokenStorage.getDeviceId();
+    const config: { headers: Record<string, string> } = {
+      headers: {}
+    };
+
+    // Send device ID in header
+    if (deviceId) {
+      config.headers["X-Device-Id"] = deviceId;
     }
-    return response.data;
+
+    const response = await apiClient.get<{ success: boolean; message: string; result: unknown }>(
+      AUTH_ENDPOINTS.ME,
+      config
+    );
+    // Extract user data from result field if present
+    const userData = response.data.result || response.data;
+    if (userData) {
+      tokenStorage.setUser(userData);
+    }
+    return userData;
   },
 
   /**

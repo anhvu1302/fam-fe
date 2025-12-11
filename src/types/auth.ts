@@ -5,6 +5,7 @@ export interface LoginRequest {
   identity: string; // username or email (3-255 chars)
   password: string; // 8-100 chars
   rememberMe?: boolean;
+  deviceId?: string; // Device ID for tracking
 }
 
 export interface VerifyTwoFactorRequest {
@@ -89,16 +90,31 @@ export interface UserInfo {
   fullName: string | null;
   firstName: string | null;
   lastName: string | null;
-  avatar: string | null; // Changed from avatarUrl to match new API
+  avatar: string | null;
   avatarUrl?: string | null; // Keep for backward compatibility
   phoneNumber: string | null;
-  phoneCountryCode: string | null;
+  phoneCountryCode?: string | null;
   dateOfBirth: string | null;
   bio: string | null;
   isEmailVerified: boolean;
-  isTwoFactorEnabled: boolean;
+  isPhoneVerified?: boolean;
+  isTwoFactorEnabled?: boolean;
+  twoFactorEnabled?: boolean; // New API uses this name
   preferredLanguage: string | null;
   timeZone: string | null;
+  receiveNotifications?: boolean;
+  receiveMarketingEmails?: boolean;
+  isActive?: boolean;
+  lastLoginAt?: string | null;
+  lastLoginIp?: string | null;
+  emailVerifiedAt?: string | null;
+  phoneVerifiedAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
+  devices?: unknown[] | null;
+  nodeRoles?: unknown[] | null;
+  deviceId?: string | null;
 }
 
 /**
@@ -110,9 +126,11 @@ export interface UserInfo {
 export interface AuthResponse {
   accessToken: string | null;
   refreshToken: string | null;
-  expiresIn: number;
+  accessTokenExpiresAt?: string; // ISO 8601 timestamp from API
+  refreshTokenExpiresAt?: string; // ISO 8601 timestamp from API
   tokenType: string | null;
   user: UserInfo | null;
+  deviceId?: string | null;
   // 2FA flow
   requiresTwoFactor?: boolean;
   twoFactorSessionToken?: string | null;

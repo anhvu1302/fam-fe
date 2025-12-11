@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Spin } from "antd";
 
-import { tokenStorage } from "@/lib/token-storage";
+import { useAuthCheck } from "@/hooks/use-auth-check";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -14,27 +13,23 @@ interface AuthGuardProps {
 /**
  * Auth Guard Component
  * Protects routes that require authentication
+ * Does NOT call /auth/me - that's handled by main layout
  */
 export default function AuthGuard({ children }: AuthGuardProps) {
-  const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    // Check if user is authenticated
-    const checkAuth = async () => {
-      const authenticated = await tokenStorage.verifyAuthentication();
-      setIsAuthenticated(authenticated);
-
-      if (!authenticated) {
-        router.replace("/login");
-      }
-
+  useAuthCheck({
+    refreshUserData: false, // Don't call /auth/me here
+    onAuthSuccess: () => {
+      setIsAuthenticated(true);
       setIsChecking(false);
-    };
-
-    checkAuth();
-  }, [router]);  // Show loading while checking
+    },
+    onAuthFailed: () => {
+      setIsAuthenticated(false);
+      setIsChecking(false);
+    },
+  });
   if (isChecking) {
     return (
       <div className="flex h-screen items-center justify-center">

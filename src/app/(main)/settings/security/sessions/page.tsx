@@ -1,113 +1,56 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
   ArrowLeftOutlined,
-  ChromeOutlined,
   DeleteOutlined,
   DesktopOutlined,
-  EnvironmentOutlined,
   ExclamationCircleOutlined,
   GlobalOutlined,
-  MobileOutlined,
   ReloadOutlined,
   SafetyOutlined,
-  TabletOutlined,
 } from "@ant-design/icons";
 import {
   Alert,
-  Badge,
   Button,
   Card,
   Empty,
-  List,
   message,
   Modal,
   Skeleton,
-  Space,
   Tag,
   Tooltip,
   Typography,
 } from "antd";
 
-import authApi from "@/lib/api/auth";
+import sessionsApi, { type UserSession } from "@/lib/api/sessions";
+import { getDeviceId as _getDeviceId } from "@/lib/device-id";
 import { useI18n } from "@/lib/i18n-context";
-import type { UserDeviceResponse } from "@/types/auth";
 
 const { Title, Text } = Typography;
 
-// Mock data for demonstration (replace with real API when available)
-const mockDevices: UserDeviceResponse[] = [
-  {
-    id: "1",
-    deviceId: "device-001",
-    deviceName: "Chrome trên MacBook Pro",
-    deviceType: "desktop",
-    browser: "Chrome",
-    browserVersion: "120.0",
-    os: "macOS",
-    osVersion: "14.1",
-    ipAddress: "192.168.1.100",
-    location: "Hồ Chí Minh, Việt Nam",
-    lastActiveAt: new Date().toISOString(),
-    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    isCurrent: true,
-    isOnline: true,
-  },
-  {
-    id: "2",
-    deviceId: "device-002",
-    deviceName: "Safari trên iPhone 15",
-    deviceType: "mobile",
-    browser: "Safari",
-    browserVersion: "17.0",
-    os: "iOS",
-    osVersion: "17.1",
-    ipAddress: "192.168.1.101",
-    location: "Hồ Chí Minh, Việt Nam",
-    lastActiveAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-    isCurrent: false,
-    isOnline: false,
-  },
-  {
-    id: "3",
-    deviceId: "device-003",
-    deviceName: "Firefox trên Windows",
-    deviceType: "desktop",
-    browser: "Firefox",
-    browserVersion: "121.0",
-    os: "Windows",
-    osVersion: "11",
-    ipAddress: "10.0.0.50",
-    location: "Hà Nội, Việt Nam",
-    lastActiveAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    isCurrent: false,
-    isOnline: false,
-  },
-];
-
-export default function DevicesPage() {
+export default function SessionsPage() {
   const { t } = useI18n();
   const router = useRouter();
-  const [devices, setDevices] = useState<UserDeviceResponse[]>([]);
+  const [sessions, setSessions] = useState<UserSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [revoking, setRevoking] = useState<string | null>(null);
 
-  // Load devices
+  // Load sessions
   const loadDevices = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with real API call when available
-      // const response = await apiClient.get('/api/auth/devices');
-      // setDevices(response.data);
+      const data = await sessionsApi.getAllSessions();
+      const currentDeviceId = _getDeviceId();
 
-      // Using mock data for now
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setDevices(mockDevices);
+      const sessionsWithCurrent = data.map((session) => ({
+        ...session,
+        isCurrentDevice: session.deviceId === currentDeviceId,
+      }));
+
+      setSessions(sessionsWithCurrent);
     } catch {
       message.error(t("common.error", "An error occurred"));
     } finally {
@@ -117,10 +60,13 @@ export default function DevicesPage() {
 
   useEffect(() => {
     loadDevices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Revoke device session
-  const revokeDevice = async (deviceId: string) => {
+  const revokeDevice = useCallback(async (sessionId: string) => {
+    const revokedSession = sessions.find((s) => s.id === sessionId);
+
     Modal.confirm({
       title: t("settings.revokeAccess", "Revoke access"),
       icon: <ExclamationCircleOutlined />,
@@ -129,14 +75,21 @@ export default function DevicesPage() {
       okType: "danger",
       cancelText: t("common.cancel", "Cancel"),
       onOk: async () => {
-        setRevoking(deviceId);
+        setRevoking(sessionId);
         try {
-          // TODO: Replace with real API call
-          // await apiClient.delete(`/api/auth/devices/${deviceId}`);
-          await new Promise((resolve) => setTimeout(resolve, 500));
+          await sessionsApi.deleteSession(sessionId);
 
-          setDevices((prev) => prev.filter((d) => d.id !== deviceId));
-          message.success(t("common.success", "Success"));
+          // If revoking current device, logout
+          if (revokedSession?.isCurrentDevice) {
+            message.warning(t("common.description", "Current device revoked. Logging out..."));
+            setTimeout(() => {
+              router.push("/login");
+            }, 2000);
+          } else {
+            // Only remove if not current device
+            setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+            message.success(t("common.success", "Success"));
+          }
         } catch {
           message.error(t("common.error", "An error occurred"));
         } finally {
@@ -144,10 +97,10 @@ export default function DevicesPage() {
         }
       },
     });
-  };
+  }, [sessions, t, router]);
 
   // Logout all other devices
-  const logoutAllOther = async () => {
+  const logoutAllOther = useCallback(async () => {
     Modal.confirm({
       title: t("common.confirm", "Are you sure?"),
       icon: <ExclamationCircleOutlined />,
@@ -157,55 +110,50 @@ export default function DevicesPage() {
       cancelText: t("common.cancel", "Cancel"),
       onOk: async () => {
         try {
-          await authApi.logoutAll(true);
-          setDevices((prev) => prev.filter((d) => d.isCurrent));
+          await sessionsApi.deleteAllSessions(true);
+          setSessions((prev) => prev.filter((s) => s.isCurrentDevice));
           message.success(t("common.success", "Success"));
         } catch {
           message.error(t("common.error", "An error occurred"));
         }
       },
     });
-  };
+  }, [t]);
 
-  // Get device icon
-  const getDeviceIcon = (type: string | null) => {
-    switch (type) {
-      case "mobile":
-        return <MobileOutlined className="text-2xl" />;
-      case "tablet":
-        return <TabletOutlined className="text-2xl" />;
-      default:
-        return <DesktopOutlined className="text-2xl" />;
+  // Format date with error handling
+  const formatDate = (dateString: string | undefined | null) => {
+    if (!dateString) return "N/A";
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "N/A";
+      return date.toLocaleString("vi-VN");
+    } catch {
+      return "N/A";
     }
   };
 
-  // Get browser icon
-  const getBrowserIcon = (browser: string | null) => {
-    if (browser?.toLowerCase().includes("chrome")) {
-      return <ChromeOutlined />;
+  // Get relative time with error handling and Vietnamese translations
+  const getRelativeTime = (dateString: string | undefined | null) => {
+    if (!dateString) return "N/A";
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "N/A";
+
+      const now = new Date();
+      const diff = now.getTime() - date.getTime();
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+
+      if (minutes < 1) return "Vừa xong";
+      if (minutes < 60) return `${minutes} phút trước`;
+      if (hours < 24) return `${hours} giờ trước`;
+      if (days < 7) return `${days} ngày trước`;
+      if (days < 30) return `${Math.floor(days / 7)} tuần trước`;
+      return `${Math.floor(days / 30)} tháng trước`;
+    } catch {
+      return "N/A";
     }
-    return <GlobalOutlined />;
-  };
-
-  // Format date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString("vi-VN");
-  };
-
-  // Get relative time
-  const getRelativeTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (minutes < 1) return "Vừa xong";
-    if (minutes < 60) return `${minutes} phút trước`;
-    if (hours < 24) return `${hours} giờ trước`;
-    return `${days} ngày trước`;
   };
 
   return (
@@ -227,16 +175,16 @@ export default function DevicesPage() {
             </Text>
           </div>
         </div>
-        <Space>
+        <div className="flex gap-2">
           <Button icon={<ReloadOutlined />} onClick={loadDevices} loading={loading}>
             Làm mới
           </Button>
-          {devices.filter((d) => !d.isCurrent).length > 0 && (
+          {sessions.filter((s) => !s.isCurrentDevice).length > 0 && (
             <Button danger onClick={logoutAllOther}>
               Đăng xuất tất cả thiết bị khác
             </Button>
           )}
-        </Space>
+        </div>
       </div>
 
       {/* Alert */}
@@ -258,94 +206,86 @@ export default function DevicesPage() {
               </div>
             ))}
           </div>
-        ) : devices.length === 0 ? (
+        ) : sessions.length === 0 ? (
           <Empty description="Không có thiết bị nào" />
         ) : (
-          <List
-            dataSource={devices}
-            renderItem={(device) => (
-              <List.Item
-                actions={[
-                  device.isCurrent ? (
-                    <Tag color="blue" key="current">
-                      Thiết bị hiện tại
-                    </Tag>
-                  ) : (
-                    <Button
-                      key="revoke"
-                      danger
-                      icon={<DeleteOutlined />}
-                      loading={revoking === device.id}
-                      onClick={() => revokeDevice(device.id)}
-                    >
-                      Thu hồi
-                    </Button>
-                  ),
-                ]}
+          <div className="space-y-4">
+            {sessions.map((session) => (
+              <div
+                key={session.id}
+                className="flex items-start justify-between border-b border-gray-200 pb-4 last:border-b-0"
               >
-                <List.Item.Meta
-                  avatar={
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-                      <Badge dot status={device.isOnline ? "success" : "default"}>
-                        {getDeviceIcon(device.deviceType)}
-                      </Badge>
+                <div className="flex items-start gap-4 flex-1">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 shrink-0">
+                    <DesktopOutlined className="text-2xl" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="mb-1">
+                      <span className="font-medium text-base">
+                        {session.deviceName || "Thiết bị không xác định"}
+                      </span>
                     </div>
-                  }
-                  title={
-                    <Space>
-                      <span>{device.deviceName || "Thiết bị không xác định"}</span>
-                      {device.isOnline && (
-                        <Tag color="green" className="ml-2">
-                          Đang hoạt động
-                        </Tag>
-                      )}
-                    </Space>
-                  }
-                  description={
                     <div className="space-y-1 text-sm text-gray-500">
-                      <div className="flex items-center gap-4">
-                        <Tooltip title="Trình duyệt">
-                          <span>
-                            {getBrowserIcon(device.browser)} {device.browser}{" "}
-                            {device.browserVersion}
-                          </span>
-                        </Tooltip>
-                        <span>•</span>
-                        <span>
-                          {device.os} {device.osVersion}
-                        </span>
-                      </div>
+                      {session.browser && (
+                        <div className="flex items-center gap-4">
+                          <Tooltip title="Trình duyệt">
+                            <span className="truncate max-w-md">{session.browser}</span>
+                          </Tooltip>
+                        </div>
+                      )}
+                      {session.operatingSystem && (
+                        <div className="flex items-center gap-4">
+                          <Tooltip title="Hệ điều hành">
+                            <span className="truncate max-w-md">{session.operatingSystem}</span>
+                          </Tooltip>
+                        </div>
+                      )}
                       <div className="flex items-center gap-4">
                         <Tooltip title="Địa chỉ IP">
                           <span>
                             <GlobalOutlined className="mr-1" />
-                            {device.ipAddress || "N/A"}
+                            {session.ipAddress || "N/A"}
                           </span>
                         </Tooltip>
-                        {device.location && (
-                          <>
-                            <span>•</span>
-                            <Tooltip title="Vị trí">
-                              <span>
-                                <EnvironmentOutlined className="mr-1" />
-                                {device.location}
-                              </span>
-                            </Tooltip>
-                          </>
-                        )}
                       </div>
-                      <div>
+                      {session.location && (
+                        <div className="flex items-center gap-4">
+                          <Tooltip title="Vị trí">
+                            <span>{session.location}</span>
+                          </Tooltip>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-4">
                         <Text type="secondary">
-                          Hoạt động lần cuối: {getRelativeTime(device.lastActiveAt)} (
-                          {formatDate(device.lastActiveAt)})
+                          Hoạt động lần cuối: {getRelativeTime(session.lastActivityAt)} (
+                          {formatDate(session.lastActivityAt)})
+                        </Text>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <Text type="secondary">
+                          Đăng nhập lần cuối: {formatDate(session.lastLoginAt)}
                         </Text>
                       </div>
                     </div>
-                  }
-                />
-              </List.Item>
-            )}
-          />
+                  </div>
+                </div>
+                <div className="ml-4 shrink-0">
+                  {session.isCurrentDevice ? (
+                    <Tag color="blue">Thiết bị hiện tại</Tag>
+                  ) : (
+                    <Button
+                      danger
+                      icon={<DeleteOutlined />}
+                      loading={revoking === session.id}
+                      onClick={() => revokeDevice(session.id)}
+                    >
+                      Thu hồi
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </Card>
     </div>

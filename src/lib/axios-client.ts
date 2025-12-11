@@ -155,6 +155,134 @@ apiClient.interceptors.request.use(
     }
 );
 
+// Flag to prevent multiple refresh attempts (Lock/Mutex pattern)
+let isRefreshing = false;
+let refreshPromise: Promise<void> | null = null;
+let failedQueue: Array<{ resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }> = [];
+
+const processQueue = (error: unknown = null) => {
+    failedQueue.forEach((promise) => {
+        if (error) {
+            promise.reject(error);
+        } else {
+            promise.resolve();
+        }
+    });
+    failedQueue = [];
+};
+
+/**
+ * Perform token refresh with lock mechanism
+ * Returns promise that resolves when refresh is complete
+ * Implements the standard refresh flow with mutex to prevent race conditions
+ */
+const performTokenRefresh = async (): Promise<void> => {
+    // If already refreshing, return the existing promise (Key for avoiding race conditions!)
+    if (isRefreshing && refreshPromise) {
+        return refreshPromise;
+    }
+
+    // Set lock
+    isRefreshing = true;
+
+    refreshPromise = (async () => {
+        try {
+
+            // Get stored device ID for refresh request
+            let deviceId: string | null = null;
+            if (typeof window !== 'undefined') {
+                deviceId = localStorage.getItem('device_id');
+            }
+
+            // Prepare refresh payload
+            let refreshPayload: Record<string, unknown> | SecurePayload = deviceId ? { deviceId } : {};
+
+            // Encrypt payload if encryption is enabled
+            if (ENCRYPTION_ENABLED) {
+                refreshPayload = encryptData(refreshPayload);
+            }
+
+            const signaturePath = '/api/proxy/api/auth/refresh';
+
+            const response = await fetch(signaturePath, {
+                method: 'POST',
+                credentials: 'include', // Important: Send cookies including refresh_token
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...generateAppSignature(signaturePath),
+                },
+                body: JSON.stringify(refreshPayload),
+            });
+
+            if (response.ok) {
+                const responseData = await response.json();
+
+                let data = responseData;
+                if (ENCRYPTION_ENABLED && isSecurePayload(responseData)) {
+                    data = decryptData(responseData);
+                }
+
+                if (data && typeof data === 'object' && 'success' in data && data.success === true && 'result' in data) {
+                    data = data.result;
+                }
+
+                if (data.accessToken && data.refreshToken) {
+                    const setTokenPath = '/api/proxy/auth/set-token';
+                    const setTokenResponse = await fetch(setTokenPath, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...generateAppSignature(setTokenPath),
+                        },
+                        body: JSON.stringify({
+                            accessToken: data.accessToken,
+                            refreshToken: data.refreshToken,
+                            accessTokenExpiresAt: data.accessTokenExpiresAt,
+                            refreshTokenExpiresAt: data.refreshTokenExpiresAt,
+                        }),
+                    });
+
+                    if (!setTokenResponse.ok) {
+                        throw new Error('Failed to save refreshed tokens');
+                    }
+
+                    if (data.deviceId && typeof window !== 'undefined') {
+                        localStorage.setItem('device_id', data.deviceId);
+                    }
+
+                    if (typeof window !== 'undefined') {
+                        sessionStorage.setItem('_has_session', 'true');
+                        localStorage.setItem('_last_token_refresh', Date.now().toString());
+                    }
+
+                    // Process all queued requests
+                    processQueue();
+                    return;
+                }
+
+                throw new Error('Missing tokens in refresh response');
+            }
+
+            throw new Error(`Token refresh failed with status: ${response.status}`);
+        } catch (error) {
+            // Reject all queued requests
+            processQueue(error);
+            if (typeof window !== 'undefined') {
+                sessionStorage.removeItem('_has_session');
+                window.location.href = '/login';
+            }
+            throw error;
+        } finally {
+            // Release lock
+            isRefreshing = false;
+            refreshPromise = null;
+        }
+    })();
+
+    return refreshPromise;
+};
+
 // Response Interceptor: Giải mã data khi nhận về và unwrap API response
 apiClient.interceptors.response.use(
     (response: AxiosResponse) => {
@@ -187,7 +315,7 @@ apiClient.interceptors.response.use(
 
         return response;
     },
-    (error: AxiosError) => {
+    async (error: AxiosError) => {
         // Xử lý lỗi response đã mã hóa
         if (ENCRYPTION_ENABLED && error.response?.data) {
             if (isSecurePayload(error.response.data)) {
@@ -197,6 +325,45 @@ apiClient.interceptors.response.use(
                 }
             }
         }
+
+        const originalRequest = error.config;
+
+        // Handle 401 Unauthorized - attempt token refresh (Reactive Approach)
+        if (error.response?.status === 401 && originalRequest && !originalRequest.headers?.['X-Retry-After-Refresh']) {
+            // Skip refresh for auth endpoints to prevent infinite loops
+            if (originalRequest.url?.includes('/auth/login') ||
+                originalRequest.url?.includes('/auth/refresh') ||
+                originalRequest.url?.includes('/auth/logout')) {
+                return Promise.reject(sanitizeError(error));
+            }
+
+            // If already refreshing, queue this request
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject });
+                })
+                    .then(() => {
+                        // Retry the original request after token refresh
+                        originalRequest.headers['X-Retry-After-Refresh'] = 'true';
+                        return apiClient(originalRequest);
+                    })
+                    .catch((err) => {
+                        return Promise.reject(err);
+                    });
+            }
+
+            // This is the first 401 - start refresh process
+            return performTokenRefresh()
+                .then(() => {
+                    // Retry the original request
+                    originalRequest.headers['X-Retry-After-Refresh'] = 'true';
+                    return apiClient(originalRequest);
+                })
+                .catch(() => {
+                    return Promise.reject(sanitizeError(error));
+                });
+        }
+
         // Trả về lỗi đã được sanitize
         return Promise.reject(sanitizeError(error));
     }
