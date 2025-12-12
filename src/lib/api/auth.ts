@@ -65,15 +65,6 @@ export const authApi = {
       data
     );
 
-    console.log("[AUTH] Login response:", {
-      hasAccessToken: !!response.data.accessToken,
-      hasRefreshToken: !!response.data.refreshToken,
-      requiresTwoFactor: response.data.requiresTwoFactor,
-      requiresEmailVerification: response.data.requiresEmailVerification,
-      accessTokenLength: response.data.accessToken?.length || 0,
-      refreshTokenLength: response.data.refreshToken?.length || 0,
-    });
-
     // Save tokens if login successful without 2FA or email verification
     if (
       response.data.accessToken &&
@@ -81,7 +72,7 @@ export const authApi = {
       !response.data.requiresTwoFactor &&
       !response.data.requiresEmailVerification
     ) {
-      console.log("[AUTH] Saving tokens...");
+
       await tokenStorage.setTokens(
         response.data.accessToken,
         response.data.refreshToken,
@@ -109,16 +100,8 @@ export const authApi = {
       data
     );
 
-    console.log("[AUTH] Verify2FA response:", {
-      hasAccessToken: !!response.data.accessToken,
-      hasRefreshToken: !!response.data.refreshToken,
-      accessTokenLength: response.data.accessToken?.length || 0,
-      refreshTokenLength: response.data.refreshToken?.length || 0,
-    });
-
     // Save tokens after successful 2FA
     if (response.data.accessToken && response.data.refreshToken) {
-      console.log("[AUTH] Saving 2FA tokens...");
       await tokenStorage.setTokens(
         response.data.accessToken,
         response.data.refreshToken,
@@ -181,7 +164,6 @@ export const authApi = {
 
       // Only clear tokens if logout was successful
       tokenStorage.clear();
-      console.info("Logout successful");
     } catch (error) {
       // Re-throw so caller can handle it
       throw error;

@@ -23,14 +23,6 @@ export const tokenStorage = {
     refreshTokenExpiresAt?: string
   ): Promise<void> {
     try {
-      console.log("[TOKEN-STORAGE] setTokens called:", {
-        accessTokenLength: accessToken?.length || 0,
-        refreshTokenLength: refreshToken?.length || 0,
-        accessTokenExpiresAt,
-        refreshTokenExpiresAt,
-      });
-
-      // Import generateAppSignature dynamically to avoid circular dependencies
       const { generateAppSignature } = await import("./app-signature");
 
       // Call the proxy endpoint to store tokens in httpOnly cookies
@@ -50,15 +42,11 @@ export const tokenStorage = {
         }),
       });
 
-      console.log("[TOKEN-STORAGE] set-token response:", response.status);
 
       if (response.ok) {
-        console.info("Tokens successfully stored in httpOnly cookies");
         if (typeof window !== "undefined") {
           sessionStorage.setItem("_has_session", "true");
         }
-      } else {
-        console.warn("Failed to set tokens in cookies", response.status);
       }
     } catch (error) {
       console.error("Failed to set tokens:", error);

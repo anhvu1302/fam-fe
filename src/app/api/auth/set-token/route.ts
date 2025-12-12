@@ -5,17 +5,7 @@ export async function POST(req: NextRequest) {
     try {
         const { accessToken, refreshToken, accessTokenExpiresAt, refreshTokenExpiresAt } = await req.json();
 
-        console.log("[SET-TOKEN] Received request:", {
-            hasAccessToken: !!accessToken,
-            accessTokenLength: accessToken?.length || 0,
-            hasRefreshToken: !!refreshToken,
-            refreshTokenLength: refreshToken?.length || 0,
-            accessTokenExpiresAt,
-            refreshTokenExpiresAt,
-        });
-
         if (!accessToken || !refreshToken) {
-            console.error("[SET-TOKEN] Missing tokens:", { accessToken, refreshToken });
             return NextResponse.json(
                 { error: "Missing tokens" },
                 { status: 400 }
@@ -49,12 +39,6 @@ export async function POST(req: NextRequest) {
             maxAge: accessTokenMaxAge,
         });
 
-        console.log("[SET-TOKEN] Cookie set:", {
-            accessTokenMaxAge,
-            refreshTokenMaxAge,
-            cookieCount: response.cookies.getAll().length,
-        });
-
         // Set refresh token cookie
         response.cookies.set("refresh_token", refreshToken, {
             httpOnly: true,
@@ -64,12 +48,10 @@ export async function POST(req: NextRequest) {
             maxAge: refreshTokenMaxAge,
         });
 
-        console.log("[SET-TOKEN] Success, tokens set in cookies");
         return response;
     } catch (error) {
-        console.error("[SET-TOKEN] Error:", error);
         return NextResponse.json(
-            { error: "Failed to set tokens" },
+            { error: "Failed to set tokens: " + (error instanceof Error ? error.message : String(error)) },
             { status: 500 }
         );
     }

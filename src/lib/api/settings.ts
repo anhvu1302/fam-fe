@@ -21,7 +21,6 @@ class SettingsApi {
 
         // Return cached data if still valid
         if (this.cache && now - this.cacheTimestamp < this.cacheDuration) {
-            console.log("Using cached settings");
             return this.cache;
         }
 
@@ -43,7 +42,6 @@ class SettingsApi {
 
             // Return cached data even if expired if fetch fails
             if (this.cache) {
-                console.log("Using expired cached settings as fallback");
                 return this.cache;
             }
 

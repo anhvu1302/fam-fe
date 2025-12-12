@@ -228,8 +228,7 @@ function AdminLayoutContent({
                   tokenStorage.clear();
                   router.push("/login");
                 } catch (error) {
-                  console.error("Logout failed:", error);
-                  message.error("Đăng xuất thất bại. Vui lòng thử lại.");
+                  message.error("Đăng xuất thất bại. Vui lòng thử lại." + (error instanceof Error ? error.message : String(error)));
                 }
               }}
             />

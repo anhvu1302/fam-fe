@@ -53,13 +53,6 @@ function validateAppRequest(req: NextRequest): { valid: boolean; reason?: string
     ).toString();
 
     if (appSignature !== expectedSignature) {
-        console.warn('[PROXY] Signature mismatch:', {
-            received: appSignature,
-            expected: expectedSignature,
-            timestamp,
-            pathname,
-            fullUrl: req.url
-        });
         return {
             valid: false,
             reason: "Invalid signature - Request authentication failed"
@@ -72,7 +65,6 @@ function validateAppRequest(req: NextRequest): { valid: boolean; reason?: string
     const hasValidReferer = referer && ALLOWED_ORIGINS.some(allowed => referer.startsWith(allowed));
 
     if (!hasValidOrigin && !hasValidReferer) {
-        console.warn('[PROXY] Origin/Referer warning:', { origin, referer });
         // Không block vì signature đã valid
     }
 
@@ -108,7 +100,6 @@ function validateAndStoreNonce(nonce: string | undefined, timestamp: number | un
 
     // Check nonce đã tồn tại chưa
     if (nonceStore.has(nonce)) {
-        console.warn(`[PROXY] Replay attack detected! Nonce already used: ${nonce}`);
         return false;
     }
 
@@ -126,7 +117,6 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
     // Validate request từ app (chặn external calls)
     const securityCheck = validateAppRequest(req);
     if (!securityCheck.valid) {
-        console.warn(`[PROXY] Security check failed: ${securityCheck.reason}`);
         return NextResponse.json(
             {
                 error: "Forbidden",
@@ -150,7 +140,6 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
             };
 
             if (!accessToken || !refreshToken) {
-                console.error("[PROXY] auth/set-token: Missing tokens");
                 return NextResponse.json(
                     { error: "Missing tokens" },
                     { status: 400 }
@@ -191,12 +180,10 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
                 maxAge: refreshTokenMaxAge,
             });
 
-            console.log("[PROXY] auth/set-token: Cookies set successfully");
             return response;
         } catch (error) {
-            console.error("[PROXY] auth/set-token error:", error);
             return NextResponse.json(
-                { error: "Failed to set tokens" },
+                { error: "Failed to set tokens: " + (error instanceof Error ? error.message : String(error)) },
                 { status: 500 }
             );
         }
@@ -215,7 +202,6 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
                 // Validate nonce trước khi decrypt để chống replay attack
                 const payload = rawBody as { nonce?: string; ts?: number };
                 if (!validateAndStoreNonce(payload.nonce, payload.ts)) {
-                    console.error(`[PROXY] Replay attack blocked!`);
                     return NextResponse.json(
                         {
                             error: "Replay Attack Detected",
@@ -227,7 +213,6 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
 
                 const decrypted = decryptData(rawBody);
                 if (!decrypted) {
-                    console.error(`[PROXY] Decryption failed!`);
                     return NextResponse.json(
                         { error: "Invalid Signature or Data - Possible tampering" },
                         { status: 400 }
@@ -245,9 +230,7 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
                             refreshToken: refreshToken
                         };
                         body = JSON.stringify(bodyWithToken);
-                        console.log("[PROXY] Injected refresh token into /auth/refresh request body");
                     } else {
-                        console.warn("[PROXY] No refresh token in cookie for /auth/refresh");
                         body = JSON.stringify(decrypted);
                     }
                 } else {
@@ -265,9 +248,7 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
                             refreshToken: refreshToken
                         };
                         body = JSON.stringify(bodyWithToken);
-                        console.log("[PROXY] Injected refresh token into /auth/refresh request body");
                     } else {
-                        console.warn("[PROXY] No refresh token in cookie for /auth/refresh");
                         body = JSON.stringify(rawBody);
                     }
                 } else {
@@ -275,7 +256,6 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
                 }
             }
         } catch (error) {
-            console.error(`[PROXY] Error parsing body:`, error);
             body = null;
         }
     }
@@ -288,16 +268,6 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
         // Get tokens from cookies
         const cookieStore = await cookies();
         const accessToken = cookieStore.get("access_token")?.value;
-
-        if (process.env.NODE_ENV === "development") {
-            console.log("[PROXY] Token extraction:", {
-                url: url,
-                path: targetPath,
-                hasAccessToken: !!accessToken,
-                accessTokenLength: accessToken?.length || 0,
-                cookies: cookieStore.getAll().map(c => c.name)
-            });
-        }
 
         // For /auth/refresh, we don't send Authorization header
         // The refresh token is already injected into the body by the code above
@@ -342,9 +312,8 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
             try {
                 backendData = JSON.parse(responseText);
             } catch (e) {
-                console.error(`[PROXY] Failed to parse response JSON:`, e);
                 return NextResponse.json(
-                    { error: "Invalid JSON response from backend" },
+                    { error: "Invalid JSON response from backend: " + (e instanceof Error ? e.message : String(e)) },
                     { status: 502 }
                 );
             }
