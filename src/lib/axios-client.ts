@@ -252,8 +252,9 @@ const performTokenRefresh = async (): Promise<void> => {
                     }
 
                     if (typeof window !== 'undefined') {
-                        sessionStorage.setItem('_has_session', 'true');
+                        localStorage.setItem('_has_session', 'true');
                         localStorage.setItem('_last_token_refresh', Date.now().toString());
+                        localStorage.setItem('_auth_timestamp', Date.now().toString());
                     }
 
                     // Process all queued requests
@@ -269,7 +270,8 @@ const performTokenRefresh = async (): Promise<void> => {
             // Reject all queued requests
             processQueue(error);
             if (typeof window !== 'undefined') {
-                sessionStorage.removeItem('_has_session');
+                localStorage.removeItem('_has_session');
+                localStorage.removeItem('_auth_timestamp');
                 window.location.href = '/login';
             }
             throw error;

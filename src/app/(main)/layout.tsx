@@ -224,11 +224,12 @@ function AdminLayoutContent({
               onClick={async () => {
                 try {
                   await authApi.logout();
-                  // Only navigate if logout was successful
+                  // Clear will dispatch storage event for other tabs
                   tokenStorage.clear();
+                  // Redirect to login
                   router.push("/login");
-                } catch (error) {
-                  message.error("Đăng xuất thất bại. Vui lòng thử lại." + (error instanceof Error ? error.message : String(error)));
+                } catch (_error) {
+                  message.error("Đăng xuất thất bại. Vui lòng thử lại.");
                 }
               }}
             />

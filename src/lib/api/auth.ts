@@ -149,18 +149,20 @@ export const authApi = {
   async logout(): Promise<void> {
     try {
       const deviceId = tokenStorage.getDeviceId();
+
+      // Send device ID in both body and header for logout tracking
+      const payload: { deviceId?: string } = {};
       const config: { headers: Record<string, string> } = {
         headers: {}
       };
 
-      // Send device ID in header for logout tracking
       if (deviceId) {
+        payload.deviceId = deviceId;
         config.headers["X-Device-Id"] = deviceId;
       }
 
       // Logout requires authentication - Authorization header will be added by axios interceptor
-      // The empty object as second parameter ensures axios includes all interceptors
-      await apiClient.post(AUTH_ENDPOINTS.LOGOUT, {}, config);
+      await apiClient.post(AUTH_ENDPOINTS.LOGOUT, payload, config);
 
       // Only clear tokens if logout was successful
       tokenStorage.clear();

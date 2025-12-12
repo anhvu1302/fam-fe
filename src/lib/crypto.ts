@@ -86,9 +86,6 @@ export const decryptData = <T>(payload: SecurePayload): T | null => {
 
             // Reject nếu request quá cũ hoặc timestamp trong tương lai (clock skew)
             if (age > MAX_REQUEST_AGE || age < -60000) {
-                console.warn(
-                    `[CRYPTO] Request timestamp invalid. Age: ${age}ms, Max: ${MAX_REQUEST_AGE}ms`
-                );
                 return null;
             }
         }
@@ -100,7 +97,6 @@ export const decryptData = <T>(payload: SecurePayload): T | null => {
 
         const currentMac = CryptoJS.HmacSHA256(macInput, _mk()).toString();
         if (currentMac !== h) {
-            console.warn('[CRYPTO] HMAC validation failed');
             return null;
         }
 

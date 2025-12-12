@@ -42,10 +42,21 @@ export const tokenStorage = {
         }),
       });
 
-
       if (response.ok) {
         if (typeof window !== "undefined") {
-          sessionStorage.setItem("_has_session", "true");
+          // Use localStorage instead of sessionStorage for cross-tab sync
+          const oldValue = localStorage.getItem("_has_session");
+          localStorage.setItem("_has_session", "true");
+          localStorage.setItem("_auth_timestamp", Date.now().toString());
+
+          // Dispatch storage event manually (for other tabs to detect)
+          window.dispatchEvent(new StorageEvent('storage', {
+            key: '_has_session',
+            oldValue: oldValue,
+            newValue: 'true',
+            url: window.location.href,
+            storageArea: localStorage
+          }));
         }
       }
     } catch (error) {
@@ -101,7 +112,20 @@ export const tokenStorage = {
       localStorage.removeItem(USER_KEY);
       localStorage.removeItem(DEVICE_ID_KEY);
       localStorage.removeItem(_AUTH_STATE_KEY);
-      sessionStorage.removeItem("_has_session");
+
+      // Manually trigger storage event for cross-tab sync
+      const oldValue = localStorage.getItem("_has_session");
+      localStorage.removeItem("_has_session");
+      localStorage.removeItem("_auth_timestamp");
+
+      // Dispatch storage event manually (for other tabs to detect)
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: '_has_session',
+        oldValue: oldValue,
+        newValue: null,
+        url: window.location.href,
+        storageArea: localStorage
+      }));
     }
   },
 
@@ -125,11 +149,12 @@ export const tokenStorage = {
   },
 
   /**
-   * Check if user is authenticated (sync check from sessionStorage)
+   * Check if user is authenticated (sync check from localStorage)
+   * Using localStorage allows auth state to be shared across tabs
    */
   isAuthenticated(): boolean {
     if (typeof window !== "undefined") {
-      return sessionStorage.getItem("_has_session") === "true";
+      return localStorage.getItem("_has_session") === "true";
     }
     return false;
   },
