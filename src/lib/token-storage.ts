@@ -26,7 +26,7 @@ export const tokenStorage = {
 
       // Call the proxy endpoint to store tokens in httpOnly cookies
       // This goes through the same proxy security as all other API calls
-      const signaturePath = '/api/proxy/auth/set-token';
+      const signaturePath = '/proxy/auth/set-token';
       const response = await fetch(signaturePath, {
         method: "POST",
         headers: {

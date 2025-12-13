@@ -119,7 +119,7 @@ const sanitizeError = (error: AxiosError): ApiError => {
 // ==================== AXIOS CLIENT ====================
 // Base URL trỏ về Next.js Proxy, không trỏ về Backend thật
 const apiClient = axios.create({
-    baseURL: "/api/proxy",
+    baseURL: "/proxy",
     headers: {
         "Content-Type": "application/json",
     },
@@ -200,7 +200,7 @@ const performTokenRefresh = async (): Promise<void> => {
                 refreshPayload = encryptData(refreshPayload);
             }
 
-            const signaturePath = '/api/proxy/api/auth/refresh';
+            const signaturePath = '/proxy/api/auth/refresh';
 
             const response = await fetch(signaturePath, {
                 method: 'POST',
@@ -225,7 +225,7 @@ const performTokenRefresh = async (): Promise<void> => {
                 }
 
                 if (data.accessToken && data.refreshToken) {
-                    const setTokenPath = '/api/proxy/auth/set-token';
+                    const setTokenPath = '/proxy/auth/set-token';
                     const setTokenResponse = await fetch(setTokenPath, {
                         method: 'POST',
                         credentials: 'include',

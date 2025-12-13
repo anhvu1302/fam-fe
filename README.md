@@ -63,7 +63,7 @@ src/
 ├── app/
 │   ├── (auth)/          # Auth pages (login, register)
 │   ├── (main)/          # Main app pages
-│   └── api/proxy/       # Secure API proxy ⭐
+│   └── proxy/           # Secure API proxy ⭐
 ├── components/          # React components
 ├── lib/
 │   ├── crypto.ts        # Encryption & replay protection ⭐
@@ -94,7 +94,7 @@ src/
 npx ts-node scripts/test-replay-attack.ts
 
 # Test direct access (should fail)
-curl http://localhost:8001/api/proxy/api/settings/public
+curl http://localhost:8001/proxy/api/settings/public
 # Expected: 403 Forbidden
 ```
 
