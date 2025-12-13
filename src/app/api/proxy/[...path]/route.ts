@@ -283,6 +283,25 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
             }
         }
 
+        // Forward IP-related headers for accurate client IP detection
+        // Priority order: X-Forwarded-For > X-Real-IP > CF-Connecting-IP
+        const forwardedFor = req.headers.get("X-Forwarded-For");
+        const realIp = req.headers.get("X-Real-IP");
+        const cfConnectingIp = req.headers.get("CF-Connecting-IP");
+
+        if (forwardedFor) {
+            headers["X-Forwarded-For"] = forwardedFor;
+        } else if (realIp) {
+            headers["X-Forwarded-For"] = realIp;
+        } else if (cfConnectingIp) {
+            headers["X-Forwarded-For"] = cfConnectingIp;
+        }
+
+        // Also forward X-Real-IP if available
+        if (realIp) {
+            headers["X-Real-IP"] = realIp;
+        }
+
         const customHeaders = [
             "X-Request-Id",
             "X-Correlation-Id",
