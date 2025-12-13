@@ -12,6 +12,7 @@ import {
 import { Alert, Button, Form, Input, message, Result, Spin } from "antd";
 
 import authApi from "@/lib/api/auth";
+import { useI18n } from "@/lib/i18n-context";
 
 interface ResetPasswordFormValues {
   newPassword: string;
@@ -19,6 +20,8 @@ interface ResetPasswordFormValues {
 }
 
 function ResetPasswordContent() {
+  const { t } = useI18n();
+  const [messageApi, messageContextHolder] = message.useMessage();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -41,7 +44,13 @@ function ResetPasswordContent() {
       }
 
       try {
-        await authApi.verifyResetToken({ email, resetToken: token });
+        const response = await authApi.verifyResetToken({ email, resetToken: token });
+
+        // Check if response has maskedEmail (token is valid)
+        if (!response || !response.maskedEmail) {
+          throw new Error("Link khôi phục mật khẩu đã hết hạn hoặc không hợp lệ.");
+        }
+
         setTokenValid(true);
       } catch (err) {
         const errorMessage =
@@ -68,8 +77,9 @@ function ResetPasswordContent() {
         newPassword: values.newPassword,
         confirmPassword: values.confirmPassword,
       });
+
       setSuccess(true);
-      message.success("Đặt lại mật khẩu thành công!");
+      messageApi.success("Đặt lại mật khẩu thành công!");
     } catch (err) {
       const errorMessage =
         err instanceof Error
@@ -84,166 +94,178 @@ function ResetPasswordContent() {
   // Show loading while verifying
   if (verifying) {
     return (
-      <div className="rounded-2xl bg-white p-8 shadow-xl">
-        <div className="flex flex-col items-center justify-center py-12">
-          <Spin size="large" />
-          <p className="mt-4 text-gray-500">Đang xác minh link...</p>
+      <>
+        {messageContextHolder}
+        <div className="rounded-2xl bg-white p-8 shadow-xl dark:bg-gray-800">
+          <div className="flex flex-col items-center justify-center py-12">
+            <Spin size="large" />
+            <p className="mt-4 text-gray-500 dark:text-gray-400">Đang xác minh link...</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   // Show error if token invalid
   if (!tokenValid && !success) {
     return (
-      <div className="rounded-2xl bg-white p-8 shadow-xl">
-        <Result
-          status="error"
-          title="Link không hợp lệ"
-          subTitle={error || "Link khôi phục mật khẩu đã hết hạn hoặc không hợp lệ."}
-          extra={[
-            <Link href="/forgot-password" key="forgot">
-              <Button type="primary" size="large" className="m-2">
-                Yêu cầu link mới
-              </Button>
-            </Link>,
-            <Link href="/login" key="login">
-              <Button size="large" className="m-2">Quay lại đăng nhập</Button>
-            </Link>,
-          ]}
-        />
-      </div>
+      <>
+        {messageContextHolder}
+        <div className="rounded-2xl bg-white p-8 shadow-xl dark:bg-gray-800">
+          <Result
+            status="error"
+            title="Link không hợp lệ"
+            subTitle={error || "Link khôi phục mật khẩu đã hết hạn hoặc không hợp lệ."}
+            extra={[
+              <Link href="/forgot-password" key="forgot">
+                <Button type="primary" size="large" className="m-2">
+                  Yêu cầu link mới
+                </Button>
+              </Link>,
+              <Link href="/login" key="login">
+                <Button size="large" className="m-2">Quay lại đăng nhập</Button>
+              </Link>,
+            ]}
+          />
+        </div>
+      </>
     );
   }
 
   // Show success
   if (success) {
     return (
-      <div className="rounded-2xl bg-white p-8 shadow-xl">
-        <Result
-          icon={<CheckCircleOutlined className="text-green-500" />}
-          status="success"
-          title="Đặt lại mật khẩu thành công!"
-          subTitle="Mật khẩu của bạn đã được cập nhật. Bây giờ bạn có thể đăng nhập với mật khẩu mới."
-          extra={
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => router.push("/login")}
-            >
-              Đăng nhập ngay
-            </Button>
-          }
-        />
-      </div>
+      <>
+        {messageContextHolder}
+        <div className="rounded-2xl bg-white p-8 shadow-xl dark:bg-gray-800">
+          <Result
+            icon={<CheckCircleOutlined className="text-green-500" />}
+            status="success"
+            title="Đặt lại mật khẩu thành công!"
+            subTitle="Mật khẩu của bạn đã được cập nhật. Bây giờ bạn có thể đăng nhập với mật khẩu mới."
+            extra={
+              <Button
+                type="primary"
+                size="large"
+                onClick={() => router.push("/login")}
+              >
+                Đăng nhập ngay
+              </Button>
+            }
+          />
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="rounded-2xl bg-white p-8 shadow-xl">
-      {/* Header */}
-      <div className="mb-8 text-center">
-        <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
-          <LockOutlined className="text-2xl text-green-600" />
+    <>
+      {messageContextHolder}
+      <div className="rounded-2xl bg-white p-8 shadow-xl dark:bg-gray-800">
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+            <LockOutlined className="text-2xl text-green-600 dark:text-green-300" />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+            Đặt mật khẩu mới
+          </h2>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Nhập mật khẩu mới cho tài khoản của bạn
+          </p>
         </div>
-        <h2 className="text-xl font-semibold text-gray-800">
-          Đặt mật khẩu mới
-        </h2>
-        <p className="mt-1 text-sm text-gray-500">
-          Nhập mật khẩu mới cho tài khoản của bạn
-        </p>
-      </div>
 
-      {/* Error Alert */}
-      {error && (
-        <Alert
-          title={error}
-          type="error"
-          showIcon
-          closable
-          onClose={() => setError(null)}
-          className="mb-4"
-        />
-      )}
-
-      {/* Form */}
-      <Form
-        name="reset-password"
-        onFinish={onSubmit}
-        layout="vertical"
-        size="large"
-        requiredMark={false}
-      >
-        <Form.Item
-          name="newPassword"
-          label="Mật khẩu mới"
-          rules={[
-            { required: true, message: "Vui lòng nhập mật khẩu mới!" },
-            { min: 8, message: "Mật khẩu phải có ít nhất 8 ký tự!" },
-            { max: 100, message: "Mật khẩu tối đa 100 ký tự!" },
-            {
-              pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-              message: "Mật khẩu phải có chữ hoa, chữ thường và số!",
-            },
-          ]}
-          hasFeedback
-        >
-          <Input.Password
-            prefix={<LockOutlined className="text-gray-400" />}
-            placeholder="Nhập mật khẩu mới"
-            autoComplete="new-password"
+        {/* Error Alert */}
+        {error && (
+          <Alert
+            title={error}
+            type="error"
+            showIcon
+            closable
+            onClose={() => setError(null)}
+            className="mb-4"
           />
-        </Form.Item>
+        )}
 
-        <Form.Item
-          name="confirmPassword"
-          label="Xác nhận mật khẩu"
-          dependencies={["newPassword"]}
-          hasFeedback
-          rules={[
-            { required: true, message: "Vui lòng xác nhận mật khẩu!" },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("newPassword") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(
-                  new Error("Mật khẩu xác nhận không khớp!")
-                );
+        {/* Form */}
+        <Form
+          name="reset-password"
+          onFinish={onSubmit}
+          layout="vertical"
+          size="large"
+          requiredMark={false}
+        >
+          <Form.Item
+            name="newPassword"
+            label="Mật khẩu mới"
+            rules={[
+              { required: true, message: "Vui lòng nhập mật khẩu mới!" },
+              { min: 8, message: "Mật khẩu phải có ít nhất 8 ký tự!" },
+              { max: 100, message: "Mật khẩu tối đa 100 ký tự!" },
+              {
+                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+                message: "Mật khẩu phải có chữ hoa, chữ thường và số!",
               },
-            }),
-          ]}
-        >
-          <Input.Password
-            prefix={<LockOutlined className="text-gray-400" />}
-            placeholder="Nhập lại mật khẩu mới"
-            autoComplete="new-password"
-          />
-        </Form.Item>
-
-        <Form.Item className="mb-4">
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={loading}
-            block
-            className="h-11"
+            ]}
+            hasFeedback
           >
-            Đặt lại mật khẩu
-          </Button>
-        </Form.Item>
+            <Input.Password
+              prefix={<LockOutlined className="text-gray-400" />}
+              placeholder="Nhập mật khẩu mới"
+              autoComplete="new-password"
+            />
+          </Form.Item>
 
-        <div className="text-center">
-          <Link
-            href="/login"
-            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700"
+          <Form.Item
+            name="confirmPassword"
+            label="Xác nhận mật khẩu"
+            dependencies={["newPassword"]}
+            hasFeedback
+            rules={[
+              { required: true, message: "Vui lòng xác nhận mật khẩu!" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("newPassword") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    new Error("Mật khẩu xác nhận không khớp!")
+                  );
+                },
+              }),
+            ]}
           >
-            <ArrowLeftOutlined className="text-xs" />
-            Quay lại đăng nhập
-          </Link>
-        </div>
-      </Form>
-    </div>
+            <Input.Password
+              prefix={<LockOutlined className="text-gray-400" />}
+              placeholder="Nhập lại mật khẩu mới"
+              autoComplete="new-password"
+            />
+          </Form.Item>
+
+          <Form.Item className="mb-4">
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={loading}
+              block
+              className="h-11"
+            >
+              Đặt lại mật khẩu
+            </Button>
+          </Form.Item>
+
+          <div className="text-center">
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              <ArrowLeftOutlined className="text-xs" />
+              Quay lại đăng nhập
+            </Link>
+          </div>
+        </Form>
+      </div>
+    </>
   );
 }
 
@@ -251,10 +273,10 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="rounded-2xl bg-white p-8 shadow-xl">
+        <div className="rounded-2xl bg-white p-8 shadow-xl dark:bg-gray-800">
           <div className="flex flex-col items-center justify-center py-12">
             <Spin size="large" />
-            <p className="mt-4 text-gray-500">Đang tải...</p>
+            <p className="mt-4 text-gray-500 dark:text-gray-400">Đang tải...</p>
           </div>
         </div>
       }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import {
     CameraOutlined,
@@ -29,8 +29,8 @@ import type { RcFile, UploadFile } from "antd/es/upload/interface";
 
 import { useI18n } from "@/lib/i18n-context";
 import { getUserAvatarUrl } from "@/lib/minio-url";
-import { tokenStorage } from "@/lib/token-storage";
-import type { UserInfo } from "@/types/auth";
+import { useUser } from "@/lib/user-context";
+
 
 const { Title, Text } = Typography;
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -44,6 +44,7 @@ interface EditProfileFormValues {
 
 export default function ProfileSettingsPage() {
     const { t } = useI18n();
+    const { user, updateUser } = useUser();
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [editMode, setEditMode] = useState(false);
@@ -52,10 +53,6 @@ export default function ProfileSettingsPage() {
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [previewUrl, setPreviewUrl] = useState<string>("");
-
-    const user = useMemo<UserInfo | null>(() => {
-        return (tokenStorage.getUser() as UserInfo | null) || null;
-    }, []);
 
     // Handle avatar upload
     const beforeUpload = (file: RcFile) => {
@@ -142,13 +139,12 @@ export default function ProfileSettingsPage() {
             // TODO: Call API to update user profile
             message.success(t("profile.profileUpdated", "Cập nhật thông tin thành công!"));
 
-            const updatedUser = {
-                ...user,
+            // Update user in context (memory)
+            updateUser({
                 firstName: values.firstName,
                 lastName: values.lastName,
                 email: values.email,
-            };
-            tokenStorage.setUser(updatedUser);
+            });
             setEditMode(false);
         } catch {
             message.error(t("profile.updateError", "Không thể cập nhật thông tin. Vui lòng thử lại."));

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -13,11 +13,11 @@ import {
 } from "@ant-design/icons";
 import {
   Alert,
+  App,
   Button,
   Card,
   Form,
   Input,
-  message,
   Modal,
   Space,
   Switch,
@@ -27,35 +27,30 @@ import {
 
 import authApi from "@/lib/api/auth";
 import { tokenStorage } from "@/lib/token-storage";
-import type { UserInfo } from "@/types/auth";
+import { useUser } from "@/lib/user-context";
+
 
 const { Title, Text, Paragraph } = Typography;
 
 export default function SecuritySettingsPage() {
   const router = useRouter();
-  const [user, setUser] = useState<UserInfo | null>(null);
+  const { message } = App.useApp();
+  const { user, updateUser } = useUser();
   const [loading, setLoading] = useState(false);
   const [showDisable2FAModal, setShowDisable2FAModal] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
-  useEffect(() => {
-    const userData = tokenStorage.getUser() as UserInfo | null;
-    setUser(userData);
-  }, []);
-
-  // Disable 2FA
+  // User is already managed by UserContext
+  // No need to initialize from tokenStorage
   const handleDisable2FA = async (values: { password: string }) => {
     setLoading(true);
     try {
       await authApi.disable2FA({ password: values.password });
+
       message.success("Đã tắt xác thực hai lớp!");
       setShowDisable2FAModal(false);
-      // Update user state
-      if (user) {
-        const updatedUser = { ...user, isTwoFactorEnabled: false };
-        tokenStorage.setUser(updatedUser);
-        setUser(updatedUser);
-      }
+      // Update user state in context (memory only - no localStorage)
+      updateUser({ isTwoFactorEnabled: false, twoFactorEnabled: false });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Không thể tắt 2FA. Vui lòng thử lại.";
@@ -78,6 +73,7 @@ export default function SecuritySettingsPage() {
         newPassword: values.newPassword,
         logoutAllDevices: values.logoutAllDevices,
       });
+
       message.success("Đã đổi mật khẩu thành công!");
       setShowChangePasswordModal(false);
 

@@ -7,7 +7,6 @@
 
 import { getDeviceId as _clearDeviceId } from "./device-id";
 
-const USER_KEY = "user_info";
 const DEVICE_ID_KEY = "device_id";
 const _AUTH_STATE_KEY = "_auth_state"; // Timestamp of last auth refresh
 
@@ -65,26 +64,6 @@ export const tokenStorage = {
   },
 
   /**
-   * Save user info in localStorage (not sensitive data)
-   */
-  setUser(user: unknown): void {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(USER_KEY, JSON.stringify(user));
-    }
-  },
-
-  /**
-   * Get user info
-   */
-  getUser(): unknown | null {
-    if (typeof window !== "undefined") {
-      const user = localStorage.getItem(USER_KEY);
-      return user ? JSON.parse(user) : null;
-    }
-    return null;
-  },
-
-  /**
    * Save device ID from login response
    */
   setDeviceId(deviceId: string): void {
@@ -109,7 +88,6 @@ export const tokenStorage = {
    */
   clear(): void {
     if (typeof window !== "undefined") {
-      localStorage.removeItem(USER_KEY);
       localStorage.removeItem(DEVICE_ID_KEY);
       localStorage.removeItem(_AUTH_STATE_KEY);
 

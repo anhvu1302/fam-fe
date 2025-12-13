@@ -18,16 +18,8 @@ export function useAuthStateSync() {
                     console.log("[Auth Sync] User logged in, reloading...");
                     window.location.reload();
                 } else if ((e.newValue === null || e.newValue === "false") && e.oldValue === "true") {
-                    // User logged out on another tab - redirect to login
+                    // User logged out on another tab - just redirect without calling logout API again
                     console.log("[Auth Sync] User logged out, redirecting to login...");
-                    // Clear cookies by calling logout endpoint without deviceId (silent)
-                    fetch('/api/proxy/api/auth/logout', {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' }
-                    }).catch(() => {
-                        // Ignore errors - just redirect
-                    });
                     router.push("/login");
                 }
             }

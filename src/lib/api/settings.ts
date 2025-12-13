@@ -1,4 +1,5 @@
 import apiClient from "@/lib/axios-client";
+import type { I_Return } from "@/types/api-response";
 import type { AppSetting, AppSettingsGrouped, AppSettingsMap } from "@/types/settings";
 
 const SETTINGS_ENDPOINTS = {
@@ -25,12 +26,20 @@ class SettingsApi {
         }
 
         try {
-            const response = await apiClient.get<AppSetting[]>(
+            const response = await apiClient.get<I_Return<AppSetting[]>>(
                 SETTINGS_ENDPOINTS.GET_ALL_SETTINGS
             );
 
+            // Check if request was successful
+            if (!response.data.success) {
+                throw new Error(response.data.message || "Failed to fetch settings");
+            }
+
+            // Extract settings array from wrapper
+            const settings = response.data.result || [];
+
             // Transform flat array to grouped object
-            const grouped = this.groupSettingsByGroup(response.data);
+            const grouped = this.groupSettingsByGroup(settings);
 
             // Update cache
             this.cache = grouped;

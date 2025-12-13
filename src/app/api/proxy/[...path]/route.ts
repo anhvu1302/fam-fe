@@ -255,7 +255,7 @@ async function handler(req: NextRequest, { params }: ProxyParams) {
                     body = JSON.stringify(rawBody);
                 }
             }
-        } catch (error) {
+        } catch (_error) {
             body = null;
         }
     }

@@ -1,3 +1,5 @@
+import type { I_Return } from "@/types/api-response";
+
 import apiClient from "../axios-client";
 
 export interface UserTheme {
@@ -31,19 +33,29 @@ export const themeApi = {
    * Get current user's theme settings
    */
   async getUserTheme(): Promise<UserTheme> {
-    const response = await apiClient.get<UserTheme>(THEME_ENDPOINTS.GET);
-    return response.data;
+    const response = await apiClient.get<I_Return<UserTheme>>(THEME_ENDPOINTS.GET);
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to get user theme");
+    }
+
+    return response.data.result || { primaryColor: null, layout: null, theme: null, locale: null, sidebar: null };
   },
 
   /**
    * Update user's theme settings
    */
   async updateUserTheme(data: UpdateUserThemeRequest): Promise<UserTheme> {
-    const response = await apiClient.put<UserTheme>(
+    const response = await apiClient.put<I_Return<UserTheme>>(
       THEME_ENDPOINTS.UPDATE,
       data
     );
-    return response.data;
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to update user theme");
+    }
+
+    return response.data.result || { primaryColor: null, layout: null, theme: null, locale: null, sidebar: null };
   },
 };
 

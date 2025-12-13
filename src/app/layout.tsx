@@ -9,6 +9,7 @@ import ThemeFloatButton from "@/components/ThemeFloatButton";
 import { I18nProvider } from "@/lib/i18n-context";
 import { SettingsProvider } from "@/lib/settings-context";
 import { ThemeProvider } from "@/lib/theme-context";
+import { UserProvider } from "@/lib/user-context";
 
 import "./globals.css";
 
@@ -41,12 +42,14 @@ export default function RootLayout({
           <ThemeProvider>
             <ThemeConfigProvider>
               <SettingsProvider>
-                <I18nProvider>
-                  <AppInitializer>
-                    {children}
-                  </AppInitializer>
-                  <ThemeFloatButton />
-                </I18nProvider>
+                <UserProvider>
+                  <I18nProvider>
+                    <AppInitializer>
+                      {children}
+                    </AppInitializer>
+                    <ThemeFloatButton />
+                  </I18nProvider>
+                </UserProvider>
               </SettingsProvider>
             </ThemeConfigProvider>
           </ThemeProvider>

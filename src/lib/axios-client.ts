@@ -4,8 +4,6 @@ import axios, {
     InternalAxiosRequestConfig,
 } from "axios";
 
-import type { ApiSuccessResponse } from "@/types/api-response";
-
 import { generateAppSignature } from "./app-signature";
 import {
     decryptData,
@@ -306,14 +304,8 @@ apiClient.interceptors.response.use(
             response.data = originalData;
         }
 
-        // Unwrap API response if it follows the new format {success, message, result}
-        if (response.data && typeof response.data === 'object' && 'success' in response.data) {
-            const apiResponse = response.data as ApiSuccessResponse<unknown>;
-            if (apiResponse.success === true && 'result' in apiResponse) {
-                // Unwrap the result field
-                response.data = apiResponse.result;
-            }
-        }
+        // Don't unwrap API response - let client handle {success, message, result, errors} structure
+        // This allows client to properly distinguish between success and error cases
 
         return response;
     },
@@ -335,7 +327,9 @@ apiClient.interceptors.response.use(
             // Skip refresh for auth endpoints to prevent infinite loops
             if (originalRequest.url?.includes('/auth/login') ||
                 originalRequest.url?.includes('/auth/refresh') ||
-                originalRequest.url?.includes('/auth/logout')) {
+                originalRequest.url?.includes('/auth/logout') ||
+                originalRequest.url?.includes('/auth/verify-reset-token') ||
+                originalRequest.url?.includes('/auth/forgot-password')) {
                 return Promise.reject(sanitizeError(error));
             }
 

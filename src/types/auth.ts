@@ -31,6 +31,7 @@ export interface Enable2FARequest {
 
 export interface Confirm2FARequest {
   code: string; // 6 digits, pattern: ^\d{6}$
+  secret: string; // The secret returned from enable2FA
 }
 
 export interface Disable2FARequest {
@@ -150,26 +151,40 @@ export type LoginResponse = AuthResponse;
  */
 export type VerifyTwoFactorResponse = AuthResponse;
 
-export interface Enable2FAResponse {
+// ==================== 2FA Enable/Confirm Responses ====================
+export interface Enable2FAResult {
   secret: string | null;
   qrCodeUri: string | null;
   manualEntryKey: string | null;
 }
 
-export interface Confirm2FAResponse {
-  success: boolean;
-  backupCodes: string[] | null;
-  message: string | null;
+// After unwrap, these are the actual response types returned by API methods
+export type Enable2FAResponse = Enable2FAResult;
+
+export interface Confirm2FAResult {
+  backupCodes: string[];
+}
+
+export type Confirm2FAResponse = Confirm2FAResult;
+
+export interface Disable2FAResponse {
+  message?: string;
+}
+
+export interface ChangePasswordResponse {
+  message?: string;
+}
+
+export interface ForgotPasswordResponse {
+  message?: string;
 }
 
 export interface VerifyResetTokenResponse {
-  isValid: boolean;
-  message: string | null;
+  maskedEmail: string;
 }
 
 export interface ResetPasswordResponse {
-  success: boolean;
-  message: string | null;
+  message?: string;
 }
 
 // Device/Session Models

@@ -9,16 +9,18 @@ import { useRouter } from "next/navigation";
 
 import { authApi } from "@/lib/api/auth";
 import { tokenStorage } from "@/lib/token-storage";
+import { UserInfo } from "@/types/auth";
 
 interface UseAuthCheckOptions {
     onAuthSuccess?: () => void;
     onAuthFailed?: () => void;
     refreshUserData?: boolean; // Whether to call /auth/me
+    setUser?: (user: UserInfo | null) => void; // To save user data
 }
 
 export function useAuthCheck(options: UseAuthCheckOptions = {}) {
     const router = useRouter();
-    const { onAuthSuccess, onAuthFailed, refreshUserData = false } = options;
+    const { onAuthSuccess, onAuthFailed, refreshUserData = false, setUser } = options;
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -27,6 +29,7 @@ export function useAuthCheck(options: UseAuthCheckOptions = {}) {
 
                 if (!authenticated) {
                     tokenStorage.clear();
+                    setUser?.(null);
                     onAuthFailed?.();
                     router.replace("/login");
                     return;
@@ -34,19 +37,21 @@ export function useAuthCheck(options: UseAuthCheckOptions = {}) {
 
                 // Only call /auth/me if refreshUserData is true
                 if (refreshUserData) {
-                    await authApi.getCurrentUser();
+                    const userData = await authApi.getCurrentUser() as UserInfo;
                     tokenStorage.updateAuthState();
+                    setUser?.(userData);
                 }
 
                 onAuthSuccess?.();
             } catch (error) {
                 console.error("Auth check failed:", error);
                 tokenStorage.clear();
+                setUser?.(null);
                 onAuthFailed?.();
                 router.replace("/login");
             }
         };
 
         checkAuth();
-    }, [router, onAuthSuccess, onAuthFailed, refreshUserData]);
+    }, [router, onAuthSuccess, onAuthFailed, refreshUserData, setUser]);
 }

@@ -24,18 +24,18 @@ import {
 import authApi from "@/lib/api/auth";
 import { useI18n } from "@/lib/i18n-context";
 import { tokenStorage } from "@/lib/token-storage";
-import type { UserInfo } from "@/types/auth";
+import { useUser } from "@/lib/user-context";
+
 
 const { Title, Text } = Typography;
 
 export default function AccountSettingsPage() {
     const { t } = useI18n();
     const router = useRouter();
+    const { user } = useUser();
     const [loading, setLoading] = useState(false);
     const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
     const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
-
-    const user = tokenStorage.getUser() as UserInfo | null;
 
     // Change Password
     const handleChangePassword = async (values: {
@@ -49,6 +49,7 @@ export default function AccountSettingsPage() {
                 newPassword: values.newPassword,
                 logoutAllDevices: false,
             });
+
             message.success(t("settings.changePasswordSuccess", "Password changed successfully!"));
             setShowChangePasswordModal(false);
         } catch (err) {

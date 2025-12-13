@@ -27,7 +27,8 @@ import authApi from "@/lib/api/auth";
 import { useI18n } from "@/lib/i18n-context";
 import { getMinioUrl, getUserAvatarUrl } from "@/lib/minio-url";
 import { tokenStorage } from "@/lib/token-storage";
-import type { UserInfo } from "@/types/auth";
+import { useUser } from "@/lib/user-context";
+
 
 const { Header, Sider, Content } = Layout;
 
@@ -53,10 +54,12 @@ function AdminLayoutContent({
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const { t } = useI18n();
+  const { user, setUser } = useUser();
 
   // Call /auth/me to refresh user data on main layout mount
   useAuthCheck({
     refreshUserData: true, // This will call /auth/me
+    setUser, // Save user data to context
   });
 
   // Sync user data with backend whenever route changes
@@ -206,12 +209,12 @@ function AdminLayoutContent({
 
             <Button
               type="text"
-              onClick={() => router.push("/profile")}
+              onClick={() => router.push("/settings/profile")}
               className="flex items-center gap-2 h-auto px-2"
             >
               <Avatar
                 icon={<UserOutlined />}
-                src={getUserAvatarUrl(tokenStorage.getUser() as UserInfo | null)}
+                src={getUserAvatarUrl(user)}
                 size="small"
               />
               <span className="hidden sm:inline font-medium">{t("layout.adminName", "Admin")}</span>

@@ -6,10 +6,13 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 import authApi from "@/lib/api/auth";
+import { useUser } from "@/lib/user-context";
+import { UserInfo } from "@/types/auth";
 
 export function useRouteAuthSync() {
     const pathname = usePathname();
     const lastPathRef = useRef<string | null>(null);
+    const { setUser } = useUser();
 
     useEffect(() => {
         // Skip if this is the first mount (handled by useAuthCheck)
@@ -35,7 +38,8 @@ export function useRouteAuthSync() {
         // Call /auth/me to sync user data with backend
         const syncUserData = async () => {
             try {
-                await authApi.getCurrentUser();
+                const userData = await authApi.getCurrentUser() as UserInfo;
+                setUser(userData);
             } catch (_error) {
                 // Silently fail - error will be handled by auth guard
                 // User will be redirected to login if session is invalid
@@ -43,5 +47,5 @@ export function useRouteAuthSync() {
         };
 
         syncUserData();
-    }, [pathname]);
+    }, [pathname, setUser]);
 }

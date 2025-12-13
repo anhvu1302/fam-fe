@@ -1,14 +1,18 @@
+import type { I_Return } from "@/types/api-response";
 import type {
   AuthenticationMethodsResponse,
   AuthResponse,
   ChangePasswordRequest,
+  ChangePasswordResponse,
   Confirm2FARequest,
   Confirm2FAResponse,
   Disable2FARequest,
+  Disable2FAResponse,
   DisableTwoFactorWithBackupRequest,
   Enable2FARequest,
   Enable2FAResponse,
   ForgotPasswordRequest,
+  ForgotPasswordResponse,
   LoginRequest,
   RefreshTokenRequest,
   ResetPasswordRequest,
@@ -60,86 +64,98 @@ export const authApi = {
    * Returns requiresEmailVerification: true if email not verified
    */
   async login(data: LoginRequest): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>(
+    const response = await apiClient.post<I_Return<AuthResponse>>(
       AUTH_ENDPOINTS.LOGIN,
       data
     );
 
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Login failed");
+    }
+
+    const authData = response.data.result;
+
     // Save tokens if login successful without 2FA or email verification
     if (
-      response.data.accessToken &&
-      response.data.refreshToken &&
-      !response.data.requiresTwoFactor &&
-      !response.data.requiresEmailVerification
+      authData.accessToken &&
+      authData.refreshToken &&
+      !authData.requiresTwoFactor &&
+      !authData.requiresEmailVerification
     ) {
 
       await tokenStorage.setTokens(
-        response.data.accessToken,
-        response.data.refreshToken,
-        response.data.accessTokenExpiresAt,
-        response.data.refreshTokenExpiresAt
+        authData.accessToken,
+        authData.refreshToken,
+        authData.accessTokenExpiresAt,
+        authData.refreshTokenExpiresAt
       );
-      if (response.data.user) {
-        tokenStorage.setUser(response.data.user);
-      }
       // Save device ID if provided
-      if (response.data.deviceId) {
-        tokenStorage.setDeviceId(response.data.deviceId);
+      if (authData.deviceId) {
+        tokenStorage.setDeviceId(authData.deviceId);
       }
     }
 
-    return response.data;
+    return authData;
   },
 
   /**
    * Verify 2FA code after login
    */
   async verify2FA(data: VerifyTwoFactorRequest): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>(
+    const response = await apiClient.post<I_Return<AuthResponse>>(
       AUTH_ENDPOINTS.VERIFY_2FA,
       data
     );
 
+    if (!response.data.success) {
+      throw new Error(response.data.message || "2FA verification failed");
+    }
+
+    const authData = response.data.result;
+
     // Save tokens after successful 2FA
-    if (response.data.accessToken && response.data.refreshToken) {
+    if (authData.accessToken && authData.refreshToken) {
       await tokenStorage.setTokens(
-        response.data.accessToken,
-        response.data.refreshToken,
-        response.data.accessTokenExpiresAt,
-        response.data.refreshTokenExpiresAt
+        authData.accessToken,
+        authData.refreshToken,
+        authData.accessTokenExpiresAt,
+        authData.refreshTokenExpiresAt
       );
-      if (response.data.user) {
-        tokenStorage.setUser(response.data.user);
-      }
       // Save device ID if provided
-      if (response.data.deviceId) {
-        tokenStorage.setDeviceId(response.data.deviceId);
+      if (authData.deviceId) {
+        tokenStorage.setDeviceId(authData.deviceId);
       }
     }
 
-    return response.data;
+    return authData;
   },
 
   /**
    * Refresh access token
    */
   async refreshToken(data: RefreshTokenRequest): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>(
+    const response = await apiClient.post<I_Return<AuthResponse>>(
       AUTH_ENDPOINTS.REFRESH,
       data
     );
 
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Token refresh failed");
+    }
+
+    const authData = response.data.result;
+
     // Update tokens
-    if (response.data.accessToken && response.data.refreshToken) {
+    if (authData.accessToken && authData.refreshToken) {
       await tokenStorage.setTokens(
-        response.data.accessToken,
-        response.data.refreshToken,
-        response.data.accessTokenExpiresAt,
-        response.data.refreshTokenExpiresAt
+        authData.accessToken,
+        authData.refreshToken,
+        authData.accessTokenExpiresAt,
+        authData.refreshTokenExpiresAt
       );
     }
 
-    return response.data;
+    return authData;
   },
 
   /**
@@ -162,7 +178,15 @@ export const authApi = {
       }
 
       // Logout requires authentication - Authorization header will be added by axios interceptor
-      await apiClient.post(AUTH_ENDPOINTS.LOGOUT, payload, config);
+      const response = await apiClient.post<I_Return<void>>(
+        AUTH_ENDPOINTS.LOGOUT,
+        payload,
+        config
+      );
+
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Logout failed");
+      }
 
       // Only clear tokens if logout was successful
       tokenStorage.clear();
@@ -177,7 +201,14 @@ export const authApi = {
    */
   async logoutAll(exceptCurrentDevice = false): Promise<void> {
     try {
-      await apiClient.post(AUTH_ENDPOINTS.LOGOUT_ALL, { exceptCurrentDevice });
+      const response = await apiClient.post<I_Return<void>>(
+        AUTH_ENDPOINTS.LOGOUT_ALL,
+        { exceptCurrentDevice }
+      );
+
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Logout all failed");
+      }
     } finally {
       // Clear tokens even if request fails
       tokenStorage.clear();
@@ -200,16 +231,16 @@ export const authApi = {
       config.headers["X-Device-Id"] = deviceId;
     }
 
-    const response = await apiClient.get<{ success: boolean; message: string; result: unknown }>(
+    const response = await apiClient.get<I_Return<unknown>>(
       AUTH_ENDPOINTS.ME,
       config
     );
-    // Extract user data from result field if present
-    const userData = response.data.result || response.data;
-    if (userData) {
-      tokenStorage.setUser(userData);
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to get user info");
     }
-    return userData;
+
+    return response.data.result;
   },
 
   /**
@@ -224,32 +255,40 @@ export const authApi = {
   /**
    * Request password reset email
    */
-  async forgotPassword(data: ForgotPasswordRequest): Promise<void> {
-    await apiClient.post(AUTH_ENDPOINTS.FORGOT_PASSWORD, data);
+  async forgotPassword(data: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
+    const response = await apiClient.post<I_Return<ForgotPasswordResponse>>(AUTH_ENDPOINTS.FORGOT_PASSWORD, data);
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to send password reset email");
+    }
+
+    return response.data.result;
   },
 
   /**
    * Verify reset token is valid
    */
   async verifyResetToken(data: VerifyResetTokenRequest): Promise<VerifyResetTokenResponse> {
-    const response = await apiClient.post(AUTH_ENDPOINTS.VERIFY_RESET_TOKEN, data);
-    // If API returns 200 but isValid is false, treat as error
-    if (response.data?.isValid === false) {
-      throw new Error(response.data?.message || "Invalid or expired reset token.");
+    const response = await apiClient.post<I_Return<VerifyResetTokenResponse>>(AUTH_ENDPOINTS.VERIFY_RESET_TOKEN, data);
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to verify reset token");
     }
-    return response.data;
+
+    return response.data.result;
   },
 
   /**
    * Reset password with token
    */
   async resetPassword(data: ResetPasswordRequest): Promise<ResetPasswordResponse> {
-    const response = await apiClient.post(AUTH_ENDPOINTS.RESET_PASSWORD, data);
-    // If API returns 200 but success is false, treat as error
-    if (response.data?.success === false) {
-      throw new Error(response.data?.message || "Failed to reset password.");
+    const response = await apiClient.post<I_Return<ResetPasswordResponse>>(AUTH_ENDPOINTS.RESET_PASSWORD, data);
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to reset password");
     }
-    return response.data;
+
+    return response.data.result;
   },
 
   // ==================== 2FA MANAGEMENT ====================
@@ -258,91 +297,130 @@ export const authApi = {
    * Enable 2FA - Step 1: Get QR code and secret
    */
   async enable2FA(data: Enable2FARequest): Promise<Enable2FAResponse> {
-    const response = await apiClient.post<Enable2FAResponse>(
+    const response = await apiClient.post<I_Return<Enable2FAResponse>>(
       AUTH_ENDPOINTS.ENABLE_2FA,
       data
     );
-    return response.data;
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to enable 2FA");
+    }
+
+    return response.data.result;
   },
 
   /**
    * Enable 2FA - Step 2: Confirm with TOTP code
    */
   async confirm2FA(data: Confirm2FARequest): Promise<Confirm2FAResponse> {
-    const response = await apiClient.post<Confirm2FAResponse>(
+    const response = await apiClient.post<I_Return<Confirm2FAResponse>>(
       AUTH_ENDPOINTS.CONFIRM_2FA,
       data
     );
-    return response.data;
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to confirm 2FA");
+    }
+
+    return response.data.result;
   },
 
   /**
    * Disable 2FA with password
    */
-  async disable2FA(data: Disable2FARequest): Promise<void> {
-    await apiClient.post(AUTH_ENDPOINTS.DISABLE_2FA, data);
+  async disable2FA(data: Disable2FARequest): Promise<Disable2FAResponse> {
+    const response = await apiClient.post<I_Return<Disable2FAResponse>>(AUTH_ENDPOINTS.DISABLE_2FA, data);
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to disable 2FA");
+    }
+
+    return response.data.result;
   },
 
   /**
    * Disable 2FA with backup code (for locked out users)
    */
-  async disable2FAWithBackup(data: DisableTwoFactorWithBackupRequest): Promise<void> {
-    await apiClient.post(AUTH_ENDPOINTS.DISABLE_2FA_WITH_BACKUP, data);
+  async disable2FAWithBackup(data: DisableTwoFactorWithBackupRequest): Promise<Disable2FAResponse> {
+    const response = await apiClient.post<I_Return<Disable2FAResponse>>(AUTH_ENDPOINTS.DISABLE_2FA_WITH_BACKUP, data);
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to disable 2FA with backup code");
+    }
+
+    return response.data.result;
   },
 
   /**
    * Get available authentication methods for 2FA
    */
   async getAuthenticationMethods(): Promise<AuthenticationMethodsResponse> {
-    const response = await apiClient.get<AuthenticationMethodsResponse>(
+    const response = await apiClient.get<I_Return<AuthenticationMethodsResponse>>(
       AUTH_ENDPOINTS.AUTHENTICATION_METHODS
     );
-    return response.data;
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to get authentication methods");
+    }
+
+    return response.data.result;
   },
 
   /**
    * Select authentication method for 2FA
    */
   async selectAuthenticationMethod(data: SelectAuthenticationMethodRequest): Promise<void> {
-    await apiClient.post(AUTH_ENDPOINTS.SELECT_AUTH_METHOD, data);
+    const response = await apiClient.post<I_Return<void>>(
+      AUTH_ENDPOINTS.SELECT_AUTH_METHOD,
+      data
+    );
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to select authentication method");
+    }
   },
 
   /**
    * Verify Email OTP during login
    */
   async verifyEmailOtp(data: VerifyEmailOtpRequest): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>(
+    const response = await apiClient.post<I_Return<AuthResponse>>(
       AUTH_ENDPOINTS.VERIFY_EMAIL_OTP,
       data
     );
 
-    if (response.data.accessToken && response.data.refreshToken) {
-      tokenStorage.setTokens(response.data.accessToken, response.data.refreshToken);
-      if (response.data.user) {
-        tokenStorage.setUser(response.data.user);
-      }
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Email OTP verification failed");
     }
 
-    return response.data;
+    const authData = response.data.result;
+
+    if (authData.accessToken && authData.refreshToken) {
+      tokenStorage.setTokens(authData.accessToken, authData.refreshToken);
+    }
+
+    return authData;
   },
 
   /**
    * Verify recovery code during 2FA
    */
   async verifyRecoveryCode(data: VerifyRecoveryCodeRequest): Promise<VerifyTwoFactorResponse> {
-    const response = await apiClient.post<VerifyTwoFactorResponse>(
+    const response = await apiClient.post<I_Return<VerifyTwoFactorResponse>>(
       AUTH_ENDPOINTS.VERIFY_RECOVERY_CODE,
       data
     );
 
-    if (response.data.accessToken && response.data.refreshToken) {
-      tokenStorage.setTokens(response.data.accessToken, response.data.refreshToken);
-      if (response.data.user) {
-        tokenStorage.setUser(response.data.user);
-      }
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Recovery code verification failed");
     }
 
-    return response.data;
+    const authData = response.data.result;
+
+    if (authData.accessToken && authData.refreshToken) {
+      tokenStorage.setTokens(authData.accessToken, authData.refreshToken);
+    }
+
+    return authData;
   },
 
   // ==================== PASSWORD ====================
@@ -350,8 +428,14 @@ export const authApi = {
   /**
    * Change password
    */
-  async changePassword(data: ChangePasswordRequest): Promise<void> {
-    await apiClient.post(AUTH_ENDPOINTS.CHANGE_PASSWORD, data);
+  async changePassword(data: ChangePasswordRequest): Promise<ChangePasswordResponse> {
+    const response = await apiClient.post<I_Return<ChangePasswordResponse>>(AUTH_ENDPOINTS.CHANGE_PASSWORD, data);
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to change password");
+    }
+
+    return response.data.result;
   },
 };
 
