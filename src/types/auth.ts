@@ -99,8 +99,7 @@ export interface UserInfo {
   bio: string | null;
   isEmailVerified: boolean;
   isPhoneVerified?: boolean;
-  isTwoFactorEnabled?: boolean;
-  twoFactorEnabled?: boolean; // New API uses this name
+  twoFactorEnabled?: boolean;
   preferredLanguage: string | null;
   timeZone: string | null;
   receiveNotifications?: boolean;

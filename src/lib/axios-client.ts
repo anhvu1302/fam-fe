@@ -325,11 +325,20 @@ apiClient.interceptors.response.use(
         // Handle 401 Unauthorized - attempt token refresh (Reactive Approach)
         if (error.response?.status === 401 && originalRequest && !originalRequest.headers?.['X-Retry-After-Refresh']) {
             // Skip refresh for auth endpoints to prevent infinite loops
-            if (originalRequest.url?.includes('/auth/login') ||
-                originalRequest.url?.includes('/auth/refresh') ||
-                originalRequest.url?.includes('/auth/logout') ||
-                originalRequest.url?.includes('/auth/verify-reset-token') ||
-                originalRequest.url?.includes('/auth/forgot-password')) {
+            const AUTH_ENDPOINTS: string[] = [
+                '/auth/login',
+                '/auth/refresh',
+                '/auth/logout',
+                '/auth/verify-reset-token',
+                '/auth/forgot-password',
+                '/auth/disable-2fa',
+                '/auth/verify-2fa',
+                '/auth/change-password',
+            ];
+
+            const url = originalRequest.url;
+
+            if (url && AUTH_ENDPOINTS.some(endpoint => url.includes(endpoint))) {
                 return Promise.reject(sanitizeError(error));
             }
 

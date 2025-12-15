@@ -9,7 +9,7 @@ import {
   SafetyOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Alert, Button, Checkbox, Form, Input, message, Statistic } from "antd";
+import { Button, Checkbox, Form, Input, message, Statistic } from "antd";
 
 import authApi from "@/lib/api/auth";
 import { ApiError } from "@/lib/axios-client";
@@ -319,18 +319,6 @@ export default function LoginPage() {
             </>
           )}
         </div>
-
-        {/* Error Alert */}
-        {error && (
-          <Alert
-            title={error.message}
-            type={error.type || "error"}
-            showIcon
-            closable
-            onClose={() => setError(null)}
-            className="mb-4"
-          />
-        )}
 
         {/* Account Locked Countdown */}
         {error?.code === "AUTH_ACCOUNT_LOCKED" && lockoutCountdown !== null && lockoutCountdown > 0 && (

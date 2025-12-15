@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -13,11 +13,12 @@ import {
 } from "@ant-design/icons";
 import {
   Alert,
-  App,
   Button,
   Card,
   Form,
+  type FormInstance,
   Input,
+  message,
   Modal,
   Space,
   Switch,
@@ -26,6 +27,7 @@ import {
 } from "antd";
 
 import authApi from "@/lib/api/auth";
+import { useI18n } from "@/lib/i18n-context";
 import { tokenStorage } from "@/lib/token-storage";
 import { useUser } from "@/lib/user-context";
 
@@ -33,28 +35,30 @@ import { useUser } from "@/lib/user-context";
 const { Title, Text, Paragraph } = Typography;
 
 export default function SecuritySettingsPage() {
+  const { t } = useI18n();
   const router = useRouter();
-  const { message } = App.useApp();
+  const [messageApi, messageContextHolder] = message.useMessage();
   const { user, updateUser } = useUser();
   const [loading, setLoading] = useState(false);
   const [showDisable2FAModal, setShowDisable2FAModal] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const disable2FAFormRef = useRef<FormInstance>(null);
+  const changePasswordFormRef = useRef<FormInstance>(null);
 
-  // User is already managed by UserContext
-  // No need to initialize from tokenStorage
   const handleDisable2FA = async (values: { password: string }) => {
     setLoading(true);
     try {
       await authApi.disable2FA({ password: values.password });
 
-      message.success("Đã tắt xác thực hai lớp!");
+      messageApi.success(t("settings.disable2FASuccess", "Đã tắt xác thực hai lớp!"));
+      disable2FAFormRef.current?.resetFields();
       setShowDisable2FAModal(false);
       // Update user state in context (memory only - no localStorage)
-      updateUser({ isTwoFactorEnabled: false, twoFactorEnabled: false });
+      updateUser({ twoFactorEnabled: false });
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Không thể tắt 2FA. Vui lòng thử lại.";
-      message.error(errorMessage);
+        err instanceof Error ? err.message : t("settings.disable2FAError", "Không thể tắt 2FA. Vui lòng thử lại.");
+      messageApi.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -74,18 +78,19 @@ export default function SecuritySettingsPage() {
         logoutAllDevices: values.logoutAllDevices,
       });
 
-      message.success("Đã đổi mật khẩu thành công!");
+      messageApi.success(t("settings.changePasswordSuccess", "Đã đổi mật khẩu thành công!"));
+      changePasswordFormRef.current?.resetFields();
       setShowChangePasswordModal(false);
 
       if (values.logoutAllDevices) {
-        message.info("Đang đăng xuất...");
+        messageApi.info(t("common.loggingOut", "Đang đăng xuất..."));
         tokenStorage.clear();
         router.push("/login");
       }
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Không thể đổi mật khẩu. Vui lòng thử lại.";
-      message.error(errorMessage);
+        err instanceof Error ? err.message : t("settings.changePasswordError", "Không thể đổi mật khẩu. Vui lòng thử lại.");
+      messageApi.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -93,13 +98,14 @@ export default function SecuritySettingsPage() {
 
   return (
     <div className="mx-auto max-w-4xl p-6">
+      {messageContextHolder}
       <div className="mb-6">
         <Title level={2}>
           <SafetyOutlined className="mr-2" />
-          Bảo mật
+          {t("settings.security", "Bảo mật")}
         </Title>
         <Text type="secondary">
-          Quản lý các cài đặt bảo mật cho tài khoản của bạn
+          {t("settings.manageSecuritySettings", "Quản lý các cài đặt bảo mật cho tài khoản của bạn")}
         </Text>
       </div>
 
@@ -112,31 +118,30 @@ export default function SecuritySettingsPage() {
             </div>
             <div>
               <Title level={4} className="mb-1!">
-                Xác thực hai lớp (2FA)
+                {t("settings.twoFactorAuth", "Xác thực hai lớp (2FA)")}
               </Title>
               <Paragraph type="secondary" className="mb-2!">
-                Thêm một lớp bảo mật bổ sung cho tài khoản của bạn bằng cách yêu cầu mã xác
-                thực khi đăng nhập.
+                {t("settings.twoFactorDescription", "Thêm một lớp bảo mật bổ sung cho tài khoản của bạn bằng cách yêu cầu mã xác thực khi đăng nhập.")}
               </Paragraph>
-              {user?.isTwoFactorEnabled ? (
+              {user?.twoFactorEnabled ? (
                 <Tag color="success" icon={<CheckCircleOutlined />}>
-                  Đã bật
+                  {t("settings.twoFactorEnabled", "Đã bật")}
                 </Tag>
               ) : (
                 <Tag color="warning" icon={<ExclamationCircleOutlined />}>
-                  Chưa bật
+                  {t("settings.twoFactorDisabled", "Chưa bật")}
                 </Tag>
               )}
             </div>
           </div>
           <div>
-            {user?.isTwoFactorEnabled ? (
+            {user?.twoFactorEnabled ? (
               <Button danger onClick={() => setShowDisable2FAModal(true)}>
-                Tắt 2FA
+                {t("settings.disable2FA", "Tắt 2FA")}
               </Button>
             ) : (
               <Button type="primary" onClick={() => router.push("/settings/security/authentication")}>
-                Bật 2FA
+                {t("settings.enable2FA", "Bật 2FA")}
               </Button>
             )}
           </div>
@@ -152,15 +157,15 @@ export default function SecuritySettingsPage() {
             </div>
             <div>
               <Title level={4} className="mb-1!">
-                Mật khẩu
+                {t("settings.password", "Mật khẩu")}
               </Title>
               <Paragraph type="secondary" className="mb-0!">
-                Đổi mật khẩu định kỳ để tăng cường bảo mật tài khoản.
+                {t("settings.passwordDescription", "Đổi mật khẩu định kỳ để tăng cường bảo mật tài khoản.")}
               </Paragraph>
             </div>
           </div>
           <Button onClick={() => setShowChangePasswordModal(true)}>
-            Đổi mật khẩu
+            {t("settings.changePassword", "Đổi mật khẩu")}
           </Button>
         </div>
       </Card>
@@ -174,15 +179,15 @@ export default function SecuritySettingsPage() {
             </div>
             <div>
               <Title level={4} className="mb-1!">
-                Thiết bị & Phiên đăng nhập
+                {t("settings.devicesAndSessions", "Thiết bị & Phiên đăng nhập")}
               </Title>
               <Paragraph type="secondary" className="mb-0!">
-                Xem và quản lý các thiết bị đang đăng nhập vào tài khoản của bạn.
+                {t("settings.devicesDescription", "Xem và quản lý các thiết bị đang đăng nhập vào tài khoản của bạn.")}
               </Paragraph>
             </div>
           </div>
           <Button onClick={() => router.push("/settings/security/sessions")}>
-            Quản lý thiết bị
+            {t("settings.manageDevices", "Quản lý thiết bị")}
           </Button>
         </div>
       </Card>
@@ -192,7 +197,7 @@ export default function SecuritySettingsPage() {
         title={
           <span>
             <ExclamationCircleOutlined className="mr-2 text-orange-500" />
-            Tắt xác thực hai lớp
+            {t("settings.disableTwoFactorTitle", "Tắt xác thực hai lớp")}
           </span>
         }
         open={showDisable2FAModal}
@@ -200,13 +205,14 @@ export default function SecuritySettingsPage() {
         footer={null}
       >
         <Alert
-          message="Cảnh báo"
-          description="Tắt 2FA sẽ làm giảm bảo mật của tài khoản. Bạn có chắc chắn muốn tiếp tục?"
+          title={t("common.warning", "Cảnh báo")}
+          description={t("settings.disableTwoFactorWarning", "Tắt 2FA sẽ làm giảm bảo mật của tài khoản. Bạn có chắc chắn muốn tiếp tục?")}
           type="warning"
           showIcon
-          className="mb-4"
+          className="mb-4!"
         />
         <Form
+          ref={disable2FAFormRef}
           name="disable-2fa"
           onFinish={handleDisable2FA}
           layout="vertical"
@@ -214,16 +220,19 @@ export default function SecuritySettingsPage() {
         >
           <Form.Item
             name="password"
-            label="Nhập mật khẩu để xác nhận"
-            rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+            label={t("settings.enterPasswordToConfirm", "Nhập mật khẩu để xác nhận")}
+            rules={[{ required: true, message: t("validation.passwordRequired", "Vui lòng nhập mật khẩu!") }]}
           >
-            <Input.Password placeholder="Mật khẩu hiện tại" />
+            <Input.Password placeholder={t("settings.currentPassword", "Mật khẩu hiện tại")} />
           </Form.Item>
           <Form.Item className="mb-0">
             <Space className="w-full justify-end">
-              <Button onClick={() => setShowDisable2FAModal(false)}>Hủy</Button>
+              <Button onClick={() => {
+                disable2FAFormRef.current?.resetFields();
+                setShowDisable2FAModal(false);
+              }}>{t("common.cancel", "Hủy")}</Button>
               <Button type="primary" danger htmlType="submit" loading={loading}>
-                Tắt 2FA
+                {t("settings.disable2FA", "Tắt 2FA")}
               </Button>
             </Space>
           </Form.Item>
@@ -235,7 +244,7 @@ export default function SecuritySettingsPage() {
         title={
           <span>
             <LockOutlined className="mr-2" />
-            Đổi mật khẩu
+            {t("settings.changePassword", "Đổi mật khẩu")}
           </span>
         }
         open={showChangePasswordModal}
@@ -244,6 +253,7 @@ export default function SecuritySettingsPage() {
         width={480}
       >
         <Form
+          ref={changePasswordFormRef}
           name="change-password"
           onFinish={handleChangePassword}
           layout="vertical"
@@ -252,60 +262,63 @@ export default function SecuritySettingsPage() {
         >
           <Form.Item
             name="currentPassword"
-            label="Mật khẩu hiện tại"
-            rules={[{ required: true, message: "Vui lòng nhập mật khẩu hiện tại!" }]}
+            label={t("settings.currentPassword", "Mật khẩu hiện tại")}
+            rules={[{ required: true, message: t("validation.currentPasswordRequired", "Vui lòng nhập mật khẩu hiện tại!") }]}
           >
-            <Input.Password placeholder="Nhập mật khẩu hiện tại" />
+            <Input.Password placeholder={t("settings.enterCurrentPassword", "Nhập mật khẩu hiện tại")} />
           </Form.Item>
 
           <Form.Item
             name="newPassword"
-            label="Mật khẩu mới"
+            label={t("settings.newPassword", "Mật khẩu mới")}
             rules={[
-              { required: true, message: "Vui lòng nhập mật khẩu mới!" },
-              { min: 8, message: "Mật khẩu phải có ít nhất 8 ký tự!" },
+              { required: true, message: t("validation.newPasswordRequired", "Vui lòng nhập mật khẩu mới!") },
+              { min: 8, message: t("validation.passwordMinLength", "Mật khẩu phải có ít nhất 8 ký tự!") },
               {
                 pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                message: "Mật khẩu phải có chữ hoa, chữ thường và số!",
+                message: t("validation.passwordPattern", "Mật khẩu phải có chữ hoa, chữ thường và số!"),
               },
             ]}
             hasFeedback
           >
-            <Input.Password placeholder="Nhập mật khẩu mới" />
+            <Input.Password placeholder={t("settings.enterNewPassword", "Nhập mật khẩu mới")} />
           </Form.Item>
 
           <Form.Item
             name="confirmPassword"
-            label="Xác nhận mật khẩu mới"
+            label={t("settings.confirmPassword", "Xác nhận mật khẩu mới")}
             dependencies={["newPassword"]}
             hasFeedback
             rules={[
-              { required: true, message: "Vui lòng xác nhận mật khẩu!" },
+              { required: true, message: t("validation.confirmPasswordRequired", "Vui lòng xác nhận mật khẩu!") },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue("newPassword") === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(new Error("Mật khẩu xác nhận không khớp!"));
+                  return Promise.reject(new Error(t("validation.passwordMismatch", "Mật khẩu xác nhận không khớp!")));
                 },
               }),
             ]}
           >
-            <Input.Password placeholder="Nhập lại mật khẩu mới" />
+            <Input.Password placeholder={t("settings.confirmNewPassword", "Nhập lại mật khẩu mới")} />
           </Form.Item>
 
           <Form.Item name="logoutAllDevices" valuePropName="checked">
             <Space>
               <Switch />
-              <span>Đăng xuất tất cả thiết bị khác sau khi đổi mật khẩu</span>
+              <span>{t("settings.logoutAllDevices", "Đăng xuất tất cả thiết bị khác sau khi đổi mật khẩu")}</span>
             </Space>
           </Form.Item>
 
           <Form.Item className="mb-0">
             <Space className="w-full justify-end">
-              <Button onClick={() => setShowChangePasswordModal(false)}>Hủy</Button>
+              <Button onClick={() => {
+                changePasswordFormRef.current?.resetFields();
+                setShowChangePasswordModal(false);
+              }}>{t("common.cancel", "Hủy")}</Button>
               <Button type="primary" htmlType="submit" loading={loading}>
-                Đổi mật khẩu
+                {t("settings.changePassword", "Đổi mật khẩu")}
               </Button>
             </Space>
           </Form.Item>

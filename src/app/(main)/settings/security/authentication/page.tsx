@@ -12,12 +12,12 @@ import {
 } from "@ant-design/icons";
 import {
   Alert,
-  App,
   Button,
   Card,
   Divider,
   Form,
   Input,
+  message,
   Result,
   Space,
   Steps,
@@ -35,7 +35,7 @@ const { Text } = Typography;
 export default function TwoFactorSetupPage() {
   const { t } = useI18n();
   const router = useRouter();
-  const { message } = App.useApp();
+  const [messageApi, messageContextHolder] = message.useMessage();
   const { user, updateUser } = useUser();
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
   const [loading, setLoading] = useState(false);
@@ -43,11 +43,10 @@ export default function TwoFactorSetupPage() {
   const [setupData, setSetupData] = useState<Enable2FAResult | null>(null);
   const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
   const [backupCodesSaved, setBackupCodesSaved] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // If 2FA already enabled, redirect
-    if (user?.isTwoFactorEnabled) {
+    if (user?.twoFactorEnabled) {
       router.push("/settings/security");
     }
   }, [router, user]);
@@ -71,7 +70,6 @@ export default function TwoFactorSetupPage() {
   // Step 1: Enter password to enable 2FA
   const onPasswordSubmit = async (values: { password: string }) => {
     setLoading(true);
-    setError(null);
 
     try {
       const response = await authApi.enable2FA({ password: values.password });
@@ -81,7 +79,7 @@ export default function TwoFactorSetupPage() {
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : t("common.error", "An error occurred");
-      setError(errorMessage);
+      messageApi.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -90,7 +88,6 @@ export default function TwoFactorSetupPage() {
   // Step 2: Verify TOTP code
   const onCodeSubmit = async (values: { code: string }) => {
     setLoading(true);
-    setError(null);
 
     try {
       if (!setupData?.secret) {
@@ -107,17 +104,14 @@ export default function TwoFactorSetupPage() {
       if (codes && codes.length > 0) {
         setBackupCodes(codes);
         setCurrentStep(2);
-        message.success(t("settings.twoFactorEnabled", "Two-factor authentication enabled!"));
-
-        // Update user state in context (memory only - no localStorage)
-        updateUser({ isTwoFactorEnabled: true, twoFactorEnabled: true });
+        messageApi.success(t("settings.twoFactorEnabled", "Two-factor authentication enabled!"));
       } else {
         throw new Error(t("common.error", "Failed to receive backup codes. Please try again."));
       }
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : t("common.error", "An error occurred");
-      setError(errorMessage);
+      messageApi.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -126,7 +120,7 @@ export default function TwoFactorSetupPage() {
   // Copy secret to clipboard
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    message.success(t("common.copied", "Copied {text}!").replace("{text}", label));
+    messageApi.success(t("common.copied", "Copied {text}!").replace("{text}", label));
   };
 
   // Copy all backup codes
@@ -134,7 +128,7 @@ export default function TwoFactorSetupPage() {
     if (backupCodes) {
       navigator.clipboard.writeText(backupCodes.join("\n"));
       setBackupCodesSaved(true);
-      message.success(t("common.copied", "Mã đã được sao chép!"));
+      messageApi.success(t("common.copied", "Mã đã được sao chép!"));
     }
   };
 
@@ -150,7 +144,7 @@ export default function TwoFactorSetupPage() {
       a.click();
       URL.revokeObjectURL(url);
       setBackupCodesSaved(true);
-      message.success(t("common.downloaded", "Mã đã được tải xuống!"));
+      messageApi.success(t("common.downloaded", "Mã đã được tải xuống!"));
     }
   };
 
@@ -168,10 +162,11 @@ export default function TwoFactorSetupPage() {
 
   return (
     <div className="mx-auto max-w-3xl p-6">
+      {messageContextHolder}
       <Card>
         {/* Header */}
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-blue-600 shadow-lg">
             <SafetyOutlined className="text-4xl text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
@@ -183,19 +178,7 @@ export default function TwoFactorSetupPage() {
         </div>
 
         {/* Steps */}
-        <Steps current={currentStep} items={steps} className="mb-8" />
-
-        {/* Error Alert */}
-        {error && (
-          <Alert
-            title={error}
-            type="error"
-            showIcon
-            closable
-            onClose={() => setError(null)}
-            className="mb-6"
-          />
-        )}
+        <Steps current={currentStep} items={steps} className="mb-12!" />
 
         {/* Step 0: Enter Password */}
         {currentStep === 0 && (
@@ -205,7 +188,7 @@ export default function TwoFactorSetupPage() {
               description={t("auth.twoFactorDescription", "2FA thêm một lớp bảo mật bổ sung cho tài khoản của bạn. Ngoài mật khẩu, bạn sẽ cần nhập mã từ ứng dụng xác thực khi đăng nhập.")}
               type="info"
               showIcon
-              className="mb-8 rounded-xl border-blue-200 bg-blue-50"
+              className="mb-8! rounded-xl border-blue-200 bg-blue-50"
             />
 
             <Form
@@ -255,7 +238,7 @@ export default function TwoFactorSetupPage() {
 
             {/* QR Code */}
             <div className="mb-8 flex justify-center">
-              <div className="rounded-3xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-8 shadow-xl">
+              <div className="rounded-3xl border border-gray-200 dark:border-gray-700 bg-linear-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-8 shadow-xl">
                 {setupData.qrCodeUri ? (
                   <canvas
                     ref={qrCanvasRef}
@@ -352,11 +335,11 @@ export default function TwoFactorSetupPage() {
               description={t("auth.backupCodesWarning", "Mỗi mã khôi phục chỉ sử dụng được một lần. Hãy lưu chúng ở nơi an toàn và không chia sẻ với ai.")}
               type="warning"
               showIcon
-              className="mb-8 rounded-xl border-amber-300 bg-amber-50"
+              className="mb-8! rounded-xl border-amber-300 bg-amber-50"
             />
 
             {/* Backup Codes Grid */}
-            <div className="mb-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-6 shadow-sm">
+            <div className="mb-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-linear-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-6 shadow-sm">
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {backupCodes.map((code, index) => (
                   <div
@@ -384,17 +367,20 @@ export default function TwoFactorSetupPage() {
             <div className="text-center">
               {!backupCodesSaved && (
                 <Alert
-                  message={t("auth.saveCodesFirst", "Vui lòng sao chép hoặc tải xuống các mã khôi phục trước khi tiếp tục")}
+                  title={t("auth.saveCodesFirst", "Vui lòng sao chép hoặc tải xuống các mã khôi phục trước khi tiếp tục")}
                   type="warning"
                   showIcon
-                  className="mb-4 rounded-lg"
+                  className="mb-4! rounded-lg"
                 />
               )}
               <Button
                 type="primary"
                 size="large"
                 disabled={!backupCodesSaved}
-                onClick={() => router.push("/settings/security")}
+                onClick={() => {
+                  updateUser({ twoFactorEnabled: true });
+                  router.push("/settings/security");
+                }}
               >
                 {t("common.done", "Hoàn tất")}
               </Button>

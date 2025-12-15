@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -49,6 +49,7 @@ export default function SessionsPage() {
     sessionId: null,
     isLogoutAll: false,
   });
+  const loadedRef = useRef(false);
 
   // Load sessions
   const loadDevices = async () => {
@@ -71,6 +72,8 @@ export default function SessionsPage() {
   };
 
   useEffect(() => {
+    if (loadedRef.current) return;
+    loadedRef.current = true;
     loadDevices();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

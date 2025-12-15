@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 import { authApi } from "@/lib/api/auth";
@@ -21,8 +21,13 @@ interface UseAuthCheckOptions {
 export function useAuthCheck(options: UseAuthCheckOptions = {}) {
     const router = useRouter();
     const { onAuthSuccess, onAuthFailed, refreshUserData = false, setUser } = options;
+    const loadedRef = useRef(false);
 
     useEffect(() => {
+        // Prevent double call in React Strict Mode
+        if (loadedRef.current) return;
+        loadedRef.current = true;
+
         const checkAuth = async () => {
             try {
                 const authenticated = tokenStorage.isAuthenticated();

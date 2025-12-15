@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { BgColorsOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { Card, message, Radio, Space, Spin, Typography } from "antd";
@@ -15,9 +15,12 @@ export default function AppearanceSettingsPage() {
     const [saving, setSaving] = useState(false);
     const [theme, setTheme] = useState<"light" | "dark" | "auto">("light");
     const [language, setLanguage] = useState<"en" | "vi">("vi");
+    const loadedRef = useRef(false);
 
     // Load user theme on mount
     useEffect(() => {
+        if (loadedRef.current) return;
+        loadedRef.current = true;
         loadTheme();
     }, []);
 
