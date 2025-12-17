@@ -1,5 +1,7 @@
 import { TranslationResource } from "@/types/i18n";
 
+import { errorsVi } from "./errors.vi";
+
 export const vi: TranslationResource = {
     common: {
         save: "Lưu",
@@ -31,33 +33,8 @@ export const vi: TranslationResource = {
         important: "Quan trọng!",
     },
     errors: {
-        AUTH_EMAIL_NOT_VERIFIED:
-            "Email chưa được xác nhận. Vui lòng liên hệ quản trị viên để xác nhận email.",
-        AUTH_INVALID_CREDENTIALS: "Email hoặc mật khẩu không chính xác.",
-        AUTH_ACCOUNT_LOCKED:
-            "Tài khoản của bạn đã bị khóa do nhập sai mật khẩu quá nhiều lần.",
-        AUTH_ACCOUNT_INACTIVE: "Tài khoản không hoạt động. Vui lòng liên hệ hỗ trợ.",
-        AUTH_INVALID_TOKEN: "Token không hợp lệ hoặc đã hết hạn.",
-        AUTH_TOKEN_EXPIRED: "Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.",
-        AUTH_REFRESH_TOKEN_EXPIRED: "Phiên của bạn đã hết hạn. Vui lòng đăng nhập lại.",
-        AUTH_DEVICE_NOT_FOUND: "Thiết bị không tìm thấy.",
-        AUTH_2FA_REQUIRED: "Xác thực hai yếu tố bắt buộc.",
-        AUTH_INVALID_2FA_CODE: "Mã xác thực hai yếu tố không chính xác.",
-        AUTH_2FA_INVALID_CODE: "Mã xác thực hai yếu tố không chính xác.",
-        AUTH_2FA_INVALID_RECOVERY_CODE: "Mã phục hồi không chính xác.",
-        AUTH_PASSWORD_WEAK: "Mật khẩu không đủ mạnh.",
-        AUTH_PASSWORD_MISMATCH: "Mật khẩu không khớp.",
-        AUTH_OLD_PASSWORD_INCORRECT: "Mật khẩu cũ không chính xác.",
-        AUTH_EMAIL_ALREADY_EXISTS: "Email đã được sử dụng.",
-        AUTH_USER_NOT_FOUND: "Người dùng không tìm thấy.",
-        UNAUTHORIZED: "Bạn không có quyền truy cập.",
-        FORBIDDEN: "Truy cập bị từ chối.",
-        NOT_FOUND: "Không tìm thấy.",
-        BAD_REQUEST: "Yêu cầu không hợp lệ.",
-        INTERNAL_SERVER_ERROR: "Lỗi máy chủ. Vui lòng thử lại sau.",
-        SERVICE_UNAVAILABLE: "Dịch vụ tạm thời không khả dụng. Vui lòng thử lại sau.",
-        NETWORK_ERROR: "Lỗi kết nối. Vui lòng kiểm tra kết nối internet.",
-        TIMEOUT: "Yêu cầu hết thời gian chờ. Vui lòng thử lại.",
+        ...errorsVi,
+        UNKNOWN_ERROR: "Có lỗi xảy ra. Vui lòng thử lại.",
         DEFAULT: "Có lỗi xảy ra. Vui lòng thử lại.",
     },
     auth: {

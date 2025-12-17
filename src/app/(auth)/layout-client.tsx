@@ -3,8 +3,8 @@
 import Image from "next/image";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { useAppSettingsByGroup } from "@/hooks/use-app-settings";
-import { getMinioUrl } from "@/lib/minio-url";
+import { useAppSettingsByGroup } from "@/lib/hooks/use-app-settings";
+import { getMinioUrl } from "@/lib/utils/minio-url";
 
 export function AuthLayoutClient({
     children,

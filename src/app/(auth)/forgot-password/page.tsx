@@ -7,17 +7,20 @@ import { ArrowLeftOutlined, MailOutlined } from "@ant-design/icons";
 import { Alert, Button, Form, Input, message, Result } from "antd";
 
 import authApi from "@/lib/api/auth";
-import { useI18n } from "@/lib/i18n-context";
+import { useI18n } from "@/lib/contexts/i18n-context";
+import { ERROR_CODES } from "@/lib/constants/error-codes";
+import { useApiError } from "@/lib/hooks/use-api-error";
 
 interface ForgotPasswordFormValues {
   email: string;
 }
 
 export default function ForgotPasswordPage() {
-  const { t } = useI18n();
+  const { t: _t } = useI18n();
   const [messageApi, messageContextHolder] = message.useMessage();
+  const { formatError } = useApiError();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ message: string; code?: string; type: "error" | "warning" | "info" } | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState<string>("");
 
@@ -26,17 +29,22 @@ export default function ForgotPasswordPage() {
     setError(null);
 
     try {
-      await authApi.forgotPassword({ email: values.email });
+      const response = await authApi.forgotPassword({ email: values.email });
+
+      if (!response.success) {
+        const formattedError = formatError(response);
+        setError(formattedError);
+        messageApi[formattedError.type](formattedError.message);
+        return;
+      }
 
       setSubmittedEmail(values.email);
       setSubmitted(true);
       messageApi.success("Đã gửi email khôi phục mật khẩu!");
     } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Không thể gửi email khôi phục. Vui lòng thử lại.";
-      setError(errorMessage);
+      const formattedError = formatError(err);
+      setError(formattedError);
+      messageApi[formattedError.type](formattedError.message);
     } finally {
       setLoading(false);
     }
@@ -102,8 +110,8 @@ export default function ForgotPasswordPage() {
         {/* Error Alert */}
         {error && (
           <Alert
-            title={error}
-            type="error"
+            message={error.message}
+            type={error.type}
             showIcon
             closable
             onClose={() => setError(null)}

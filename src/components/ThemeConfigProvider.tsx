@@ -2,7 +2,7 @@
 
 import { ConfigProvider, theme } from "antd";
 
-import { useTheme } from "@/lib/theme-context";
+import { useTheme } from "@/lib/contexts/theme-context";
 
 export default function ThemeConfigProvider({ children }: { children: React.ReactNode }) {
     const {

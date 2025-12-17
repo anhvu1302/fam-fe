@@ -3,7 +3,7 @@
  */
 import { useEffect } from "react";
 
-import { getOrCreateDeviceId } from "@/lib/device-id";
+import { getOrCreateDeviceId } from "@/lib/utils/device-id";
 
 export function useInitializeApp() {
     useEffect(() => {

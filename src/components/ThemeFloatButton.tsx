@@ -4,7 +4,7 @@ import { SettingOutlined } from "@ant-design/icons";
 import { FloatButton } from "antd";
 
 import SettingDrawer from "@/components/SettingDrawer";
-import { useTheme } from "@/lib/theme-context";
+import { useTheme } from "@/lib/contexts/theme-context";
 
 export default function ThemeFloatButton() {
     const { toggleSettingsDrawer } = useTheme();

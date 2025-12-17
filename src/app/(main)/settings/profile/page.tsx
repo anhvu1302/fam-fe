@@ -27,9 +27,9 @@ import {
 } from "antd";
 import type { RcFile, UploadFile } from "antd/es/upload/interface";
 
-import { useI18n } from "@/lib/i18n-context";
-import { getUserAvatarUrl } from "@/lib/minio-url";
-import { useUser } from "@/lib/user-context";
+import { useI18n } from "@/lib/contexts/i18n-context";
+import { useUser } from "@/lib/contexts/user-context";
+import { getUserAvatarUrl } from "@/lib/utils/minio-url";
 
 
 const { Title, Text } = Typography;
@@ -187,7 +187,7 @@ export default function ProfileSettingsPage() {
                         >
                             {t("profile.changeAvatar", "Đổi ảnh đại diện")}
                         </Button>
-                        {(user.avatar || user.avatarUrl) && (
+                        {user.avatar && (
                             <Button
                                 icon={<DeleteOutlined />}
                                 danger

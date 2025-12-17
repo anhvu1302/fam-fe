@@ -8,7 +8,7 @@ import {
     encryptData,
     ENCRYPTION_ENABLED,
     isSecurePayload,
-} from "@/lib/crypto";
+} from "@/lib/utils/crypto";
 
 const BACKEND_URL = process.env.BACKEND_API_URL || "http://localhost:8000";
 const APP_SIGNATURE_KEY = process.env.NEXT_PUBLIC_APP_SIGNATURE_KEY || "default-signature-key";

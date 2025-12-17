@@ -25,10 +25,11 @@ import {
 } from "antd";
 import QRCode from "qrcode";
 
-import authApi from "@/lib/api/auth";
-import { useI18n } from "@/lib/i18n-context";
-import { useUser } from "@/lib/user-context";
-import type { Enable2FAResult } from "@/types/auth";
+import authApi, { type Enable2FAResult } from "@/lib/api/auth";
+import { useI18n } from "@/lib/contexts/i18n-context";
+import { useUser } from "@/lib/contexts/user-context";
+import { ERROR_CODES } from "@/lib/constants/error-codes";
+import { useApiError } from "@/lib/hooks/use-api-error";
 
 const { Text } = Typography;
 
@@ -37,6 +38,7 @@ export default function TwoFactorSetupPage() {
   const router = useRouter();
   const [messageApi, messageContextHolder] = message.useMessage();
   const { user, updateUser } = useUser();
+  const { formatError } = useApiError();
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -46,7 +48,7 @@ export default function TwoFactorSetupPage() {
 
   useEffect(() => {
     // If 2FA already enabled, redirect
-    if (user?.twoFactorEnabled) {
+    if (user?.isTwoFactorEnabled) {
       router.push("/settings/security");
     }
   }, [router, user]);
@@ -74,12 +76,17 @@ export default function TwoFactorSetupPage() {
     try {
       const response = await authApi.enable2FA({ password: values.password });
 
-      setSetupData(response);
+      if (!response.success) {
+        const formattedError = formatError(response);
+        messageApi[formattedError.type](formattedError.message);
+        return;
+      }
+
+      setSetupData(response.result);
       setCurrentStep(1);
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : t("common.error", "An error occurred");
-      messageApi.error(errorMessage);
+      const formattedError = formatError(err);
+      messageApi[formattedError.type](formattedError.message);
     } finally {
       setLoading(false);
     }
@@ -99,7 +106,13 @@ export default function TwoFactorSetupPage() {
         secret: setupData.secret
       });
 
-      const codes = response.backupCodes;
+      if (!response.success) {
+        const formattedError = formatError(response);
+        messageApi[formattedError.type](formattedError.message);
+        return;
+      }
+
+      const codes = response.result.backupCodes;
 
       if (codes && codes.length > 0) {
         setBackupCodes(codes);
@@ -109,9 +122,8 @@ export default function TwoFactorSetupPage() {
         throw new Error(t("common.error", "Failed to receive backup codes. Please try again."));
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : t("common.error", "An error occurred");
-      messageApi.error(errorMessage);
+      const formattedError = formatError(err);
+      messageApi[formattedError.type](formattedError.message);
     } finally {
       setLoading(false);
     }
@@ -378,7 +390,7 @@ export default function TwoFactorSetupPage() {
                 size="large"
                 disabled={!backupCodesSaved}
                 onClick={() => {
-                  updateUser({ twoFactorEnabled: true });
+                  updateUser({ isTwoFactorEnabled: true });
                   router.push("/settings/security");
                 }}
               >

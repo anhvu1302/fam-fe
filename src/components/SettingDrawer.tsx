@@ -13,7 +13,7 @@ import {
     customTheme,
     type ThemeValuesType,
     useTheme
-} from '@/lib/theme-context';
+} from '@/lib/contexts/theme-context';
 
 const presetColorList = Array.from(new Set(
     Object.values(customColors).map(({ color }) => color?.toLowerCase())

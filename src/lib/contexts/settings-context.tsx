@@ -2,8 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-import settingsApi from "@/lib/api/settings";
-import type { AppSettingsGrouped } from "@/types/settings";
+import settingsApi, { type AppSettingsGrouped } from "@/lib/api/settings";
 
 interface SettingsContextType {
     settings: AppSettingsGrouped | null;

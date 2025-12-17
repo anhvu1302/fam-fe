@@ -1,5 +1,5 @@
-import { envConfig } from "@/lib/env-config";
-import type { UserInfo } from "@/types/auth";
+import type { UserInfo } from "@/lib/api/auth";
+import { envConfig } from "@/lib/config/env";
 
 /**
  * Utility function để tạo full MinIO/S3 URL từ file path
@@ -39,8 +39,7 @@ export function getUserAvatarUrl(user: UserInfo | null | undefined): string | un
         return undefined;
     }
 
-    // Prefer new 'avatar' field, fallback to old 'avatarUrl' field
-    const avatarPath = user.avatar || user.avatarUrl;
+    const avatarPath = user.avatar;
     return getMinioUrl(avatarPath);
 }
 

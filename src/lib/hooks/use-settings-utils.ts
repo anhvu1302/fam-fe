@@ -4,7 +4,7 @@
  * Utility functions for app settings
  */
 
-import { useAppSettingsByGroup } from "@/hooks/use-app-settings";
+import { useAppSettingsByGroup } from "@/lib/hooks/use-app-settings";
 
 /**
  * Hook to get branding settings

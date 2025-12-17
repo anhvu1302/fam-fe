@@ -8,20 +8,23 @@ import { ArrowLeftOutlined, KeyOutlined, SafetyOutlined } from "@ant-design/icon
 import { Alert, Button, Form, Input, message, Spin } from "antd";
 
 import authApi from "@/lib/api/auth";
+import { ERROR_CODES } from "@/lib/constants/error-codes";
+import { useApiError } from "@/lib/hooks/use-api-error";
 
 function RecoveryCodeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { formatError } = useApiError();
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ message: string; code?: string; type: "error" | "warning" | "info" } | null>(null);
 
   // Get session token from URL or sessionStorage
   const sessionToken = searchParams.get("token") || sessionStorage.getItem("2fa_session_token");
 
   const onSubmit = async (values: { recoveryCode: string }) => {
     if (!sessionToken) {
-      setError("Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.");
+      setError({ message: "Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.", type: "error" });
       return;
     }
 
@@ -34,17 +37,22 @@ function RecoveryCodeContent() {
         recoveryCode: values.recoveryCode.replace(/\s/g, ""), // Remove spaces
       });
 
-      if (response.accessToken) {
+      if (!response.success) {
+        const formattedError = formatError(response);
+        setError(formattedError);
+        message[formattedError.type](formattedError.message);
+        return;
+      }
+
+      if (response.result.accessToken && response.result.refreshToken) {
         sessionStorage.removeItem("2fa_session_token");
         message.success("Đăng nhập thành công!");
         router.replace("/");
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Mã khôi phục không đúng. Vui lòng thử lại.";
-      setError(errorMessage);
+      const formattedError = formatError(err);
+      setError(formattedError);
+      message[formattedError.type](formattedError.message);
     } finally {
       setLoading(false);
     }
@@ -84,8 +92,8 @@ function RecoveryCodeContent() {
       {/* Error Alert */}
       {error && (
         <Alert
-          title={error}
-          type="error"
+          message={error.message}
+          type={error.type}
           showIcon
           closable
           onClose={() => setError(null)}

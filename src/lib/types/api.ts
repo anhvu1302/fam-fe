@@ -1,6 +1,13 @@
 /**
- * API Response wrapper types based on new API structure
+ * Common API Types
+ * 
+ * Shared type definitions for API responses across the application.
+ * These types provide a standardized way to handle success and failure cases.
  */
+
+import type { components } from "@/modules/api-schema";
+
+// ==================== RETURN TYPE PATTERNS ====================
 
 /**
  * Base interface for return types with common properties.
@@ -8,7 +15,6 @@
 export interface I_ReturnBase {
     success: boolean;
     message?: string;
-    code?: number | string;
 }
 
 /**
@@ -26,9 +32,7 @@ export interface I_ReturnSuccess<T, E = unknown> extends I_ReturnBase {
  */
 export interface I_ReturnFailure extends I_ReturnBase {
     success: false;
-    message: string;
-    code?: number | string;
-    errors?: ApiErrorDetail[];
+    errors?: components["schemas"]["ApiError"][];
 }
 
 /**
@@ -40,35 +44,20 @@ export interface I_ReturnFailure extends I_ReturnBase {
  *
  * @example
  * ```typescript
- * function fetchUser(id: string): I_Return<User> {
- *   try {
- *     const user = await getUser(id);
- *     return { success: true, result: user };
- *   } catch (error) {
- *     return { success: false, message: error.message, code: 'USER_NOT_FOUND' };
- *   }
+ * async function fetchUser(id: string): Promise<I_Return<User>> {
+ *   const result = await wrapResponse<User>(
+ *     apiClient.GET(`/api/users/${id}`)
+ *   );
+ *   return result;
+ * }
+ * 
+ * // Usage
+ * const response = await fetchUser("123");
+ * if (response.success) {
+ *   console.log(response.result); // User type
+ * } else {
+ *   console.error(response.errors); // ApiError[]
  * }
  * ```
  */
 export type I_Return<T = void, E = unknown> = I_ReturnSuccess<T, E> | I_ReturnFailure;
-
-// ==================== Legacy Types (for backward compatibility) ====================
-
-export interface ApiErrorDetail {
-    message: string;
-    code: string;
-}
-
-export interface ApiSuccessResponse<T = unknown> {
-    success: true;
-    message: string;
-    result: T;
-}
-
-export interface ApiErrorResponse {
-    success: false;
-    message?: string;
-    errors?: ApiErrorDetail[];
-}
-
-export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;

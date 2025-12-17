@@ -9,14 +9,13 @@ import {
   SafetyOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, message, Statistic } from "antd";
+import { Button, Checkbox, Form, Input, message } from "antd";
 
-import authApi from "@/lib/api/auth";
-import { ApiError } from "@/lib/axios-client";
-import { getOrCreateDeviceId } from "@/lib/device-id";
-import { useI18n } from "@/lib/i18n-context";
-import { tokenStorage } from "@/lib/token-storage";
-import type { AuthStep, LoginRequest } from "@/types/auth";
+import authApi, { type AuthStep, type LoginRequest } from "@/lib/api/auth";
+import { ERROR_CODES } from "@/lib/constants/error-codes";
+import { useI18n } from "@/lib/contexts/i18n-context";
+import { useApiError } from "@/lib/hooks/use-api-error";
+import { tokenStorage } from "@/lib/utils/token-storage";
 
 interface LoginFormValues {
   identity: string;
@@ -32,16 +31,10 @@ interface EmailOtpFormValues {
   otp: string;
 }
 
-interface ErrorState {
-  message: string;
-  code?: string;
-  details?: Record<string, unknown>;
-  type?: "error" | "warning" | "info";
-}
-
 export default function LoginPage() {
   const router = useRouter();
   const { t } = useI18n();
+  const { formatError } = useApiError();
   const [messageApi, messageContextHolder] = message.useMessage();
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -50,7 +43,7 @@ export default function LoginPage() {
     string | null
   >(null);
   const [rememberMe, setRememberMe] = useState(false);
-  const [error, setError] = useState<ErrorState | null>(null);
+  const [error, setError] = useState<{ message: string; code?: string; type: "error" | "warning" | "info"; details?: Record<string, unknown> } | null>(null);
   const [lockoutCountdown, setLockoutCountdown] = useState<number | null>(null);
   const [userEmail, setUserEmail] = useState<string>("");
 
@@ -91,70 +84,6 @@ export default function LoginPage() {
     );
   }
 
-  // Parse API error response
-  const parseApiError = (err: unknown): ErrorState => {
-    if (err instanceof ApiError) {
-      // Get error code from data.errors[0].code or default to code
-      let errorCode = err.code;
-      let errorDetails: Record<string, unknown> | undefined;
-
-      if (
-        err.data &&
-        typeof err.data === "object" &&
-        "errors" in err.data &&
-        Array.isArray(err.data.errors) &&
-        err.data.errors.length > 0
-      ) {
-        const firstError = err.data.errors[0];
-        if (typeof firstError === "object" && "code" in firstError) {
-          errorCode = firstError.code as string;
-        }
-        if (typeof firstError === "object" && "details" in firstError) {
-          errorDetails = firstError.details as Record<string, unknown>;
-        }
-      }
-
-      // Map error codes to messages
-      const errorCodeMap: Record<string, [string, "error" | "warning" | "info"]> = {
-        AUTH_EMAIL_NOT_VERIFIED: [
-          t("errors.AUTH_EMAIL_NOT_VERIFIED"),
-          "warning",
-        ],
-        AUTH_INVALID_CREDENTIALS: [
-          t("errors.AUTH_INVALID_CREDENTIALS"),
-          "error",
-        ],
-        AUTH_INVALID_2FA_CODE: [
-          t("errors.AUTH_INVALID_2FA_CODE"),
-          "error",
-        ],
-        AUTH_ACCOUNT_LOCKED: [
-          `${t("errors.AUTH_ACCOUNT_LOCKED")} (${errorDetails?.minutesRemaining || 15} ${t("common.minutesRemaining") || "phút"})`,
-          "warning",
-        ],
-        AUTH_ACCOUNT_INACTIVE: [
-          t("errors.AUTH_ACCOUNT_INACTIVE"),
-          "warning",
-        ],
-      };
-
-      const [message, type] =
-        errorCodeMap[errorCode] || [err.message, "error"];
-
-      return {
-        message,
-        code: errorCode,
-        details: errorDetails,
-        type,
-      };
-    }
-
-    return {
-      message: err instanceof Error ? err.message : "Đã có lỗi xảy ra",
-      type: "error",
-    };
-  };
-
   // Handle login with credentials
   const onLoginSubmit = async (values: LoginFormValues) => {
     setLoading(true);
@@ -166,49 +95,81 @@ export default function LoginPage() {
         identity: values.identity,
         password: values.password,
         rememberMe: values.remember,
-        deviceId: getOrCreateDeviceId(), // Add device ID to login request
       };
 
       const response = await authApi.login(loginData);
 
+      if (!response.success) {
+        // Format error with automatic translation
+        const formattedError = formatError(response);
+
+        // Handle account locked with countdown
+        if (formattedError.code === ERROR_CODES.AUTH_ACCOUNT_LOCKED) {
+          // Try to extract minutes from error message
+          const minutesMatch = formattedError.message.match(/(\d+)\s*(?:minutes|phút)/i);
+          const minutesRemaining = minutesMatch ? parseInt(minutesMatch[1], 10) : 15;
+          setLockoutCountdown(minutesRemaining * 60); // Convert to seconds
+          setError({
+            message: `${formattedError.message}`,
+            code: formattedError.code,
+            type: formattedError.type,
+            details: formattedError.details,
+          });
+        } else {
+          setError({
+            message: formattedError.message,
+            code: formattedError.code,
+            type: formattedError.type,
+            details: formattedError.details,
+          });
+        }
+
+        messageApi[formattedError.type](formattedError.message);
+        return;
+      }
+
+      const loginResult = response.result;
+
       // Check if email needs verification
-      if (response.requiresEmailVerification) {
+      if (loginResult.requiresEmailVerification) {
         setUserEmail(values.identity);
         setRememberMe(values.remember);
         setStep("email-otp");
       }
       // Check if 2FA is required
-      else if (response.requiresTwoFactor && response.twoFactorSessionToken) {
-        setTwoFactorSessionToken(response.twoFactorSessionToken);
+      else if (loginResult.requiresTwoFactor && loginResult.twoFactorSessionToken) {
+        setTwoFactorSessionToken(loginResult.twoFactorSessionToken);
         setRememberMe(values.remember);
         setStep("2fa");
         // Store session token for recovery page
         sessionStorage.setItem(
           "2fa_session_token",
-          response.twoFactorSessionToken
+          loginResult.twoFactorSessionToken
         );
         messageApi.info(t("auth.twoFactorAuth"));
-      } else if (response.accessToken) {
-        // Login successful without 2FA - tokens already saved in authApi
+      } else if (loginResult.accessToken && loginResult.refreshToken) {
+        // Login successful - save tokens
+        await tokenStorage.setTokens(
+          loginResult.accessToken,
+          loginResult.refreshToken,
+          loginResult.accessTokenExpiresAt,
+          loginResult.refreshTokenExpiresAt
+        );
+        if (loginResult.deviceId) {
+          tokenStorage.setDeviceId(loginResult.deviceId);
+        }
         messageApi.success(t("common.success"));
         router.replace("/");
       }
     } catch (err) {
-      const errorState = parseApiError(err);
-
-      // Handle account locked with countdown
-      if (errorState.code === "AUTH_ACCOUNT_LOCKED") {
-        const minutesRemaining = (errorState.details?.minutesRemaining as number) || 15;
-        setLockoutCountdown(minutesRemaining * 60); // Convert to seconds
-        setError({
-          ...errorState,
-          message: `${t("errors.AUTH_ACCOUNT_LOCKED")} (${minutesRemaining} ${t("common.minutesRemaining") || "phút"})`,
-        });
-      } else {
-        setError(errorState);
-      }
-
-      messageApi.error(errorState.message);
+      const formattedError = formatError(err);
+      setError({
+        message: formattedError.message,
+        code: formattedError.code,
+        type: formattedError.type,
+        details: formattedError.details,
+      });
+      messageApi[formattedError.type](formattedError.message);
     } finally {
       setLoading(false);
     }
@@ -232,15 +193,41 @@ export default function LoginPage() {
         rememberMe,
       });
 
-      if (response.accessToken) {
-        // Tokens already saved in authApi
+      if (!response.success) {
+        const formattedError = formatError(response);
+        setError({
+          message: formattedError.message,
+          code: formattedError.code,
+          type: formattedError.type,
+        });
+        messageApi[formattedError.type](formattedError.message);
+        return;
+      }
+
+      const authData = response.result;
+      if (authData.accessToken && authData.refreshToken) {
+        // Save tokens
+        await tokenStorage.setTokens(
+          authData.accessToken,
+          authData.refreshToken,
+          authData.accessTokenExpiresAt,
+          authData.refreshTokenExpiresAt
+        );
+        if (authData.deviceId) {
+          tokenStorage.setDeviceId(authData.deviceId);
+        }
         messageApi.success(t("common.success"));
         router.replace("/");
       }
     } catch (err) {
-      const errorState = parseApiError(err);
-      setError(errorState);
-      messageApi.error(errorState.message);
+      const formattedError = formatError(err);
+      setError({
+        message: formattedError.message,
+        code: formattedError.code,
+        type: formattedError.type,
+        details: formattedError.details,
+      });
+      messageApi[formattedError.type](formattedError.message);
     } finally {
       setLoading(false);
     }
@@ -257,24 +244,50 @@ export default function LoginPage() {
         emailOtp: values.otp,
       });
 
-      if (response.accessToken) {
-        // Tokens already saved in authApi
+      if (!response.success) {
+        const formattedError = formatError(response);
+        setError({
+          message: formattedError.message,
+          code: formattedError.code,
+          type: formattedError.type,
+        });
+        messageApi[formattedError.type](formattedError.message);
+        return;
+      }
+
+      const authData = response.result;
+      if (authData.accessToken && authData.refreshToken) {
+        // Save tokens
+        await tokenStorage.setTokens(
+          authData.accessToken,
+          authData.refreshToken,
+          authData.accessTokenExpiresAt,
+          authData.refreshTokenExpiresAt
+        );
+        if (authData.deviceId) {
+          tokenStorage.setDeviceId(authData.deviceId);
+        }
         messageApi.success(t("common.success"));
         router.replace("/");
-      } else if (response.requiresTwoFactor && response.twoFactorSessionToken) {
+      } else if (authData.requiresTwoFactor && authData.twoFactorSessionToken) {
         // After email verification, 2FA is required
-        setTwoFactorSessionToken(response.twoFactorSessionToken);
+        setTwoFactorSessionToken(authData.twoFactorSessionToken);
         setStep("2fa");
         sessionStorage.setItem(
           "2fa_session_token",
-          response.twoFactorSessionToken
+          authData.twoFactorSessionToken
         );
         messageApi.info(t("auth.twoFactorAuth"));
       }
     } catch (err) {
-      const errorState = parseApiError(err);
-      setError(errorState);
-      message.error(errorState.message);
+      const formattedError = formatError(err);
+      setError({
+        message: formattedError.message,
+        code: formattedError.code,
+        type: formattedError.type,
+        details: formattedError.details,
+      });
+      messageApi[formattedError.type](formattedError.message);
     } finally {
       setLoading(false);
     }
@@ -319,22 +332,6 @@ export default function LoginPage() {
             </>
           )}
         </div>
-
-        {/* Account Locked Countdown */}
-        {error?.code === "AUTH_ACCOUNT_LOCKED" && lockoutCountdown !== null && lockoutCountdown > 0 && (
-          <div className="mb-4 rounded-lg bg-blue-50 p-4">
-            <p className="mb-3 text-center text-sm font-medium text-gray-700">
-              {t("common.tryAgainIn")}
-            </p>
-            <div className="text-center">
-              <Statistic.Countdown
-                value={Date.now() + lockoutCountdown * 1000}
-                format="mm:ss"
-                valueStyle={{ color: "#1890ff", fontSize: "24px" }}
-              />
-            </div>
-          </div>
-        )}
 
         {/* Email Not Verified Message */}
         {error?.code === "AUTH_EMAIL_NOT_VERIFIED" && step !== "email-otp" && (

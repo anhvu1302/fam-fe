@@ -2,8 +2,8 @@
 
 import { useMemo } from "react";
 
-import { useSettingsContext } from "@/lib/settings-context";
-import type { AppSettingsMap } from "@/types/settings";
+import type { AppSettingsMap } from "@/lib/api/settings";
+import { useSettingsContext } from "@/lib/contexts/settings-context";
 
 export interface UseAppSettingsByGroupReturn {
     settings: AppSettingsMap;

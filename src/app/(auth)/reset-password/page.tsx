@@ -12,7 +12,9 @@ import {
 import { Alert, Button, Form, Input, message, Result, Spin } from "antd";
 
 import authApi from "@/lib/api/auth";
-import { useI18n } from "@/lib/i18n-context";
+import { useI18n } from "@/lib/contexts/i18n-context";
+import { ERROR_CODES } from "@/lib/constants/error-codes";
+import { useApiError } from "@/lib/hooks/use-api-error";
 
 interface ResetPasswordFormValues {
   newPassword: string;
@@ -20,14 +22,15 @@ interface ResetPasswordFormValues {
 }
 
 function ResetPasswordContent() {
-  const { t } = useI18n();
+  const { t: _t } = useI18n();
   const [messageApi, messageContextHolder] = message.useMessage();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { formatError } = useApiError();
 
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ message: string; code?: string; type: "error" | "warning" | "info" } | null>(null);
   const [tokenValid, setTokenValid] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -38,7 +41,7 @@ function ResetPasswordContent() {
   useEffect(() => {
     const verifyToken = async () => {
       if (!email || !token) {
-        setError("Link khôi phục mật khẩu không hợp lệ.");
+        setError({ message: "Link khôi phục mật khẩu không hợp lệ.", type: "error" });
         setVerifying(false);
         return;
       }
@@ -46,18 +49,20 @@ function ResetPasswordContent() {
       try {
         const response = await authApi.verifyResetToken({ email, resetToken: token });
 
-        // Check if response has maskedEmail (token is valid)
-        if (!response || !response.maskedEmail) {
+        // Check if response is successful and has maskedEmail
+        if (!response.success) {
+          const formattedError = formatError(response);
+          throw new Error(formattedError.message);
+        }
+
+        if (!response.result.maskedEmail) {
           throw new Error("Link khôi phục mật khẩu đã hết hạn hoặc không hợp lệ.");
         }
 
         setTokenValid(true);
       } catch (err) {
-        const errorMessage =
-          err instanceof Error
-            ? err.message
-            : "Link khôi phục mật khẩu đã hết hạn hoặc không hợp lệ.";
-        setError(errorMessage);
+        const formattedError = formatError(err);
+        setError(formattedError);
       } finally {
         setVerifying(false);
       }
@@ -71,21 +76,26 @@ function ResetPasswordContent() {
     setError(null);
 
     try {
-      await authApi.resetPassword({
+      const response = await authApi.resetPassword({
         email,
         resetToken: token,
         newPassword: values.newPassword,
         confirmPassword: values.confirmPassword,
       });
 
+      if (!response.success) {
+        const formattedError = formatError(response);
+        setError(formattedError);
+        messageApi[formattedError.type](formattedError.message);
+        return;
+      }
+
       setSuccess(true);
       messageApi.success("Đặt lại mật khẩu thành công!");
     } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Không thể đặt lại mật khẩu. Vui lòng thử lại.";
-      setError(errorMessage);
+      const formattedError = formatError(err);
+      setError(formattedError);
+      messageApi[formattedError.type](formattedError.message);
     } finally {
       setLoading(false);
     }
@@ -115,7 +125,7 @@ function ResetPasswordContent() {
           <Result
             status="error"
             title="Link không hợp lệ"
-            subTitle={error || "Link khôi phục mật khẩu đã hết hạn hoặc không hợp lệ."}
+            subTitle={error?.message || "Link khôi phục mật khẩu đã hết hạn hoặc không hợp lệ."}
             extra={[
               <Link href="/forgot-password" key="forgot">
                 <Button type="primary" size="large" className="m-2">
@@ -178,8 +188,8 @@ function ResetPasswordContent() {
         {/* Error Alert */}
         {error && (
           <Alert
-            title={error}
-            type="error"
+            message={error.message}
+            type={error.type}
             showIcon
             closable
             onClose={() => setError(null)}

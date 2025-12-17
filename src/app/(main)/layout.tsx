@@ -20,14 +20,14 @@ import { Footer } from "antd/es/layout/layout";
 
 import AuthGuard from "@/components/AuthGuard";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { useAppSettingsByGroup } from "@/hooks/use-app-settings";
-import { useAuthCheck } from "@/hooks/use-auth-check";
-import { useRouteAuthSync } from "@/hooks/use-route-auth-sync";
 import authApi from "@/lib/api/auth";
-import { useI18n } from "@/lib/i18n-context";
-import { getMinioUrl, getUserAvatarUrl } from "@/lib/minio-url";
-import { tokenStorage } from "@/lib/token-storage";
-import { useUser } from "@/lib/user-context";
+import { useI18n } from "@/lib/contexts/i18n-context";
+import { useUser } from "@/lib/contexts/user-context";
+import { useAppSettingsByGroup } from "@/lib/hooks/use-app-settings";
+import { useAuthCheck } from "@/lib/hooks/use-auth-check";
+import { useRouteAuthSync } from "@/lib/hooks/use-route-auth-sync";
+import { getMinioUrl, getUserAvatarUrl } from "@/lib/utils/minio-url";
+import { tokenStorage } from "@/lib/utils/token-storage";
 
 
 const { Header, Sider, Content } = Layout;
@@ -226,7 +226,11 @@ function AdminLayoutContent({
               danger
               onClick={async () => {
                 try {
-                  await authApi.logout();
+                  const response = await authApi.logout();
+                  if (!response.success) {
+                    message.error(response.message || "Đăng xuất thất bại");
+                    return;
+                  }
                   // Clear will dispatch storage event for other tabs
                   tokenStorage.clear();
                   // Redirect to login

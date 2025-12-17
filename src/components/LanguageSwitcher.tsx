@@ -2,7 +2,7 @@
 
 import { Select } from "antd";
 
-import { useI18n } from "@/lib/i18n-context";
+import { useI18n } from "@/lib/contexts/i18n-context";
 import { LanguageCode } from "@/types/i18n";
 
 export function LanguageSwitcher() {

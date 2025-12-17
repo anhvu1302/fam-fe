@@ -1,20 +1,24 @@
-// i18n types for multi-language support
+/**
+ * Internationalization (i18n) Types
+ * 
+ * Type definitions for language and translation management.
+ */
 
-export type LanguageCode = "vi" | "en";
+/**
+ * Supported language codes
+ */
+export type LanguageCode = "en" | "vi";
 
-export interface I18nMessage {
-    [key: string]: string | I18nMessage;
+/**
+ * Translation key-value pairs
+ */
+export interface TranslationResource {
+  [key: string]: string | TranslationResource;
 }
 
-export interface TranslationResource {
-    common: I18nMessage;
-    errors: I18nMessage;
-    auth: I18nMessage;
-    profile: I18nMessage;
-    settings: I18nMessage;
-    devices: I18nMessage;
-    validation: I18nMessage;
-    layout?: I18nMessage;
-    dashboard?: I18nMessage;
-    avatar?: I18nMessage;
+/**
+ * Translation resources by language
+ */
+export interface TranslationResources {
+  [language: string]: TranslationResource;
 }

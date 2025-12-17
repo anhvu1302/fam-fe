@@ -1,7 +1,7 @@
 "use client";
 
-import { useAuthStateSync } from "@/hooks/use-auth-state-sync";
-import { useInitializeApp } from "@/hooks/use-initialize-app";
+import { useAuthStateSync } from "@/lib/hooks/use-auth-state-sync";
+import { useInitializeApp } from "@/lib/hooks/use-initialize-app";
 
 interface AppInitializerProps {
     children: React.ReactNode;

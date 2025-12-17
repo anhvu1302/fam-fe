@@ -1,4 +1,4 @@
-import { useI18n } from "@/lib/i18n-context";
+import { useI18n } from "@/lib/contexts/i18n-context";
 
 export interface ApiError {
     type?: string;

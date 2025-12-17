@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { Spin } from "antd";
 
-import { useAuthCheck } from "@/hooks/use-auth-check";
+import { useAuthCheck } from "@/lib/hooks/use-auth-check";
 
 interface AuthGuardProps {
   children: React.ReactNode;

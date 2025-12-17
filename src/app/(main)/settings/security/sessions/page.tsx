@@ -7,7 +7,6 @@ import {
   ArrowLeftOutlined,
   DeleteOutlined,
   DesktopOutlined,
-  ExclamationCircleOutlined,
   GlobalOutlined,
   ReloadOutlined,
   SafetyOutlined,
@@ -26,8 +25,10 @@ import {
 } from "antd";
 
 import sessionsApi, { type UserSession } from "@/lib/api/sessions";
-import { getDeviceId as _getDeviceId } from "@/lib/device-id";
-import { useI18n } from "@/lib/i18n-context";
+import { useI18n } from "@/lib/contexts/i18n-context";
+import { ERROR_CODES } from "@/lib/constants/error-codes";
+import { useApiError } from "@/lib/hooks/use-api-error";
+import { getDeviceId as _getDeviceId } from "@/lib/utils/device-id";
 
 const { Title, Text } = Typography;
 
@@ -41,6 +42,7 @@ export default function SessionsPage() {
   const { t } = useI18n();
   const router = useRouter();
   const [messageApi, messageContextHolder] = message.useMessage();
+  const { formatError } = useApiError();
   const [sessions, setSessions] = useState<UserSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [revoking, setRevoking] = useState<string | null>(null);
@@ -55,7 +57,13 @@ export default function SessionsPage() {
   const loadDevices = async () => {
     setLoading(true);
     try {
-      const data = await sessionsApi.getAllSessions();
+      const response = await sessionsApi.getAllSessions();
+      if (!response.success) {
+        const formattedError = formatError(response);
+        messageApi[formattedError.type](formattedError.message);
+        return;
+      }
+      const data = response.result;
       const currentDeviceId = _getDeviceId();
 
       const sessionsWithCurrent = data.map((session) => ({
@@ -64,8 +72,9 @@ export default function SessionsPage() {
       }));
 
       setSessions(sessionsWithCurrent);
-    } catch {
-      messageApi.error(t("common.error", "An error occurred"));
+    } catch (error) {
+      const formattedError = formatError(error);
+      messageApi[formattedError.type](formattedError.message);
     } finally {
       setLoading(false);
     }
@@ -104,18 +113,32 @@ export default function SessionsPage() {
     try {
       if (confirmModal.isLogoutAll) {
         try {
-          await sessionsApi.deleteAllSessions();
+          const response = await sessionsApi.deleteAllSessions();
+          if (!response.success) {
+            const formattedError = formatError(response);
+            messageApi[formattedError.type](formattedError.message);
+            setConfirmModal({ visible: false, sessionId: null, isLogoutAll: false });
+            return;
+          }
           setSessions((prev) => prev.filter((s) => s.isCurrentDevice));
           messageApi.success(t("common.success", "Success"));
           setConfirmModal({ visible: false, sessionId: null, isLogoutAll: false });
         } catch (error) {
-          messageApi.error((error as Error).message || t("common.error", "An error occurred"));
+          const formattedError = formatError(error);
+          messageApi[formattedError.type](formattedError.message);
         }
       } else if (confirmModal.sessionId) {
         const revokedSession = sessions.find((s) => s.id === confirmModal.sessionId);
         setRevoking(confirmModal.sessionId);
         try {
-          await sessionsApi.deleteSession(confirmModal.sessionId);
+          const response = await sessionsApi.deleteSession(confirmModal.sessionId);
+          if (!response.success) {
+            const formattedError = formatError(response);
+            messageApi[formattedError.type](formattedError.message);
+            setRevoking(null);
+            setConfirmModal({ visible: false, sessionId: null, isLogoutAll: false });
+            return;
+          }
 
           // If revoking current device, logout
           if (revokedSession?.isCurrentDevice) {
@@ -129,7 +152,8 @@ export default function SessionsPage() {
             messageApi.success(t("common.success", "Success"));
           }
         } catch (error) {
-          messageApi.error((error as Error).message || t("common.error", "An error occurred"));
+          const formattedError = formatError(error);
+          messageApi[formattedError.type](formattedError.message);
         } finally {
           setRevoking(null);
           setConfirmModal({ visible: false, sessionId: null, isLogoutAll: false });
@@ -299,7 +323,7 @@ export default function SessionsPage() {
                         danger
                         icon={<DeleteOutlined />}
                         loading={revoking === session.id}
-                        onClick={() => revokeDevice(session.id)}
+                        onClick={() => session.id && revokeDevice(session.id)}
                       >
                         Thu hồi
                       </Button>

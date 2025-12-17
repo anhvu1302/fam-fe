@@ -6,11 +6,14 @@ import { BgColorsOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { Card, message, Radio, Space, Spin, Typography } from "antd";
 
 import themeApi from "@/lib/api/theme";
+import { ERROR_CODES } from "@/lib/constants/error-codes";
+import { useApiError } from "@/lib/hooks/use-api-error";
 
 const { Title, Text } = Typography;
 
 export default function AppearanceSettingsPage() {
     const [messageApi, messageContextHolder] = message.useMessage();
+    const { formatError } = useApiError();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [theme, setTheme] = useState<"light" | "dark" | "auto">("light");
@@ -21,54 +24,67 @@ export default function AppearanceSettingsPage() {
     useEffect(() => {
         if (loadedRef.current) return;
         loadedRef.current = true;
-        loadTheme();
-    }, []);
 
-    const loadTheme = async () => {
-        try {
-            const data = await themeApi.getUserTheme();
-            setTheme(data.theme as "light" | "dark" | "auto");
-            setLanguage(data.language as "en" | "vi");
-        } catch (_error) {
-            messageApi.error("Không thể tải cài đặt giao diện");
-        } finally {
-            setLoading(false);
-        }
-    };
+        const loadTheme = async () => {
+            try {
+                const response = await themeApi.getUserTheme();
+                if (!response.success) {
+                    const formattedError = formatError(response);
+                    messageApi[formattedError.type](formattedError.message);
+                    return;
+                }
+                const data = response.result;
+                setTheme(data.theme as "light" | "dark" | "auto");
+                setLanguage(data.language as "en" | "vi");
+            } catch (error) {
+                const formattedError = formatError(error);
+                messageApi[formattedError.type](formattedError.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadTheme();
+    }, [messageApi]);
 
     const handleThemeChange = async (value: "light" | "dark" | "auto") => {
         setSaving(true);
         try {
-            await themeApi.updateUserTheme({ theme: value });
+            const response = await themeApi.updateUserTheme({
+                theme: value,
+                borderRadius: 8,
+                compactMode: false,
+                darkTheme: value === "dark",
+                pinNavbar: false,
+                transparency: 1,
+            });
+            if (!response.success) {
+                const formattedError = formatError(response);
+                messageApi[formattedError.type](formattedError.message);
+                return;
+            }
             setTheme(value);
             localStorage.setItem("theme", value);
             messageApi.success("Đã cập nhật theme");
-        } catch (_error) {
-            messageApi.error("Không thể cập nhật theme");
+        } catch (error) {
+            const formattedError = formatError(error);
+            messageApi[formattedError.type](formattedError.message);
         } finally {
             setSaving(false);
         }
     };
 
-    const handleLanguageChange = async (value: "en" | "vi") => {
-        setSaving(true);
-        try {
-            await themeApi.updateUserTheme({ language: value });
-            setLanguage(value);
-            localStorage.setItem("language", value);
-            messageApi.success("Đã cập nhật ngôn ngữ");
-        } catch (_error) {
-            messageApi.error("Không thể cập nhật ngôn ngữ");
-        } finally {
-            setSaving(false);
-        }
+    const handleLanguageChange = (value: "en" | "vi") => {
+        setLanguage(value);
+        localStorage.setItem("language", value);
+        messageApi.success("Đã cập nhật ngôn ngữ");
     };
 
     if (loading) {
         return (
             <>
                 {messageContextHolder}
-                <div className="flex items-center justify-center min-h-[400px]">
+                <div className="flex items-center justify-center min-h-100">
                     <Spin size="large" />
                 </div>
             </>

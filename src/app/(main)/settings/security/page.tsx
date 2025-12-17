@@ -27,9 +27,9 @@ import {
 } from "antd";
 
 import authApi from "@/lib/api/auth";
-import { useI18n } from "@/lib/i18n-context";
-import { tokenStorage } from "@/lib/token-storage";
-import { useUser } from "@/lib/user-context";
+import { useI18n } from "@/lib/contexts/i18n-context";
+import { useUser } from "@/lib/contexts/user-context";
+import { tokenStorage } from "@/lib/utils/token-storage";
 
 
 const { Title, Text, Paragraph } = Typography;
@@ -48,13 +48,18 @@ export default function SecuritySettingsPage() {
   const handleDisable2FA = async (values: { password: string }) => {
     setLoading(true);
     try {
-      await authApi.disable2FA({ password: values.password });
+      const response = await authApi.disable2FA({ password: values.password });
+
+      if (!response.success) {
+        messageApi.error(response.message || t("settings.disable2FAError", "Không thể tắt 2FA. Vui lòng thử lại."));
+        return;
+      }
 
       messageApi.success(t("settings.disable2FASuccess", "Đã tắt xác thực hai lớp!"));
       disable2FAFormRef.current?.resetFields();
       setShowDisable2FAModal(false);
       // Update user state in context (memory only - no localStorage)
-      updateUser({ twoFactorEnabled: false });
+      updateUser({ isTwoFactorEnabled: false });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : t("settings.disable2FAError", "Không thể tắt 2FA. Vui lòng thử lại.");
@@ -72,11 +77,16 @@ export default function SecuritySettingsPage() {
   }) => {
     setLoading(true);
     try {
-      await authApi.changePassword({
+      const response = await authApi.changePassword({
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
         logoutAllDevices: values.logoutAllDevices,
       });
+
+      if (!response.success) {
+        messageApi.error(response.message || t("settings.changePasswordError", "Không thể đổi mật khẩu. Vui lòng thử lại."));
+        return;
+      }
 
       messageApi.success(t("settings.changePasswordSuccess", "Đã đổi mật khẩu thành công!"));
       changePasswordFormRef.current?.resetFields();
@@ -123,7 +133,7 @@ export default function SecuritySettingsPage() {
               <Paragraph type="secondary" className="mb-2!">
                 {t("settings.twoFactorDescription", "Thêm một lớp bảo mật bổ sung cho tài khoản của bạn bằng cách yêu cầu mã xác thực khi đăng nhập.")}
               </Paragraph>
-              {user?.twoFactorEnabled ? (
+              {user?.isTwoFactorEnabled ? (
                 <Tag color="success" icon={<CheckCircleOutlined />}>
                   {t("settings.twoFactorEnabled", "Đã bật")}
                 </Tag>
@@ -135,7 +145,7 @@ export default function SecuritySettingsPage() {
             </div>
           </div>
           <div>
-            {user?.twoFactorEnabled ? (
+            {user?.isTwoFactorEnabled ? (
               <Button danger onClick={() => setShowDisable2FAModal(true)}>
                 {t("settings.disable2FA", "Tắt 2FA")}
               </Button>

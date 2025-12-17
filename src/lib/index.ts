@@ -1,10 +1,31 @@
-export * from "./axios-client";
-export * from "./crypto";
-export * from "./env-config";
-export * from "./token-storage";
+/**
+ * Library exports
+ * 
+ * Central export point for all library modules organized by layer.
+ */
 
-// API exports
-export { default as authApi } from "./api/auth";
-export { default as sessionsApi } from "./api/sessions";
-export { default as settingsApi } from "./api/settings";
-export { default as themeApi } from "./api/theme";
+// ==================== CORE ====================
+
+// API Client (base client)
+export { default as apiClient, ApiError } from "./api-client";
+
+// API Types and Utilities
+export { isFailure, isSuccess, unwrapResult, wrapResponse } from "./api/api-utils";
+export type { I_Return, I_ReturnBase, I_ReturnFailure, I_ReturnSuccess } from "./types/api";
+
+// API Services (feature-based modules)
+export * from "./api";
+
+// ==================== LAYERS ====================
+
+// Contexts (React context providers)
+export * from "./contexts";
+
+// Hooks (custom React hooks)
+export * from "./hooks";
+
+// Utils (utility functions)
+export * from "./utils";
+
+// Config (application configuration)
+export * from "./config";

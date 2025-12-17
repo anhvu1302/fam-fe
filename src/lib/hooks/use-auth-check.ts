@@ -7,9 +7,8 @@
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-import { authApi } from "@/lib/api/auth";
-import { tokenStorage } from "@/lib/token-storage";
-import { UserInfo } from "@/types/auth";
+import authApi, { type UserInfo } from "@/lib/api/auth";
+import { tokenStorage } from "@/lib/utils/token-storage";
 
 interface UseAuthCheckOptions {
     onAuthSuccess?: () => void;
@@ -42,9 +41,12 @@ export function useAuthCheck(options: UseAuthCheckOptions = {}) {
 
                 // Only call /auth/me if refreshUserData is true
                 if (refreshUserData) {
-                    const userData = await authApi.getCurrentUser() as UserInfo;
+                    const response = await authApi.me();
+                    if (!response.success) {
+                        throw new Error(response.message || "Failed to get user data");
+                    }
                     tokenStorage.updateAuthState();
-                    setUser?.(userData);
+                    setUser?.(response.result);
                 }
 
                 onAuthSuccess?.();

@@ -22,9 +22,11 @@ import {
 } from "antd";
 
 import authApi from "@/lib/api/auth";
-import { useI18n } from "@/lib/i18n-context";
-import { tokenStorage } from "@/lib/token-storage";
-import { useUser } from "@/lib/user-context";
+import { useI18n } from "@/lib/contexts/i18n-context";
+import { useUser } from "@/lib/contexts/user-context";
+import { ERROR_CODES } from "@/lib/constants/error-codes";
+import { useApiError } from "@/lib/hooks/use-api-error";
+import { tokenStorage } from "@/lib/utils/token-storage";
 
 
 const { Title, Text } = Typography;
@@ -33,6 +35,7 @@ export default function AccountSettingsPage() {
     const { t } = useI18n();
     const router = useRouter();
     const { user } = useUser();
+    const { formatError } = useApiError();
     const [loading, setLoading] = useState(false);
     const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
     const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
@@ -44,18 +47,23 @@ export default function AccountSettingsPage() {
     }) => {
         setLoading(true);
         try {
-            await authApi.changePassword({
+            const response = await authApi.changePassword({
                 currentPassword: values.currentPassword,
                 newPassword: values.newPassword,
                 logoutAllDevices: false,
             });
 
+            if (!response.success) {
+                const formattedError = formatError(response);
+                message[formattedError.type](formattedError.message);
+                return;
+            }
+
             message.success(t("settings.changePasswordSuccess", "Password changed successfully!"));
             setShowChangePasswordModal(false);
         } catch (err) {
-            const errorMessage =
-                err instanceof Error ? err.message : t("settings.changePasswordFailed", "Failed to change password. Please try again.");
-            message.error(errorMessage);
+            const formattedError = formatError(err);
+            message[formattedError.type](formattedError.message);
         } finally {
             setLoading(false);
         }
@@ -70,9 +78,8 @@ export default function AccountSettingsPage() {
             tokenStorage.clear();
             router.push("/login");
         } catch (err) {
-            const errorMessage =
-                err instanceof Error ? err.message : t("common.error", "An error occurred");
-            message.error(errorMessage);
+            const formattedError = formatError(err);
+            message[formattedError.type](formattedError.message);
         } finally {
             setLoading(false);
         }

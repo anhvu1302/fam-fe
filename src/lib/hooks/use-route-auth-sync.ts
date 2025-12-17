@@ -6,8 +6,7 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 import authApi from "@/lib/api/auth";
-import { useUser } from "@/lib/user-context";
-import { UserInfo } from "@/types/auth";
+import { useUser } from "@/lib/contexts/user-context";
 
 export function useRouteAuthSync() {
     const pathname = usePathname();
@@ -38,10 +37,12 @@ export function useRouteAuthSync() {
         // Call /auth/me to sync user data with backend
         const syncUserData = async () => {
             try {
-                const userData = await authApi.getCurrentUser() as UserInfo;
-                setUser(userData);
-            } catch (_error) {
+                const response = await authApi.me();
+                if (response.success) {
+                    setUser(response.result);
+                }
                 // Silently fail - error will be handled by auth guard
+            } catch (_error) {
                 // User will be redirected to login if session is invalid
             }
         };

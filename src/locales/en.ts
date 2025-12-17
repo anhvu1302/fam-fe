@@ -1,5 +1,7 @@
 import { TranslationResource } from "@/types/i18n";
 
+import { errorsEn } from "./errors.en";
+
 export const en: TranslationResource = {
     common: {
         save: "Save",
@@ -31,34 +33,10 @@ export const en: TranslationResource = {
         important: "Important!",
     },
     errors: {
-        AUTH_EMAIL_NOT_VERIFIED:
-            "Email not verified. Please contact administrator to verify your email.",
-        AUTH_INVALID_CREDENTIALS: "Invalid email or password.",
-        AUTH_ACCOUNT_LOCKED:
-            "Your account has been locked due to too many failed login attempts.",
-        AUTH_ACCOUNT_INACTIVE: "Your account is inactive. Please contact support.",
-        AUTH_INVALID_TOKEN: "Invalid or expired token.",
-        AUTH_TOKEN_EXPIRED: "Your session has expired. Please login again.",
-        AUTH_REFRESH_TOKEN_EXPIRED: "Your session has expired. Please login again.",
-        AUTH_DEVICE_NOT_FOUND: "Device not found.",
-        AUTH_2FA_REQUIRED: "Two-factor authentication is required.",
-        AUTH_2FA_INVALID_CODE: "Invalid authentication code.",
-        AUTH_INVALID_2FA_CODE: "Invalid authentication code.",
-        AUTH_2FA_INVALID_RECOVERY_CODE: "Invalid recovery code.",
-        AUTH_PASSWORD_WEAK: "Password is not strong enough.",
-        AUTH_PASSWORD_MISMATCH: "Passwords do not match.",
-        AUTH_OLD_PASSWORD_INCORRECT: "Current password is incorrect.",
-        AUTH_EMAIL_ALREADY_EXISTS: "Email already in use.",
-        AUTH_USER_NOT_FOUND: "User not found.",
-        UNAUTHORIZED: "You do not have permission to access this resource.",
-        FORBIDDEN: "Access denied.",
-        NOT_FOUND: "Not found.",
-        BAD_REQUEST: "Invalid request.",
-        INTERNAL_SERVER_ERROR: "Server error. Please try again later.",
-        SERVICE_UNAVAILABLE:
-            "Service is temporarily unavailable. Please try again later.",
-        NETWORK_ERROR: "Network error. Please check your internet connection.",
-        TIMEOUT: "Request timeout. Please try again.",
+        // Auto-generated error codes from backend
+        ...errorsEn,
+        // Additional fallback errors
+        UNKNOWN_ERROR: "An error occurred. Please try again.",
         DEFAULT: "An error occurred. Please try again.",
     },
     auth: {

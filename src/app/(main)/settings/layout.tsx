@@ -12,7 +12,7 @@ import {
 } from "@ant-design/icons";
 import { Card, Col, Menu, Row } from "antd";
 
-import { useI18n } from "@/lib/i18n-context";
+import { useI18n } from "@/lib/contexts/i18n-context";
 
 interface SettingsLayoutProps {
     children: ReactNode;
