@@ -26,7 +26,6 @@ import {
 
 import sessionsApi, { type UserSession } from "@/lib/api/sessions";
 import { useI18n } from "@/lib/contexts/i18n-context";
-import { ERROR_CODES } from "@/lib/constants/error-codes";
 import { useApiError } from "@/lib/hooks/use-api-error";
 import { getDeviceId as _getDeviceId } from "@/lib/utils/device-id";
 
@@ -162,7 +161,7 @@ export default function SessionsPage() {
     } catch (error) {
       messageApi.error((error as Error).message || t("common.error", "An error occurred"));
     }
-  }, [confirmModal, sessions, t, router, messageApi]);
+  }, [confirmModal, sessions, t, router, messageApi, formatError]);
 
   // Format date with error handling
   const formatDate = (dateString: string | undefined | null) => {

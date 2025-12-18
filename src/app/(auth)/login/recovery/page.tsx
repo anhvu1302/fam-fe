@@ -8,7 +8,6 @@ import { ArrowLeftOutlined, KeyOutlined, SafetyOutlined } from "@ant-design/icon
 import { Alert, Button, Form, Input, message, Spin } from "antd";
 
 import authApi from "@/lib/api/auth";
-import { ERROR_CODES } from "@/lib/constants/error-codes";
 import { useApiError } from "@/lib/hooks/use-api-error";
 
 function RecoveryCodeContent() {

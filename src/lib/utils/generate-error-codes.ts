@@ -163,11 +163,7 @@ export function isErrorCodeKey(key: string): key is ErrorCodeKey {
 `;
 }
 
-function printEnglishTranslations(errorCodes: ErrorCode[]): void {
-    const translations = errorCodes
-        .map((ec) => `    ${ec.code}: "${ec.message.replace(/"/g, '\\"')}",`)
-        .join("\n");
-
+function printEnglishTranslations(_errorCodes: ErrorCode[]): void {
     console.log("\n📝 English translations (reference for errors.en.ts):");
     console.log("   Update src/lib/utils/errors.en.ts with these messages");
 }

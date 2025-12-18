@@ -6,7 +6,6 @@ import { BgColorsOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { Card, message, Radio, Space, Spin, Typography } from "antd";
 
 import themeApi from "@/lib/api/theme";
-import { ERROR_CODES } from "@/lib/constants/error-codes";
 import { useApiError } from "@/lib/hooks/use-api-error";
 
 const { Title, Text } = Typography;
@@ -45,7 +44,7 @@ export default function AppearanceSettingsPage() {
         };
 
         loadTheme();
-    }, [messageApi]);
+    }, [messageApi, formatError]);
 
     const handleThemeChange = async (value: "light" | "dark" | "auto") => {
         setSaving(true);

@@ -10,6 +10,7 @@ import {
     isSecurePayload,
     SecurePayload,
 } from "./utils/crypto";
+import { getDeviceId } from "./utils/device-id";
 
 // ==================== CUSTOM API ERROR ====================
 /**
@@ -32,84 +33,6 @@ export class ApiError extends Error {
         }
     }
 }
-
-/**
- * Chuyển đổi fetch Response thành ApiError an toàn
- * (Currently unused - kept for potential future use)
- */
-const _createApiError = async (response: Response, error?: Error): Promise<ApiError> => {
-    const status = response?.status ?? 0;
-    let code = "UNKNOWN_ERROR";
-
-    // Handle network errors
-    if (error) {
-        const msgLower = error.message.toLowerCase();
-        if (msgLower.includes("network") || msgLower.includes("fetch failed") || msgLower.includes("failed to fetch")) {
-            code = "ERR_NETWORK";
-        }
-    }
-
-    // Only log network/client errors in development
-    if (process.env.NODE_ENV === "development" && (status === 0 || code === "ERR_NETWORK")) {
-        console.error(`[API Error] ${code} ${status} ${response.url} - ${error?.message || "Unknown error"}`);
-    }
-
-    // Map status code to user-friendly message
-    const messageMap: Record<number, string> = {
-        400: "Dữ liệu không hợp lệ",
-        401: "Chưa đăng nhập hoặc phiên đăng nhập hết hạn",
-        403: "Không có quyền truy cập",
-        404: "Không tìm thấy",
-        408: "Yêu cầu quá thời gian",
-        429: "Quá nhiều yêu cầu",
-        500: "Lỗi máy chủ",
-        502: "Lỗi kết nối",
-        503: "Dịch vụ không khả dụng",
-        504: "Timeout",
-    };
-
-    let message = messageMap[status] || "Yêu cầu thất bại";
-    let safeData: unknown = undefined;
-
-    // Try to parse error response
-    try {
-        const responseData = await response.json();
-
-        // Handle new API error format: {success: false, message: "...", errors: [{message: "...", code: "..."}]}
-        if (responseData.success === false) {
-            if (typeof responseData.message === 'string') {
-                message = responseData.message;
-            }
-            else if (Array.isArray(responseData.errors) && responseData.errors.length > 0) {
-                const firstError = responseData.errors[0];
-                if (typeof firstError.message === 'string') {
-                    message = firstError.message;
-                }
-            }
-        }
-        // Handle old error format
-        else if (typeof responseData.detail === 'string') {
-            message = responseData.detail;
-        } else if (typeof responseData.message === 'string') {
-            message = responseData.message;
-        } else if (typeof responseData.error === 'string') {
-            message = responseData.error;
-        }
-
-        if (responseData.errors || responseData.error || responseData.message || responseData.detail) {
-            safeData = responseData;
-        }
-    } catch {
-        // Response is not JSON, use default message
-    }
-
-    // Handle network errors
-    if (code === "ERR_NETWORK" || status === 0) {
-        message = "Không thể kết nối tới máy chủ";
-    }
-
-    return new ApiError(message, status, code, safeData);
-};
 
 // ==================== TOKEN REFRESH LOGIC ====================
 let isRefreshing = false;
@@ -244,6 +167,12 @@ const requestMiddleware: Middleware = {
         const signatureHeaders = generateAppSignature(fullPathname);
         request.headers.set("x-app-signature", signatureHeaders["x-app-signature"]);
         request.headers.set("x-app-timestamp", signatureHeaders["x-app-timestamp"]);
+
+        // Add device ID header
+        const deviceId = getDeviceId();
+        if (deviceId) {
+            request.headers.set("x-device-id", deviceId);
+        }
 
         // Encrypt body if enabled and body exists
         if (ENCRYPTION_ENABLED && request.body) {

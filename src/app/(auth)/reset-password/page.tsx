@@ -13,7 +13,6 @@ import { Alert, Button, Form, Input, message, Result, Spin } from "antd";
 
 import authApi from "@/lib/api/auth";
 import { useI18n } from "@/lib/contexts/i18n-context";
-import { ERROR_CODES } from "@/lib/constants/error-codes";
 import { useApiError } from "@/lib/hooks/use-api-error";
 
 interface ResetPasswordFormValues {
@@ -69,7 +68,7 @@ function ResetPasswordContent() {
     };
 
     verifyToken();
-  }, [email, token]);
+  }, [email, token, formatError]);
 
   const onSubmit = async (values: ResetPasswordFormValues) => {
     setLoading(true);

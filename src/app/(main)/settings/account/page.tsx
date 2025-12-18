@@ -24,7 +24,6 @@ import {
 import authApi from "@/lib/api/auth";
 import { useI18n } from "@/lib/contexts/i18n-context";
 import { useUser } from "@/lib/contexts/user-context";
-import { ERROR_CODES } from "@/lib/constants/error-codes";
 import { useApiError } from "@/lib/hooks/use-api-error";
 import { tokenStorage } from "@/lib/utils/token-storage";
 
