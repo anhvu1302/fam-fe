@@ -309,22 +309,6 @@ const HorizontalMenu = ({ dictionary }: { dictionary: Awaited<ReturnType<typeof 
           <MenuItem href={`/${locale}/react-table`} icon={<i className='tabler-table' />}>
             {dictionary['navigation'].reactTable}
           </MenuItem>
-          <MenuItem
-            icon={<i className='tabler-checkbox' />}
-            href={`${process.env.NEXT_PUBLIC_DOCS_URL}/docs/user-interface/form-elements`}
-            suffix={<i className='tabler-external-link text-xl' />}
-            target='_blank'
-          >
-            {dictionary['navigation'].formELements}
-          </MenuItem>
-          <MenuItem
-            icon={<i className='tabler-layout-board-split' />}
-            href={`${process.env.NEXT_PUBLIC_DOCS_URL}/docs/user-interface/mui-table`}
-            suffix={<i className='tabler-external-link text-xl' />}
-            target='_blank'
-          >
-            {dictionary['navigation'].muiTables}
-          </MenuItem>
         </SubMenu>
         <SubMenu label={dictionary['navigation'].charts} icon={<i className='tabler-chart-donut-2' />}>
           <MenuItem href={`/${locale}/charts/apex-charts`} icon={<i className='tabler-chart-ppf' />}>
@@ -335,46 +319,6 @@ const HorizontalMenu = ({ dictionary }: { dictionary: Awaited<ReturnType<typeof 
           </MenuItem>
         </SubMenu>
         <SubMenu label={dictionary['navigation'].others} icon={<i className='tabler-dots' />}>
-          <MenuItem
-            icon={<i className='tabler-cards' />}
-            href={`${process.env.NEXT_PUBLIC_DOCS_URL}/docs/user-interface/foundation`}
-            suffix={<i className='tabler-external-link text-xl' />}
-            target='_blank'
-          >
-            {dictionary['navigation'].foundation}
-          </MenuItem>
-          <MenuItem
-            icon={<i className='tabler-atom' />}
-            href={`${process.env.NEXT_PUBLIC_DOCS_URL}/docs/user-interface/components`}
-            suffix={<i className='tabler-external-link text-xl' />}
-            target='_blank'
-          >
-            {dictionary['navigation'].components}
-          </MenuItem>
-          <MenuItem
-            icon={<i className='tabler-list-search' />}
-            href={`${process.env.NEXT_PUBLIC_DOCS_URL}/docs/menu-examples/overview`}
-            suffix={<i className='tabler-external-link text-xl' />}
-            target='_blank'
-          >
-            {dictionary['navigation'].menuExamples}
-          </MenuItem>
-          <MenuItem
-            suffix={<i className='tabler-external-link text-xl' />}
-            target='_blank'
-            href='https://pixinvent.ticksy.com'
-            icon={<i className='tabler-lifebuoy' />}
-          >
-            {dictionary['navigation'].raiseSupport}
-          </MenuItem>
-          <MenuItem
-            suffix={<i className='tabler-external-link text-xl' />}
-            target='_blank'
-            icon={<i className='tabler-book-2' />}
-            href={`${process.env.NEXT_PUBLIC_DOCS_URL}`}
-          >
-            {dictionary['navigation'].documentation}
-          </MenuItem>
           <MenuItem
             suffix={<CustomChip label='New' size='small' color='info' round='true' />}
             icon={<i className='tabler-notification' />}

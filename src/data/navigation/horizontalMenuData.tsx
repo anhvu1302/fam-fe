@@ -482,20 +482,6 @@ const horizontalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>
         icon: 'tabler-table',
         href: '/react-table'
       },
-      {
-        label: dictionary['navigation'].formELements,
-        icon: 'tabler-checkbox',
-        suffix: <i className='tabler-external-link text-xl' />,
-        href: `${process.env.NEXT_PUBLIC_DOCS_URL}/docs/user-interface/form-elements`,
-        target: '_blank'
-      },
-      {
-        label: dictionary['navigation'].muiTables,
-        icon: 'tabler-layout-board-split',
-        href: `${process.env.NEXT_PUBLIC_DOCS_URL}/docs/user-interface/mui-table`,
-        suffix: <i className='tabler-external-link text-xl' />,
-        target: '_blank'
-      }
     ]
   },
   {
@@ -518,41 +504,6 @@ const horizontalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>
     label: dictionary['navigation'].others,
     icon: 'tabler-dots',
     children: [
-      {
-        label: dictionary['navigation'].foundation,
-        icon: 'tabler-cards',
-        href: `${process.env.NEXT_PUBLIC_DOCS_URL}/docs/user-interface/foundation`,
-        suffix: <i className='tabler-external-link text-xl' />,
-        target: '_blank'
-      },
-      {
-        label: dictionary['navigation'].components,
-        icon: 'tabler-atom',
-        href: `${process.env.NEXT_PUBLIC_DOCS_URL}/docs/user-interface/components`,
-        suffix: <i className='tabler-external-link text-xl' />,
-        target: '_blank'
-      },
-      {
-        label: dictionary['navigation'].menuExamples,
-        icon: 'tabler-list-search',
-        href: `${process.env.NEXT_PUBLIC_DOCS_URL}/docs/menu-examples/overview`,
-        suffix: <i className='tabler-external-link text-xl' />,
-        target: '_blank'
-      },
-      {
-        label: dictionary['navigation'].raiseSupport,
-        icon: 'tabler-lifebuoy',
-        suffix: <i className='tabler-external-link text-xl' />,
-        target: '_blank',
-        href: 'https://pixinvent.ticksy.com'
-      },
-      {
-        label: dictionary['navigation'].documentation,
-        icon: 'tabler-book-2',
-        suffix: <i className='tabler-external-link text-xl' />,
-        target: '_blank',
-        href: `${process.env.NEXT_PUBLIC_DOCS_URL}`
-      },
       {
         suffix: {
           label: 'New',
