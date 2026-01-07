@@ -2,17 +2,17 @@
 import Grid from '@mui/material/Grid'
 
 // Components Imports
-import EarningReports from '@views/pages/widget-examples/charts/EarningReports'
-import SupportTracker from '@views/pages/widget-examples/charts/SupportTracker'
-import Sales from '@views/pages/widget-examples/charts/Sales'
-import RevenueReport from '@views/pages/widget-examples/charts/RevenueReport'
-import ProjectStatus from '@views/pages/widget-examples/charts/ProjectStatus'
-import EarningReportsWithTabs from '@views/pages/widget-examples/charts/EarningReportsWithTabs'
-import TotalEarning from '@views/pages/widget-examples/charts/TotalEarning'
-import CarrierPerformance from '@views/pages/widget-examples/charts/CarrierPerformance'
-import DeliveryExceptions from '@views/pages/widget-examples/charts/DeliveryExceptions'
-import VehicleOverview from '@views/pages/widget-examples/charts/VehicleOverview'
-import InterestedTopics from '@views/pages/widget-examples/charts/InterestedTopics'
+import EarningReports from '../../_components/widget-examples/charts/EarningReports'
+import SupportTracker from '../../_components/widget-examples/charts/SupportTracker'
+import Sales from '../../_components/widget-examples/charts/Sales'
+import RevenueReport from '../../_components/widget-examples/charts/RevenueReport'
+import ProjectStatus from '../../_components/widget-examples/charts/ProjectStatus'
+import EarningReportsWithTabs from '../../_components/widget-examples/charts/EarningReportsWithTabs'
+import TotalEarning from '../../_components/widget-examples/charts/TotalEarning'
+import CarrierPerformance from '../../_components/widget-examples/charts/CarrierPerformance'
+import DeliveryExceptions from '../../_components/widget-examples/charts/DeliveryExceptions'
+import VehicleOverview from '../../_components/widget-examples/charts/VehicleOverview'
+import InterestedTopics from '../../_components/widget-examples/charts/InterestedTopics'
 
 const Charts = () => {
   return (

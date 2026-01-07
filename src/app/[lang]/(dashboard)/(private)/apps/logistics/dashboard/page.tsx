@@ -2,13 +2,13 @@
 import Grid from '@mui/material/Grid'
 
 //Component Imports
-import LogisticsStatisticsCard from '@views/apps/logistics/dashboard/LogisticsStatisticsCard'
-import LogisticsVehicleOverview from '@views/apps/logistics/dashboard/LogisticsVehicleOverview'
-import LogisticsShipmentStatistics from '@views/apps/logistics/dashboard/LogisticsShipmentStatistics'
-import LogisticsDeliveryPerformance from '@views/apps/logistics/dashboard/LogisticsDeliveryPerformance'
-import LogisticsDeliveryExceptions from '@views/apps/logistics/dashboard/LogisticsDeliveryExceptions'
-import LogisticsOrdersByCountries from '@/views/apps/logistics/dashboard/LogisticsOrdersByCountries'
-import LogisticsOverviewTable from '@views/apps/logistics/dashboard/LogisticsOverviewTable'
+import LogisticsStatisticsCard from '../_components/dashboard/LogisticsStatisticsCard'
+import LogisticsVehicleOverview from '../_components/dashboard/LogisticsVehicleOverview'
+import LogisticsShipmentStatistics from '../_components/dashboard/LogisticsShipmentStatistics'
+import LogisticsDeliveryPerformance from '../_components/dashboard/LogisticsDeliveryPerformance'
+import LogisticsDeliveryExceptions from '../_components/dashboard/LogisticsDeliveryExceptions'
+import LogisticsOrdersByCountries from '../_components/dashboard/LogisticsOrdersByCountries'
+import LogisticsOverviewTable from '../_components/dashboard/LogisticsOverviewTable'
 
 //Data Imports
 import { getLogisticsData, getStatisticsData } from '@/app/server/actions'

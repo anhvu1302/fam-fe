@@ -6,12 +6,12 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // Component Imports
-import RechartsBarChart from '@views/charts/recharts/RechartsBarChart'
-import RechartsPieChart from '@views/charts/recharts/RechartsPieChart'
-import RechartsLineChart from '@views/charts/recharts/RechartsLineChart'
-import RechartsAreaChart from '@views/charts/recharts/RechartsAreaChart'
-import RechartsRadarChart from '@views/charts/recharts/RechartsRadarChart'
-import RechartsScatterChart from '@views/charts/recharts/RechartsScatterChart'
+import RechartsBarChart from './_components/RechartsBarChart'
+import RechartsPieChart from './_components/RechartsPieChart'
+import RechartsLineChart from './_components/RechartsLineChart'
+import RechartsAreaChart from './_components/RechartsAreaChart'
+import RechartsRadarChart from './_components/RechartsRadarChart'
+import RechartsScatterChart from './_components/RechartsScatterChart'
 
 const Recharts = () => {
   return (

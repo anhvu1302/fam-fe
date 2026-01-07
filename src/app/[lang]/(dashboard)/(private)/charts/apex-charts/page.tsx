@@ -6,16 +6,16 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // Component Imports
-import ApexBarChart from '@views/charts/apex/ApexBarChart'
-import ApexAreaChart from '@views/charts/apex/ApexAreaChart'
-import ApexLineChart from '@views/charts/apex/ApexLineChart'
-import ApexRadarChart from '@views/charts/apex/ApexRadarChart'
-import ApexDonutChart from '@views/charts/apex/ApexDonutChart'
-import ApexColumnChart from '@views/charts/apex/ApexColumnChart'
-import ApexScatterChart from '@views/charts/apex/ApexScatterChart'
-import ApexHeatmapChart from '@views/charts/apex/ApexHeatmapChart'
-import ApexRadialBarChart from '@views/charts/apex/ApexRadialBarChart'
-import ApexCandlestickChart from '@views/charts/apex/ApexCandlestickChart'
+import ApexBarChart from './_components/ApexBarChart'
+import ApexAreaChart from './_components/ApexAreaChart'
+import ApexLineChart from './_components/ApexLineChart'
+import ApexRadarChart from './_components/ApexRadarChart'
+import ApexDonutChart from './_components/ApexDonutChart'
+import ApexColumnChart from './_components/ApexColumnChart'
+import ApexScatterChart from './_components/ApexScatterChart'
+import ApexHeatmapChart from './_components/ApexHeatmapChart'
+import ApexRadialBarChart from './_components/ApexRadialBarChart'
+import ApexCandlestickChart from './_components/ApexCandlestickChart'
 
 const ApexCharts = () => {
   return (

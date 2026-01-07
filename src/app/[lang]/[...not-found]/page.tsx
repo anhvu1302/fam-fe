@@ -4,7 +4,7 @@ import type { Locale } from '@configs/i18n'
 // Component Imports
 import Providers from '@components/Providers'
 import BlankLayout from '@layouts/BlankLayout'
-import NotFound from '@views/NotFound'
+import NotFound from '../(blank-layout-pages)/pages/_components/NotFound'
 
 // Config Imports
 import { i18n } from '@configs/i18n'

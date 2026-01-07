@@ -2,11 +2,11 @@
 import Grid from '@mui/material/Grid'
 
 // Components Imports
-import CardActionsTable from '@views/pages/widget-examples/actions/Table'
-import CardActionCollapsible from '@views/pages/widget-examples/actions/Collapsible'
-import CardActionRefreshContent from '@views/pages/widget-examples/actions/RefreshContent'
-import CardActionRemoveCard from '@views/pages/widget-examples/actions/RemoveCard'
-import CardActionAll from '@views/pages/widget-examples/actions/AllActions'
+import CardActionsTable from '../../_components/widget-examples/actions/Table'
+import CardActionCollapsible from '../../_components/widget-examples/actions/Collapsible'
+import CardActionRefreshContent from '../../_components/widget-examples/actions/RefreshContent'
+import CardActionRemoveCard from '../../_components/widget-examples/actions/RemoveCard'
+import CardActionAll from '../../_components/widget-examples/actions/AllActions'
 
 const Actions = () => {
   return (

@@ -2,16 +2,16 @@
 import Grid from '@mui/material/Grid'
 
 // Component Imports
-import DialogAddCard from '@views/pages/dialog-examples/DialogAddCard'
-import DialogEditUserInfo from '@views/pages/dialog-examples/DialogEditUserInfo'
-import DialogAuthentication from '@views/pages/dialog-examples/DialogAuthentication'
-import DialogAddNewAddress from '@views/pages/dialog-examples/DialogAddNewAddress'
-import DialogShareProject from '@views/pages/dialog-examples/DialogShareProject'
-import DialogReferEarn from '@views/pages/dialog-examples/DialogReferEarn'
-import DialogPaymentMethod from '@views/pages/dialog-examples/DialogPaymentMethod'
-import DialogPaymentProviders from '@views/pages/dialog-examples/DialogPaymentProviders'
-import DialogCreateApp from '@views/pages/dialog-examples/DialogCreateApp'
-import DialogPricing from '@views/pages/dialog-examples/DialogPricing'
+import DialogAddCard from '../_components/dialog-examples/DialogAddCard'
+import DialogEditUserInfo from '../_components/dialog-examples/DialogEditUserInfo'
+import DialogAuthentication from '../_components/dialog-examples/DialogAuthentication'
+import DialogAddNewAddress from '../_components/dialog-examples/DialogAddNewAddress'
+import DialogShareProject from '../_components/dialog-examples/DialogShareProject'
+import DialogReferEarn from '../_components/dialog-examples/DialogReferEarn'
+import DialogPaymentMethod from '../_components/dialog-examples/DialogPaymentMethod'
+import DialogPaymentProviders from '../_components/dialog-examples/DialogPaymentProviders'
+import DialogCreateApp from '../_components/dialog-examples/DialogCreateApp'
+import DialogPricing from '../_components/dialog-examples/DialogPricing'
 
 // Data Imports
 import { getPricingData } from '@/app/server/actions'

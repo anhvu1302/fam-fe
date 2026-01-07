@@ -6,9 +6,9 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // Component Imports
-import FormValidationBasic from '@views/forms/form-validation/FormValidationBasic'
-import FormValidationOnSchema from '@views/forms/form-validation/FormValidationSchema'
-import FormValidationAsyncSubmit from '@views/forms/form-validation/FormValidationAsyncSubmit'
+import FormValidationBasic from './_components/FormValidationBasic'
+import FormValidationOnSchema from './_components/FormValidationSchema'
+import FormValidationAsyncSubmit from './_components/FormValidationAsyncSubmit'
 
 const FormValidation = () => {
   return (

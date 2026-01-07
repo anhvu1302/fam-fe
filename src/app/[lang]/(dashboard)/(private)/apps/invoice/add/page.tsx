@@ -2,8 +2,8 @@
 import Grid from '@mui/material/Grid'
 
 // Component Imports
-import AddCard from '@views/apps/invoice/add/AddCard'
-import AddActions from '@views/apps/invoice/add/AddActions'
+import AddCard from '../_components/add/AddCard'
+import AddActions from '../_components/add/AddActions'
 
 // Data Imports
 import { getInvoiceData } from '@/app/server/actions'

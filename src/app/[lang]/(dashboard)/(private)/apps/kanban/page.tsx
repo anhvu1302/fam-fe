@@ -2,13 +2,13 @@
 import classnames from 'classnames'
 
 // Component Imports
-import KanbanBoard from '@views/apps/kanban/KanbanBoard'
+import KanbanBoard from './_components/KanbanBoard'
 
 // Util Imports
 import { commonLayoutClasses } from '@layouts/utils/layoutClasses'
 
 // Styles Imports
-import styles from '@views/apps/kanban/styles.module.css'
+import styles from './_components/styles.module.css'
 
 const KanbanPage = () => {
   return (

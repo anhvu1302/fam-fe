@@ -1,5 +1,5 @@
 // Component Imports
-import OrderList from '@views/apps/ecommerce/orders/list'
+import OrderList from '../../_components/orders/list'
 
 // Data Imports
 import { getEcommerceData } from '@/app/server/actions'

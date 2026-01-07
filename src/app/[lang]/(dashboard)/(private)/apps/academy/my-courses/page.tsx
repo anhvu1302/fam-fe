@@ -1,5 +1,5 @@
 // Component Imports
-import AcademyMyCourse from '@/views/apps/academy/my-courses'
+import AcademyMyCourse from '../_components/my-courses'
 
 // Server Action Imports
 import { getServerMode } from '@core/utils/serverHelpers'

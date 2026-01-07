@@ -13,6 +13,7 @@
     "build:icons": "tsx src/assets/iconify-icons/bundle-icons-css.ts",
     "postinstall": "npm run build:icons",
     "removeI18n": "tsx src/remove-translation-scripts/index.ts",
+    "generate": "dotenv -e .env -- openapi-ts && eslint src/generated --ext .ts --fix",
     "clean": "rm -rf .next",
     "clear": "rm -rf node_modules .next"
   },
@@ -82,6 +83,8 @@
     "valibot": "1.2.0"
   },
   "devDependencies": {
+    "@hey-api/client-fetch": "^0.13.1",
+    "@hey-api/openapi-ts": "^0.90.1",
     "@iconify/json": "2.2.408",
     "@iconify/tools": "4.1.4",
     "@iconify/types": "2.0.0",

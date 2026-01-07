@@ -1,5 +1,5 @@
 // Component Imports
-import CreateDeal from '@views/pages/wizard-examples/create-deal'
+import CreateDeal from '../../_components/wizard-examples/create-deal'
 
 const CreateDealPage = () => {
   return <CreateDeal />

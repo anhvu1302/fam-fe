@@ -6,12 +6,12 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // Component Imports
-import StepperLinearWithValidation from '@views/forms/form-wizard/StepperLinearWithValidation'
-import StepperAlternativeLabel from '@views/forms/form-wizard/StepperAlternativeLabel'
-import StepperVerticalWithNumbers from '@views/forms/form-wizard/StepperVerticalWithNumbers'
-import StepperVerticalWithoutNumbers from '@views/forms/form-wizard/StepperVerticalWithoutNumbers'
-import StepperCustomHorizontal from '@views/forms/form-wizard/StepperCustomHorizontal'
-import StepperCustomVertical from '@views/forms/form-wizard/StepperCustomVertical'
+import StepperLinearWithValidation from './_components/StepperLinearWithValidation'
+import StepperAlternativeLabel from './_components/StepperAlternativeLabel'
+import StepperVerticalWithNumbers from './_components/StepperVerticalWithNumbers'
+import StepperVerticalWithoutNumbers from './_components/StepperVerticalWithoutNumbers'
+import StepperCustomHorizontal from './_components/StepperCustomHorizontal'
+import StepperCustomVertical from './_components/StepperCustomVertical'
 
 const FormWizard = () => {
   return (

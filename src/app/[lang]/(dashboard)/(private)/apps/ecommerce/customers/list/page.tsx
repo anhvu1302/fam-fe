@@ -1,4 +1,4 @@
-import CustomerListTable from '@views/apps/ecommerce/customers/list/CustomerListTable'
+import CustomerListTable from '../../_components/customers/list/CustomerListTable'
 
 // Data Imports
 import { getEcommerceData } from '@/app/server/actions'

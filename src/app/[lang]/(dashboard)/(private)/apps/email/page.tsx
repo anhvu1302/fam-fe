@@ -1,5 +1,5 @@
 // Component Imports
-import EmailWrapper from '@views/apps/email'
+import EmailWrapper from './_components'
 
 const EmailPage = () => {
   return <EmailWrapper folder='inbox' />

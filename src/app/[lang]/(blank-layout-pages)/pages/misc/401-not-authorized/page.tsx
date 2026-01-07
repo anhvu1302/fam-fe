@@ -1,5 +1,5 @@
 // Component Imports
-import NotAuthorized from '@views/NotAuthorized'
+import NotAuthorized from '../../_components/NotAuthorized'
 
 // Server Action Imports
 import { getServerMode } from '@core/utils/serverHelpers'

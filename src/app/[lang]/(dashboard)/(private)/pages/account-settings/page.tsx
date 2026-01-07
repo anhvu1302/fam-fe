@@ -5,13 +5,13 @@ import type { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
 
 // Component Imports
-import AccountSettings from '@views/pages/account-settings'
+import AccountSettings from './_components'
 
-const AccountTab = dynamic(() => import('@views/pages/account-settings/account'))
-const SecurityTab = dynamic(() => import('@views/pages/account-settings/security'))
-const BillingPlansTab = dynamic(() => import('@views/pages/account-settings/billing-plans'))
-const NotificationsTab = dynamic(() => import('@views/pages/account-settings/notifications'))
-const ConnectionsTab = dynamic(() => import('@views/pages/account-settings/connections'))
+const AccountTab = dynamic(() => import('./_components/account'))
+const SecurityTab = dynamic(() => import('./_components/security'))
+const BillingPlansTab = dynamic(() => import('./_components/billing-plans'))
+const NotificationsTab = dynamic(() => import('./_components/notifications'))
+const ConnectionsTab = dynamic(() => import('./_components/connections'))
 
 // Vars
 const tabContentList = (): { [key: string]: ReactElement } => ({

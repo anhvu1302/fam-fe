@@ -1,5 +1,5 @@
 // Component Imports
-import CheckoutWizard from '@views/pages/wizard-examples/checkout'
+import CheckoutWizard from '../../_components/wizard-examples/checkout'
 
 const CheckoutPage = () => {
   return <CheckoutWizard />

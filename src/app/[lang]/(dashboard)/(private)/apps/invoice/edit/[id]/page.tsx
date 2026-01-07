@@ -8,8 +8,8 @@ import Grid from '@mui/material/Grid'
 import type { InvoiceType } from '@/types/apps/invoiceTypes'
 
 // Component Imports
-import EditCard from '@views/apps/invoice/edit/EditCard'
-import EditActions from '@views/apps/invoice/edit/EditActions'
+import EditCard from '../../_components/edit/EditCard'
+import EditActions from '../../_components/edit/EditActions'
 
 // Data Imports
 import { getInvoiceData } from '@/app/server/actions'

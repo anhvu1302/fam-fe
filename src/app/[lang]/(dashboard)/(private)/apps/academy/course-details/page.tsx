@@ -2,8 +2,8 @@
 import Grid from '@mui/material/Grid'
 
 // Component Imports
-import Details from '@views/apps/academy/course-details/Details'
-import Sidebar from '@views/apps/academy/course-details/Sidebar'
+import Details from '../_components/course-details/Details'
+import Sidebar from '../_components/course-details/Sidebar'
 
 // Data Imports
 import { getAcademyData } from '@/app/server/actions'
