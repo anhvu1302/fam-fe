@@ -24,7 +24,7 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
-import { customInstance } from '../lib/api/custom-instance';
+import { customInstance } from '../libs/custom-instance';
 
 export interface ApiError {
   message: string;
@@ -1861,56 +1861,20 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 
-export type postApiAuthLoginResponse200 = {
-  data: LoginResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthLoginResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAuthLoginResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAuthLoginResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiAuthLoginResponseSuccess = (postApiAuthLoginResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthLoginResponseError = (postApiAuthLoginResponse400 | postApiAuthLoginResponse401 | postApiAuthLoginResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthLoginResponse = (postApiAuthLoginResponseSuccess | postApiAuthLoginResponseError)
-
-export const getPostApiAuthLoginUrl = () => {
-
-
+export const postApiAuthLogin = (
+    loginRequest: LoginRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<LoginResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/login`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: loginRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/login`
-}
-
-export const postApiAuthLogin = async (loginRequest: LoginRequest, options?: RequestInit): Promise<postApiAuthLoginResponse> => {
-  
-  return customInstance<postApiAuthLoginResponse>(getPostApiAuthLoginUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      loginRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthLoginMutationOptions = <TError = ApiErrorResponse,
@@ -1957,56 +1921,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAuthVerify2faResponse200 = {
-  data: VerifyTwoFactorResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthVerify2faResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAuthVerify2faResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAuthVerify2faResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiAuthVerify2faResponseSuccess = (postApiAuthVerify2faResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthVerify2faResponseError = (postApiAuthVerify2faResponse400 | postApiAuthVerify2faResponse401 | postApiAuthVerify2faResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthVerify2faResponse = (postApiAuthVerify2faResponseSuccess | postApiAuthVerify2faResponseError)
-
-export const getPostApiAuthVerify2faUrl = () => {
-
-
+export const postApiAuthVerify2fa = (
+    verifyTwoFactorRequest: VerifyTwoFactorRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<VerifyTwoFactorResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/verify-2fa`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: verifyTwoFactorRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/verify-2fa`
-}
-
-export const postApiAuthVerify2fa = async (verifyTwoFactorRequest: VerifyTwoFactorRequest, options?: RequestInit): Promise<postApiAuthVerify2faResponse> => {
-  
-  return customInstance<postApiAuthVerify2faResponse>(getPostApiAuthVerify2faUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      verifyTwoFactorRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthVerify2faMutationOptions = <TError = ApiErrorResponse,
@@ -2053,56 +1981,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAuthRefreshResponse200 = {
-  data: LoginResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthRefreshResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAuthRefreshResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAuthRefreshResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiAuthRefreshResponseSuccess = (postApiAuthRefreshResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthRefreshResponseError = (postApiAuthRefreshResponse400 | postApiAuthRefreshResponse401 | postApiAuthRefreshResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthRefreshResponse = (postApiAuthRefreshResponseSuccess | postApiAuthRefreshResponseError)
-
-export const getPostApiAuthRefreshUrl = () => {
-
-
+export const postApiAuthRefresh = (
+    refreshTokenRequest: RefreshTokenRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<LoginResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/refresh`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: refreshTokenRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/refresh`
-}
-
-export const postApiAuthRefresh = async (refreshTokenRequest: RefreshTokenRequest, options?: RequestInit): Promise<postApiAuthRefreshResponse> => {
-  
-  return customInstance<postApiAuthRefreshResponse>(getPostApiAuthRefreshUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      refreshTokenRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthRefreshMutationOptions = <TError = ApiErrorResponse,
@@ -2149,50 +2041,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAuthLogoutResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthLogoutResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAuthLogoutResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
+export const postApiAuthLogout = (
     
-export type postApiAuthLogoutResponseSuccess = (postApiAuthLogoutResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthLogoutResponseError = (postApiAuthLogoutResponse401 | postApiAuthLogoutResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthLogoutResponse = (postApiAuthLogoutResponseSuccess | postApiAuthLogoutResponseError)
-
-export const getPostApiAuthLogoutUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/logout`, method: 'POST', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/logout`
-}
-
-export const postApiAuthLogout = async ( options?: RequestInit): Promise<postApiAuthLogoutResponse> => {
-  
-  return customInstance<postApiAuthLogoutResponse>(getPostApiAuthLogoutUrl(),
-  {      
-    ...options,
-    method: 'POST'
-    
-    
-  }
-);}
-
-
 
 
 export const getPostApiAuthLogoutMutationOptions = <TError = ApiErrorResponse,
@@ -2239,51 +2099,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAuthLogoutAllResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthLogoutAllResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAuthLogoutAllResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiAuthLogoutAllResponseSuccess = (postApiAuthLogoutAllResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthLogoutAllResponseError = (postApiAuthLogoutAllResponse401 | postApiAuthLogoutAllResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthLogoutAllResponse = (postApiAuthLogoutAllResponseSuccess | postApiAuthLogoutAllResponseError)
-
-export const getPostApiAuthLogoutAllUrl = () => {
-
-
+export const postApiAuthLogoutAll = (
+    logoutAllRequest: LogoutAllRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/logout-all`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: logoutAllRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/logout-all`
-}
-
-export const postApiAuthLogoutAll = async (logoutAllRequest: LogoutAllRequest, options?: RequestInit): Promise<postApiAuthLogoutAllResponse> => {
-  
-  return customInstance<postApiAuthLogoutAllResponse>(getPostApiAuthLogoutAllUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      logoutAllRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthLogoutAllMutationOptions = <TError = ApiErrorResponse,
@@ -2330,56 +2159,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAuthChangePasswordResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthChangePasswordResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAuthChangePasswordResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAuthChangePasswordResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiAuthChangePasswordResponseSuccess = (postApiAuthChangePasswordResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthChangePasswordResponseError = (postApiAuthChangePasswordResponse400 | postApiAuthChangePasswordResponse401 | postApiAuthChangePasswordResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthChangePasswordResponse = (postApiAuthChangePasswordResponseSuccess | postApiAuthChangePasswordResponseError)
-
-export const getPostApiAuthChangePasswordUrl = () => {
-
-
+export const postApiAuthChangePassword = (
+    changePasswordRequest: ChangePasswordRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/change-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: changePasswordRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/change-password`
-}
-
-export const postApiAuthChangePassword = async (changePasswordRequest: ChangePasswordRequest, options?: RequestInit): Promise<postApiAuthChangePasswordResponse> => {
-  
-  return customInstance<postApiAuthChangePasswordResponse>(getPostApiAuthChangePasswordUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      changePasswordRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthChangePasswordMutationOptions = <TError = ApiErrorResponse,
@@ -2426,50 +2219,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiAuthAuthenticationMethodsResponse200 = {
-  data: AuthenticationMethodsResponseApiSuccessResponse
-  status: 200
-}
-
-export type getApiAuthAuthenticationMethodsResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiAuthAuthenticationMethodsResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
+export const getApiAuthAuthenticationMethods = (
     
-export type getApiAuthAuthenticationMethodsResponseSuccess = (getApiAuthAuthenticationMethodsResponse200) & {
-  headers: Headers;
-};
-export type getApiAuthAuthenticationMethodsResponseError = (getApiAuthAuthenticationMethodsResponse401 | getApiAuthAuthenticationMethodsResponse500) & {
-  headers: Headers;
-};
-
-export type getApiAuthAuthenticationMethodsResponse = (getApiAuthAuthenticationMethodsResponseSuccess | getApiAuthAuthenticationMethodsResponseError)
-
-export const getGetApiAuthAuthenticationMethodsUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<AuthenticationMethodsResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/authentication-methods`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/authentication-methods`
-}
-
-export const getApiAuthAuthenticationMethods = async ( options?: RequestInit): Promise<getApiAuthAuthenticationMethodsResponse> => {
-  
-  return customInstance<getApiAuthAuthenticationMethodsResponse>(getGetApiAuthAuthenticationMethodsUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -2489,7 +2250,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthAuthenticationMethods>>> = ({ signal }) => getApiAuthAuthenticationMethods({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthAuthenticationMethods>>> = ({ signal }) => getApiAuthAuthenticationMethods(requestOptions, signal);
 
       
 
@@ -2545,56 +2306,20 @@ export function useGetApiAuthAuthenticationMethods<TData = Awaited<ReturnType<ty
 
 
 
-export type postApiAuthSelectAuthenticationMethodResponse200 = {
-  data: SelectAuthenticationMethodResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthSelectAuthenticationMethodResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAuthSelectAuthenticationMethodResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAuthSelectAuthenticationMethodResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiAuthSelectAuthenticationMethodResponseSuccess = (postApiAuthSelectAuthenticationMethodResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthSelectAuthenticationMethodResponseError = (postApiAuthSelectAuthenticationMethodResponse400 | postApiAuthSelectAuthenticationMethodResponse401 | postApiAuthSelectAuthenticationMethodResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthSelectAuthenticationMethodResponse = (postApiAuthSelectAuthenticationMethodResponseSuccess | postApiAuthSelectAuthenticationMethodResponseError)
-
-export const getPostApiAuthSelectAuthenticationMethodUrl = () => {
-
-
+export const postApiAuthSelectAuthenticationMethod = (
+    selectAuthenticationMethodRequest: SelectAuthenticationMethodRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<SelectAuthenticationMethodResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/select-authentication-method`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: selectAuthenticationMethodRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/select-authentication-method`
-}
-
-export const postApiAuthSelectAuthenticationMethod = async (selectAuthenticationMethodRequest: SelectAuthenticationMethodRequest, options?: RequestInit): Promise<postApiAuthSelectAuthenticationMethodResponse> => {
-  
-  return customInstance<postApiAuthSelectAuthenticationMethodResponse>(getPostApiAuthSelectAuthenticationMethodUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      selectAuthenticationMethodRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthSelectAuthenticationMethodMutationOptions = <TError = ApiErrorResponse,
@@ -2641,56 +2366,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAuthVerifyEmailOtpResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthVerifyEmailOtpResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAuthVerifyEmailOtpResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAuthVerifyEmailOtpResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiAuthVerifyEmailOtpResponseSuccess = (postApiAuthVerifyEmailOtpResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthVerifyEmailOtpResponseError = (postApiAuthVerifyEmailOtpResponse400 | postApiAuthVerifyEmailOtpResponse401 | postApiAuthVerifyEmailOtpResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthVerifyEmailOtpResponse = (postApiAuthVerifyEmailOtpResponseSuccess | postApiAuthVerifyEmailOtpResponseError)
-
-export const getPostApiAuthVerifyEmailOtpUrl = () => {
-
-
+export const postApiAuthVerifyEmailOtp = (
+    verifyEmailOtpRequest: VerifyEmailOtpRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/verify-email-otp`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: verifyEmailOtpRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/verify-email-otp`
-}
-
-export const postApiAuthVerifyEmailOtp = async (verifyEmailOtpRequest: VerifyEmailOtpRequest, options?: RequestInit): Promise<postApiAuthVerifyEmailOtpResponse> => {
-  
-  return customInstance<postApiAuthVerifyEmailOtpResponse>(getPostApiAuthVerifyEmailOtpUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      verifyEmailOtpRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthVerifyEmailOtpMutationOptions = <TError = ApiErrorResponse,
@@ -2737,56 +2426,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAuthVerifyRecoveryCodeResponse200 = {
-  data: VerifyTwoFactorResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthVerifyRecoveryCodeResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAuthVerifyRecoveryCodeResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAuthVerifyRecoveryCodeResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiAuthVerifyRecoveryCodeResponseSuccess = (postApiAuthVerifyRecoveryCodeResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthVerifyRecoveryCodeResponseError = (postApiAuthVerifyRecoveryCodeResponse400 | postApiAuthVerifyRecoveryCodeResponse401 | postApiAuthVerifyRecoveryCodeResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthVerifyRecoveryCodeResponse = (postApiAuthVerifyRecoveryCodeResponseSuccess | postApiAuthVerifyRecoveryCodeResponseError)
-
-export const getPostApiAuthVerifyRecoveryCodeUrl = () => {
-
-
+export const postApiAuthVerifyRecoveryCode = (
+    verifyRecoveryCodeRequest: VerifyRecoveryCodeRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<VerifyTwoFactorResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/verify-recovery-code`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: verifyRecoveryCodeRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/verify-recovery-code`
-}
-
-export const postApiAuthVerifyRecoveryCode = async (verifyRecoveryCodeRequest: VerifyRecoveryCodeRequest, options?: RequestInit): Promise<postApiAuthVerifyRecoveryCodeResponse> => {
-  
-  return customInstance<postApiAuthVerifyRecoveryCodeResponse>(getPostApiAuthVerifyRecoveryCodeUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      verifyRecoveryCodeRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthVerifyRecoveryCodeMutationOptions = <TError = ApiErrorResponse,
@@ -2833,51 +2486,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAuthForgotPasswordResponse200 = {
-  data: ForgotPasswordResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthForgotPasswordResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAuthForgotPasswordResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiAuthForgotPasswordResponseSuccess = (postApiAuthForgotPasswordResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthForgotPasswordResponseError = (postApiAuthForgotPasswordResponse400 | postApiAuthForgotPasswordResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthForgotPasswordResponse = (postApiAuthForgotPasswordResponseSuccess | postApiAuthForgotPasswordResponseError)
-
-export const getPostApiAuthForgotPasswordUrl = () => {
-
-
+export const postApiAuthForgotPassword = (
+    forgotPasswordRequest: ForgotPasswordRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ForgotPasswordResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/forgot-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: forgotPasswordRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/forgot-password`
-}
-
-export const postApiAuthForgotPassword = async (forgotPasswordRequest: ForgotPasswordRequest, options?: RequestInit): Promise<postApiAuthForgotPasswordResponse> => {
-  
-  return customInstance<postApiAuthForgotPasswordResponse>(getPostApiAuthForgotPasswordUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      forgotPasswordRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthForgotPasswordMutationOptions = <TError = ApiErrorResponse,
@@ -2924,56 +2546,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAuthVerifyResetTokenResponse200 = {
-  data: VerifyResetTokenResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthVerifyResetTokenResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAuthVerifyResetTokenResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAuthVerifyResetTokenResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiAuthVerifyResetTokenResponseSuccess = (postApiAuthVerifyResetTokenResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthVerifyResetTokenResponseError = (postApiAuthVerifyResetTokenResponse400 | postApiAuthVerifyResetTokenResponse401 | postApiAuthVerifyResetTokenResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthVerifyResetTokenResponse = (postApiAuthVerifyResetTokenResponseSuccess | postApiAuthVerifyResetTokenResponseError)
-
-export const getPostApiAuthVerifyResetTokenUrl = () => {
-
-
+export const postApiAuthVerifyResetToken = (
+    verifyResetTokenRequest: VerifyResetTokenRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<VerifyResetTokenResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/verify-reset-token`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: verifyResetTokenRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/verify-reset-token`
-}
-
-export const postApiAuthVerifyResetToken = async (verifyResetTokenRequest: VerifyResetTokenRequest, options?: RequestInit): Promise<postApiAuthVerifyResetTokenResponse> => {
-  
-  return customInstance<postApiAuthVerifyResetTokenResponse>(getPostApiAuthVerifyResetTokenUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      verifyResetTokenRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthVerifyResetTokenMutationOptions = <TError = ApiErrorResponse,
@@ -3020,39 +2606,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAuthResetPasswordResponse200 = {
-  data: ResetPasswordResponse
-  status: 200
-}
-    
-export type postApiAuthResetPasswordResponseSuccess = (postApiAuthResetPasswordResponse200) & {
-  headers: Headers;
-};
-;
-
-export type postApiAuthResetPasswordResponse = (postApiAuthResetPasswordResponseSuccess)
-
-export const getPostApiAuthResetPasswordUrl = () => {
-
-
+export const postApiAuthResetPassword = (
+    resetPasswordRequest: ResetPasswordRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ResetPasswordResponse>(
+      {url: `http://localhost:8000/api/auth/reset-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: resetPasswordRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/reset-password`
-}
-
-export const postApiAuthResetPassword = async (resetPasswordRequest: ResetPasswordRequest, options?: RequestInit): Promise<postApiAuthResetPasswordResponse> => {
-  
-  return customInstance<postApiAuthResetPasswordResponse>(getPostApiAuthResetPasswordUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      resetPasswordRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthResetPasswordMutationOptions = <TError = unknown,
@@ -3099,56 +2666,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAuthEnable2faResponse200 = {
-  data: Enable2FAResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthEnable2faResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAuthEnable2faResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAuthEnable2faResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiAuthEnable2faResponseSuccess = (postApiAuthEnable2faResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthEnable2faResponseError = (postApiAuthEnable2faResponse400 | postApiAuthEnable2faResponse401 | postApiAuthEnable2faResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthEnable2faResponse = (postApiAuthEnable2faResponseSuccess | postApiAuthEnable2faResponseError)
-
-export const getPostApiAuthEnable2faUrl = () => {
-
-
+export const postApiAuthEnable2fa = (
+    enable2FARequest: Enable2FARequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Enable2FAResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/enable-2fa`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: enable2FARequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/enable-2fa`
-}
-
-export const postApiAuthEnable2fa = async (enable2FARequest: Enable2FARequest, options?: RequestInit): Promise<postApiAuthEnable2faResponse> => {
-  
-  return customInstance<postApiAuthEnable2faResponse>(getPostApiAuthEnable2faUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      enable2FARequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthEnable2faMutationOptions = <TError = ApiErrorResponse,
@@ -3195,56 +2726,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAuthConfirm2faResponse200 = {
-  data: Confirm2FAResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthConfirm2faResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAuthConfirm2faResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAuthConfirm2faResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiAuthConfirm2faResponseSuccess = (postApiAuthConfirm2faResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthConfirm2faResponseError = (postApiAuthConfirm2faResponse400 | postApiAuthConfirm2faResponse401 | postApiAuthConfirm2faResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthConfirm2faResponse = (postApiAuthConfirm2faResponseSuccess | postApiAuthConfirm2faResponseError)
-
-export const getPostApiAuthConfirm2faUrl = () => {
-
-
+export const postApiAuthConfirm2fa = (
+    confirm2FARequest: Confirm2FARequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Confirm2FAResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/confirm-2fa`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: confirm2FARequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/confirm-2fa`
-}
-
-export const postApiAuthConfirm2fa = async (confirm2FARequest: Confirm2FARequest, options?: RequestInit): Promise<postApiAuthConfirm2faResponse> => {
-  
-  return customInstance<postApiAuthConfirm2faResponse>(getPostApiAuthConfirm2faUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      confirm2FARequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthConfirm2faMutationOptions = <TError = ApiErrorResponse,
@@ -3291,56 +2786,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAuthDisable2faResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthDisable2faResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAuthDisable2faResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAuthDisable2faResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiAuthDisable2faResponseSuccess = (postApiAuthDisable2faResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthDisable2faResponseError = (postApiAuthDisable2faResponse400 | postApiAuthDisable2faResponse401 | postApiAuthDisable2faResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthDisable2faResponse = (postApiAuthDisable2faResponseSuccess | postApiAuthDisable2faResponseError)
-
-export const getPostApiAuthDisable2faUrl = () => {
-
-
+export const postApiAuthDisable2fa = (
+    disable2FARequest: Disable2FARequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/disable-2fa`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: disable2FARequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/disable-2fa`
-}
-
-export const postApiAuthDisable2fa = async (disable2FARequest: Disable2FARequest, options?: RequestInit): Promise<postApiAuthDisable2faResponse> => {
-  
-  return customInstance<postApiAuthDisable2faResponse>(getPostApiAuthDisable2faUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      disable2FARequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthDisable2faMutationOptions = <TError = ApiErrorResponse,
@@ -3387,56 +2846,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAuthDisable2faWithBackupResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type postApiAuthDisable2faWithBackupResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAuthDisable2faWithBackupResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAuthDisable2faWithBackupResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiAuthDisable2faWithBackupResponseSuccess = (postApiAuthDisable2faWithBackupResponse200) & {
-  headers: Headers;
-};
-export type postApiAuthDisable2faWithBackupResponseError = (postApiAuthDisable2faWithBackupResponse400 | postApiAuthDisable2faWithBackupResponse401 | postApiAuthDisable2faWithBackupResponse500) & {
-  headers: Headers;
-};
-
-export type postApiAuthDisable2faWithBackupResponse = (postApiAuthDisable2faWithBackupResponseSuccess | postApiAuthDisable2faWithBackupResponseError)
-
-export const getPostApiAuthDisable2faWithBackupUrl = () => {
-
-
+export const postApiAuthDisable2faWithBackup = (
+    disableTwoFactorWithBackupRequest: DisableTwoFactorWithBackupRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/disable-2fa-with-backup`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: disableTwoFactorWithBackupRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/disable-2fa-with-backup`
-}
-
-export const postApiAuthDisable2faWithBackup = async (disableTwoFactorWithBackupRequest: DisableTwoFactorWithBackupRequest, options?: RequestInit): Promise<postApiAuthDisable2faWithBackupResponse> => {
-  
-  return customInstance<postApiAuthDisable2faWithBackupResponse>(getPostApiAuthDisable2faWithBackupUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      disableTwoFactorWithBackupRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAuthDisable2faWithBackupMutationOptions = <TError = ApiErrorResponse,
@@ -3483,55 +2906,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiAuthMeResponse200 = {
-  data: UserDtoApiSuccessResponse
-  status: 200
-}
-
-export type getApiAuthMeResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiAuthMeResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type getApiAuthMeResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
+export const getApiAuthMe = (
     
-export type getApiAuthMeResponseSuccess = (getApiAuthMeResponse200) & {
-  headers: Headers;
-};
-export type getApiAuthMeResponseError = (getApiAuthMeResponse401 | getApiAuthMeResponse404 | getApiAuthMeResponse500) & {
-  headers: Headers;
-};
-
-export type getApiAuthMeResponse = (getApiAuthMeResponseSuccess | getApiAuthMeResponseError)
-
-export const getGetApiAuthMeUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<UserDtoApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/me`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/me`
-}
-
-export const getApiAuthMe = async ( options?: RequestInit): Promise<getApiAuthMeResponse> => {
-  
-  return customInstance<getApiAuthMeResponse>(getGetApiAuthMeUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -3551,7 +2937,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthMe>>> = ({ signal }) => getApiAuthMe({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthMe>>> = ({ signal }) => getApiAuthMe(requestOptions, signal);
 
       
 
@@ -3607,50 +2993,18 @@ export function useGetApiAuthMe<TData = Awaited<ReturnType<typeof getApiAuthMe>>
 
 
 
-export type getApiAuthMeSessionsResponse200 = {
-  data: UserSessionDtoIReadOnlyListApiSuccessResponse
-  status: 200
-}
-
-export type getApiAuthMeSessionsResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiAuthMeSessionsResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
+export const getApiAuthMeSessions = (
     
-export type getApiAuthMeSessionsResponseSuccess = (getApiAuthMeSessionsResponse200) & {
-  headers: Headers;
-};
-export type getApiAuthMeSessionsResponseError = (getApiAuthMeSessionsResponse401 | getApiAuthMeSessionsResponse500) & {
-  headers: Headers;
-};
-
-export type getApiAuthMeSessionsResponse = (getApiAuthMeSessionsResponseSuccess | getApiAuthMeSessionsResponseError)
-
-export const getGetApiAuthMeSessionsUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<UserSessionDtoIReadOnlyListApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/me/sessions`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/me/sessions`
-}
-
-export const getApiAuthMeSessions = async ( options?: RequestInit): Promise<getApiAuthMeSessionsResponse> => {
-  
-  return customInstance<getApiAuthMeSessionsResponse>(getGetApiAuthMeSessionsUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -3670,7 +3024,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthMeSessions>>> = ({ signal }) => getApiAuthMeSessions({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthMeSessions>>> = ({ signal }) => getApiAuthMeSessions(requestOptions, signal);
 
       
 
@@ -3726,55 +3080,17 @@ export function useGetApiAuthMeSessions<TData = Awaited<ReturnType<typeof getApi
 
 
 
-export type deleteApiAuthMeSessionsResponse204 = {
-  data: void
-  status: 204
-}
-
-export type deleteApiAuthMeSessionsResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type deleteApiAuthMeSessionsResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type deleteApiAuthMeSessionsResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
+export const deleteApiAuthMeSessions = (
     
-export type deleteApiAuthMeSessionsResponseSuccess = (deleteApiAuthMeSessionsResponse204) & {
-  headers: Headers;
-};
-export type deleteApiAuthMeSessionsResponseError = (deleteApiAuthMeSessionsResponse400 | deleteApiAuthMeSessionsResponse401 | deleteApiAuthMeSessionsResponse500) & {
-  headers: Headers;
-};
-
-export type deleteApiAuthMeSessionsResponse = (deleteApiAuthMeSessionsResponseSuccess | deleteApiAuthMeSessionsResponseError)
-
-export const getDeleteApiAuthMeSessionsUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/auth/me/sessions`, method: 'DELETE'
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/me/sessions`
-}
-
-export const deleteApiAuthMeSessions = async ( options?: RequestInit): Promise<deleteApiAuthMeSessionsResponse> => {
-  
-  return customInstance<deleteApiAuthMeSessionsResponse>(getDeleteApiAuthMeSessionsUrl(),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
 
 
 export const getDeleteApiAuthMeSessionsMutationOptions = <TError = ApiErrorResponse,
@@ -3821,55 +3137,17 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type deleteApiAuthMeSessionsSessionIdResponse204 = {
-  data: void
-  status: 204
-}
-
-export type deleteApiAuthMeSessionsSessionIdResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type deleteApiAuthMeSessionsSessionIdResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type deleteApiAuthMeSessionsSessionIdResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type deleteApiAuthMeSessionsSessionIdResponseSuccess = (deleteApiAuthMeSessionsSessionIdResponse204) & {
-  headers: Headers;
-};
-export type deleteApiAuthMeSessionsSessionIdResponseError = (deleteApiAuthMeSessionsSessionIdResponse401 | deleteApiAuthMeSessionsSessionIdResponse404 | deleteApiAuthMeSessionsSessionIdResponse500) & {
-  headers: Headers;
-};
-
-export type deleteApiAuthMeSessionsSessionIdResponse = (deleteApiAuthMeSessionsSessionIdResponseSuccess | deleteApiAuthMeSessionsSessionIdResponseError)
-
-export const getDeleteApiAuthMeSessionsSessionIdUrl = (sessionId: string,) => {
-
-
+export const deleteApiAuthMeSessionsSessionId = (
+    sessionId: string,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/auth/me/sessions/${sessionId}`, method: 'DELETE'
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/me/sessions/${sessionId}`
-}
-
-export const deleteApiAuthMeSessionsSessionId = async (sessionId: string, options?: RequestInit): Promise<deleteApiAuthMeSessionsSessionIdResponse> => {
-  
-  return customInstance<deleteApiAuthMeSessionsSessionIdResponse>(getDeleteApiAuthMeSessionsSessionIdUrl(sessionId),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
 
 
 export const getDeleteApiAuthMeSessionsSessionIdMutationOptions = <TError = ApiErrorResponse,
@@ -3916,55 +3194,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiAuthMeThemeResponse200 = {
-  data: UserThemeResponseApiSuccessResponse
-  status: 200
-}
-
-export type getApiAuthMeThemeResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiAuthMeThemeResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type getApiAuthMeThemeResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
+export const getApiAuthMeTheme = (
     
-export type getApiAuthMeThemeResponseSuccess = (getApiAuthMeThemeResponse200) & {
-  headers: Headers;
-};
-export type getApiAuthMeThemeResponseError = (getApiAuthMeThemeResponse401 | getApiAuthMeThemeResponse404 | getApiAuthMeThemeResponse500) & {
-  headers: Headers;
-};
-
-export type getApiAuthMeThemeResponse = (getApiAuthMeThemeResponseSuccess | getApiAuthMeThemeResponseError)
-
-export const getGetApiAuthMeThemeUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<UserThemeResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/me/theme`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/me/theme`
-}
-
-export const getApiAuthMeTheme = async ( options?: RequestInit): Promise<getApiAuthMeThemeResponse> => {
-  
-  return customInstance<getApiAuthMeThemeResponse>(getGetApiAuthMeThemeUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -3984,7 +3225,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthMeTheme>>> = ({ signal }) => getApiAuthMeTheme({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthMeTheme>>> = ({ signal }) => getApiAuthMeTheme(requestOptions, signal);
 
       
 
@@ -4040,56 +3281,19 @@ export function useGetApiAuthMeTheme<TData = Awaited<ReturnType<typeof getApiAut
 
 
 
-export type putApiAuthMeThemeResponse200 = {
-  data: UserThemeResponseApiSuccessResponse
-  status: 200
-}
-
-export type putApiAuthMeThemeResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type putApiAuthMeThemeResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type putApiAuthMeThemeResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type putApiAuthMeThemeResponseSuccess = (putApiAuthMeThemeResponse200) & {
-  headers: Headers;
-};
-export type putApiAuthMeThemeResponseError = (putApiAuthMeThemeResponse400 | putApiAuthMeThemeResponse401 | putApiAuthMeThemeResponse500) & {
-  headers: Headers;
-};
-
-export type putApiAuthMeThemeResponse = (putApiAuthMeThemeResponseSuccess | putApiAuthMeThemeResponseError)
-
-export const getPutApiAuthMeThemeUrl = () => {
-
-
+export const putApiAuthMeTheme = (
+    updateUserThemeRequest: UpdateUserThemeRequest,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<UserThemeResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/me/theme`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateUserThemeRequest
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/me/theme`
-}
-
-export const putApiAuthMeTheme = async (updateUserThemeRequest: UpdateUserThemeRequest, options?: RequestInit): Promise<putApiAuthMeThemeResponse> => {
-  
-  return customInstance<putApiAuthMeThemeResponse>(getPutApiAuthMeThemeUrl(),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      updateUserThemeRequest,)
-  }
-);}
-
-
 
 
 export const getPutApiAuthMeThemeMutationOptions = <TError = ApiErrorResponse,
@@ -4136,62 +3340,19 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiEmailTemplatesResponse200 = {
-  data: StringObjectDictionaryPageResultApiSuccessResponse
-  status: 200
-}
-
-export type getApiEmailTemplatesResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type getApiEmailTemplatesResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiEmailTemplatesResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type getApiEmailTemplatesResponseSuccess = (getApiEmailTemplatesResponse200) & {
-  headers: Headers;
-};
-export type getApiEmailTemplatesResponseError = (getApiEmailTemplatesResponse400 | getApiEmailTemplatesResponse401 | getApiEmailTemplatesResponse500) & {
-  headers: Headers;
-};
-
-export type getApiEmailTemplatesResponse = (getApiEmailTemplatesResponseSuccess | getApiEmailTemplatesResponseError)
-
-export const getGetApiEmailTemplatesUrl = (params?: GetApiEmailTemplatesParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const getApiEmailTemplates = (
+    params?: GetApiEmailTemplatesParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<StringObjectDictionaryPageResultApiSuccessResponse>(
+      {url: `http://localhost:8000/api/email-templates`, method: 'GET',
+        params, signal
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `http://localhost:8000/api/email-templates?${stringifiedParams}` : `http://localhost:8000/api/email-templates`
-}
-
-export const getApiEmailTemplates = async (params?: GetApiEmailTemplatesParams, options?: RequestInit): Promise<getApiEmailTemplatesResponse> => {
   
-  return customInstance<getApiEmailTemplatesResponse>(getGetApiEmailTemplatesUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -4211,7 +3372,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiEmailTemplates>>> = ({ signal }) => getApiEmailTemplates(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiEmailTemplates>>> = ({ signal }) => getApiEmailTemplates(params, requestOptions, signal);
 
       
 
@@ -4267,61 +3428,20 @@ export function useGetApiEmailTemplates<TData = Awaited<ReturnType<typeof getApi
 
 
 
-export type postApiEmailTemplatesResponse201 = {
-  data: Int64ApiSuccessResponse
-  status: 201
-}
-
-export type postApiEmailTemplatesResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiEmailTemplatesResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiEmailTemplatesResponse409 = {
-  data: ApiErrorResponse
-  status: 409
-}
-
-export type postApiEmailTemplatesResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiEmailTemplatesResponseSuccess = (postApiEmailTemplatesResponse201) & {
-  headers: Headers;
-};
-export type postApiEmailTemplatesResponseError = (postApiEmailTemplatesResponse400 | postApiEmailTemplatesResponse401 | postApiEmailTemplatesResponse409 | postApiEmailTemplatesResponse500) & {
-  headers: Headers;
-};
-
-export type postApiEmailTemplatesResponse = (postApiEmailTemplatesResponseSuccess | postApiEmailTemplatesResponseError)
-
-export const getPostApiEmailTemplatesUrl = () => {
-
-
+export const postApiEmailTemplates = (
+    createEmailTemplateRequest: CreateEmailTemplateRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Int64ApiSuccessResponse>(
+      {url: `http://localhost:8000/api/email-templates`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createEmailTemplateRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/email-templates`
-}
-
-export const postApiEmailTemplates = async (createEmailTemplateRequest: CreateEmailTemplateRequest, options?: RequestInit): Promise<postApiEmailTemplatesResponse> => {
-  
-  return customInstance<postApiEmailTemplatesResponse>(getPostApiEmailTemplatesUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      createEmailTemplateRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiEmailTemplatesMutationOptions = <TError = ApiErrorResponse,
@@ -4368,55 +3488,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiEmailTemplatesIdResponse200 = {
-  data: EmailTemplateResponseApiSuccessResponse
-  status: 200
-}
-
-export type getApiEmailTemplatesIdResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiEmailTemplatesIdResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type getApiEmailTemplatesIdResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type getApiEmailTemplatesIdResponseSuccess = (getApiEmailTemplatesIdResponse200) & {
-  headers: Headers;
-};
-export type getApiEmailTemplatesIdResponseError = (getApiEmailTemplatesIdResponse401 | getApiEmailTemplatesIdResponse404 | getApiEmailTemplatesIdResponse500) & {
-  headers: Headers;
-};
-
-export type getApiEmailTemplatesIdResponse = (getApiEmailTemplatesIdResponseSuccess | getApiEmailTemplatesIdResponseError)
-
-export const getGetApiEmailTemplatesIdUrl = (id: number,) => {
-
-
+export const getApiEmailTemplatesId = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<EmailTemplateResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/email-templates/${id}`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/email-templates/${id}`
-}
-
-export const getApiEmailTemplatesId = async (id: number, options?: RequestInit): Promise<getApiEmailTemplatesIdResponse> => {
-  
-  return customInstance<getApiEmailTemplatesIdResponse>(getGetApiEmailTemplatesIdUrl(id),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -4436,7 +3519,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiEmailTemplatesId>>> = ({ signal }) => getApiEmailTemplatesId(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiEmailTemplatesId>>> = ({ signal }) => getApiEmailTemplatesId(id, requestOptions, signal);
 
       
 
@@ -4492,62 +3575,20 @@ export function useGetApiEmailTemplatesId<TData = Awaited<ReturnType<typeof getA
 
 
 
-export type putApiEmailTemplatesIdResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type putApiEmailTemplatesIdResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type putApiEmailTemplatesIdResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type putApiEmailTemplatesIdResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type putApiEmailTemplatesIdResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type putApiEmailTemplatesIdResponseSuccess = (putApiEmailTemplatesIdResponse200) & {
-  headers: Headers;
-};
-export type putApiEmailTemplatesIdResponseError = (putApiEmailTemplatesIdResponse400 | putApiEmailTemplatesIdResponse401 | putApiEmailTemplatesIdResponse404 | putApiEmailTemplatesIdResponse500) & {
-  headers: Headers;
-};
-
-export type putApiEmailTemplatesIdResponse = (putApiEmailTemplatesIdResponseSuccess | putApiEmailTemplatesIdResponseError)
-
-export const getPutApiEmailTemplatesIdUrl = (id: number,) => {
-
-
+export const putApiEmailTemplatesId = (
+    id: number,
+    updateEmailTemplateRequest: UpdateEmailTemplateRequest,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/email-templates/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateEmailTemplateRequest
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/email-templates/${id}`
-}
-
-export const putApiEmailTemplatesId = async (id: number,
-    updateEmailTemplateRequest: UpdateEmailTemplateRequest, options?: RequestInit): Promise<putApiEmailTemplatesIdResponse> => {
-  
-  return customInstance<putApiEmailTemplatesIdResponse>(getPutApiEmailTemplatesIdUrl(id),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      updateEmailTemplateRequest,)
-  }
-);}
-
-
 
 
 export const getPutApiEmailTemplatesIdMutationOptions = <TError = ApiErrorResponse,
@@ -4594,60 +3635,17 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type deleteApiEmailTemplatesIdResponse204 = {
-  data: void
-  status: 204
-}
-
-export type deleteApiEmailTemplatesIdResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type deleteApiEmailTemplatesIdResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type deleteApiEmailTemplatesIdResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type deleteApiEmailTemplatesIdResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type deleteApiEmailTemplatesIdResponseSuccess = (deleteApiEmailTemplatesIdResponse204) & {
-  headers: Headers;
-};
-export type deleteApiEmailTemplatesIdResponseError = (deleteApiEmailTemplatesIdResponse400 | deleteApiEmailTemplatesIdResponse401 | deleteApiEmailTemplatesIdResponse404 | deleteApiEmailTemplatesIdResponse500) & {
-  headers: Headers;
-};
-
-export type deleteApiEmailTemplatesIdResponse = (deleteApiEmailTemplatesIdResponseSuccess | deleteApiEmailTemplatesIdResponseError)
-
-export const getDeleteApiEmailTemplatesIdUrl = (id: number,) => {
-
-
+export const deleteApiEmailTemplatesId = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/email-templates/${id}`, method: 'DELETE'
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/email-templates/${id}`
-}
-
-export const deleteApiEmailTemplatesId = async (id: number, options?: RequestInit): Promise<deleteApiEmailTemplatesIdResponse> => {
-  
-  return customInstance<deleteApiEmailTemplatesIdResponse>(getDeleteApiEmailTemplatesIdUrl(id),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
 
 
 export const getDeleteApiEmailTemplatesIdMutationOptions = <TError = ApiErrorResponse,
@@ -4694,55 +3692,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiEmailTemplatesByCodeCodeResponse200 = {
-  data: EmailTemplateResponseApiSuccessResponse
-  status: 200
-}
-
-export type getApiEmailTemplatesByCodeCodeResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiEmailTemplatesByCodeCodeResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type getApiEmailTemplatesByCodeCodeResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type getApiEmailTemplatesByCodeCodeResponseSuccess = (getApiEmailTemplatesByCodeCodeResponse200) & {
-  headers: Headers;
-};
-export type getApiEmailTemplatesByCodeCodeResponseError = (getApiEmailTemplatesByCodeCodeResponse401 | getApiEmailTemplatesByCodeCodeResponse404 | getApiEmailTemplatesByCodeCodeResponse500) & {
-  headers: Headers;
-};
-
-export type getApiEmailTemplatesByCodeCodeResponse = (getApiEmailTemplatesByCodeCodeResponseSuccess | getApiEmailTemplatesByCodeCodeResponseError)
-
-export const getGetApiEmailTemplatesByCodeCodeUrl = (code: string,) => {
-
-
+export const getApiEmailTemplatesByCodeCode = (
+    code: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<EmailTemplateResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/email-templates/by-code/${code}`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/email-templates/by-code/${code}`
-}
-
-export const getApiEmailTemplatesByCodeCode = async (code: string, options?: RequestInit): Promise<getApiEmailTemplatesByCodeCodeResponse> => {
-  
-  return customInstance<getApiEmailTemplatesByCodeCodeResponse>(getGetApiEmailTemplatesByCodeCodeUrl(code),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -4762,7 +3723,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiEmailTemplatesByCodeCode>>> = ({ signal }) => getApiEmailTemplatesByCodeCode(code, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiEmailTemplatesByCodeCode>>> = ({ signal }) => getApiEmailTemplatesByCodeCode(code, requestOptions, signal);
 
       
 
@@ -4818,55 +3779,18 @@ export function useGetApiEmailTemplatesByCodeCode<TData = Awaited<ReturnType<typ
 
 
 
-export type postApiEmailTemplatesIdActivateResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type postApiEmailTemplatesIdActivateResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiEmailTemplatesIdActivateResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type postApiEmailTemplatesIdActivateResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiEmailTemplatesIdActivateResponseSuccess = (postApiEmailTemplatesIdActivateResponse200) & {
-  headers: Headers;
-};
-export type postApiEmailTemplatesIdActivateResponseError = (postApiEmailTemplatesIdActivateResponse401 | postApiEmailTemplatesIdActivateResponse404 | postApiEmailTemplatesIdActivateResponse500) & {
-  headers: Headers;
-};
-
-export type postApiEmailTemplatesIdActivateResponse = (postApiEmailTemplatesIdActivateResponseSuccess | postApiEmailTemplatesIdActivateResponseError)
-
-export const getPostApiEmailTemplatesIdActivateUrl = (id: number,) => {
-
-
+export const postApiEmailTemplatesIdActivate = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/email-templates/${id}/activate`, method: 'POST', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/email-templates/${id}/activate`
-}
-
-export const postApiEmailTemplatesIdActivate = async (id: number, options?: RequestInit): Promise<postApiEmailTemplatesIdActivateResponse> => {
-  
-  return customInstance<postApiEmailTemplatesIdActivateResponse>(getPostApiEmailTemplatesIdActivateUrl(id),
-  {      
-    ...options,
-    method: 'POST'
-    
-    
-  }
-);}
-
-
 
 
 export const getPostApiEmailTemplatesIdActivateMutationOptions = <TError = ApiErrorResponse,
@@ -4913,55 +3837,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiEmailTemplatesIdDeactivateResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type postApiEmailTemplatesIdDeactivateResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiEmailTemplatesIdDeactivateResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type postApiEmailTemplatesIdDeactivateResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiEmailTemplatesIdDeactivateResponseSuccess = (postApiEmailTemplatesIdDeactivateResponse200) & {
-  headers: Headers;
-};
-export type postApiEmailTemplatesIdDeactivateResponseError = (postApiEmailTemplatesIdDeactivateResponse401 | postApiEmailTemplatesIdDeactivateResponse404 | postApiEmailTemplatesIdDeactivateResponse500) & {
-  headers: Headers;
-};
-
-export type postApiEmailTemplatesIdDeactivateResponse = (postApiEmailTemplatesIdDeactivateResponseSuccess | postApiEmailTemplatesIdDeactivateResponseError)
-
-export const getPostApiEmailTemplatesIdDeactivateUrl = (id: number,) => {
-
-
+export const postApiEmailTemplatesIdDeactivate = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/email-templates/${id}/deactivate`, method: 'POST', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/email-templates/${id}/deactivate`
-}
-
-export const postApiEmailTemplatesIdDeactivate = async (id: number, options?: RequestInit): Promise<postApiEmailTemplatesIdDeactivateResponse> => {
-  
-  return customInstance<postApiEmailTemplatesIdDeactivateResponse>(getPostApiEmailTemplatesIdDeactivateUrl(id),
-  {      
-    ...options,
-    method: 'POST'
-    
-    
-  }
-);}
-
-
 
 
 export const getPostApiEmailTemplatesIdDeactivateMutationOptions = <TError = ApiErrorResponse,
@@ -5008,38 +3895,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getHealthResponse200 = {
-  data: void
-  status: 200
-}
+export const getHealth = (
     
-export type getHealthResponseSuccess = (getHealthResponse200) & {
-  headers: Headers;
-};
-;
-
-export type getHealthResponse = (getHealthResponseSuccess)
-
-export const getGetHealthUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/health`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/health`
-}
-
-export const getHealth = async ( options?: RequestInit): Promise<getHealthResponse> => {
-  
-  return customInstance<getHealthResponse>(getGetHealthUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -5059,7 +3926,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getHealth>>> = ({ signal }) => getHealth({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getHealth>>> = ({ signal }) => getHealth(requestOptions, signal);
 
       
 
@@ -5115,38 +3982,18 @@ export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TErr
 
 
 
-export type headHealthResponse200 = {
-  data: void
-  status: 200
-}
+export const headHealth = (
     
-export type headHealthResponseSuccess = (headHealthResponse200) & {
-  headers: Headers;
-};
-;
-
-export type headHealthResponse = (headHealthResponseSuccess)
-
-export const getHeadHealthUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/health`, method: 'HEAD', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/health`
-}
-
-export const headHealth = async ( options?: RequestInit): Promise<headHealthResponse> => {
-  
-  return customInstance<headHealthResponse>(getHeadHealthUrl(),
-  {      
-    ...options,
-    method: 'HEAD'
-    
-    
-  }
-);}
-
-
 
 
 export const getHeadHealthMutationOptions = <TError = unknown,
@@ -5193,38 +4040,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getHealthReadyResponse200 = {
-  data: void
-  status: 200
-}
+export const getHealthReady = (
     
-export type getHealthReadyResponseSuccess = (getHealthReadyResponse200) & {
-  headers: Headers;
-};
-;
-
-export type getHealthReadyResponse = (getHealthReadyResponseSuccess)
-
-export const getGetHealthReadyUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/health/ready`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/health/ready`
-}
-
-export const getHealthReady = async ( options?: RequestInit): Promise<getHealthReadyResponse> => {
-  
-  return customInstance<getHealthReadyResponse>(getGetHealthReadyUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -5244,7 +4071,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getHealthReady>>> = ({ signal }) => getHealthReady({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getHealthReady>>> = ({ signal }) => getHealthReady(requestOptions, signal);
 
       
 
@@ -5300,38 +4127,18 @@ export function useGetHealthReady<TData = Awaited<ReturnType<typeof getHealthRea
 
 
 
-export type headHealthReadyResponse200 = {
-  data: void
-  status: 200
-}
+export const headHealthReady = (
     
-export type headHealthReadyResponseSuccess = (headHealthReadyResponse200) & {
-  headers: Headers;
-};
-;
-
-export type headHealthReadyResponse = (headHealthReadyResponseSuccess)
-
-export const getHeadHealthReadyUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/health/ready`, method: 'HEAD', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/health/ready`
-}
-
-export const headHealthReady = async ( options?: RequestInit): Promise<headHealthReadyResponse> => {
-  
-  return customInstance<headHealthReadyResponse>(getHeadHealthReadyUrl(),
-  {      
-    ...options,
-    method: 'HEAD'
-    
-    
-  }
-);}
-
-
 
 
 export const getHeadHealthReadyMutationOptions = <TError = unknown,
@@ -5378,38 +4185,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getHealthLiveResponse200 = {
-  data: void
-  status: 200
-}
+export const getHealthLive = (
     
-export type getHealthLiveResponseSuccess = (getHealthLiveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type getHealthLiveResponse = (getHealthLiveResponseSuccess)
-
-export const getGetHealthLiveUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/health/live`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/health/live`
-}
-
-export const getHealthLive = async ( options?: RequestInit): Promise<getHealthLiveResponse> => {
-  
-  return customInstance<getHealthLiveResponse>(getGetHealthLiveUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -5429,7 +4216,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getHealthLive>>> = ({ signal }) => getHealthLive({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getHealthLive>>> = ({ signal }) => getHealthLive(requestOptions, signal);
 
       
 
@@ -5485,38 +4272,18 @@ export function useGetHealthLive<TData = Awaited<ReturnType<typeof getHealthLive
 
 
 
-export type headHealthLiveResponse200 = {
-  data: void
-  status: 200
-}
+export const headHealthLive = (
     
-export type headHealthLiveResponseSuccess = (headHealthLiveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type headHealthLiveResponse = (headHealthLiveResponseSuccess)
-
-export const getHeadHealthLiveUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/health/live`, method: 'HEAD', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/health/live`
-}
-
-export const headHealthLive = async ( options?: RequestInit): Promise<headHealthLiveResponse> => {
-  
-  return customInstance<headHealthLiveResponse>(getHeadHealthLiveUrl(),
-  {      
-    ...options,
-    method: 'HEAD'
-    
-    
-  }
-);}
-
-
 
 
 export const getHeadHealthLiveMutationOptions = <TError = unknown,
@@ -5563,38 +4330,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getWellKnownJwksJsonResponse200 = {
-  data: JwkDtoListApiSuccessResponse
-  status: 200
-}
+export const getWellKnownJwksJson = (
     
-export type getWellKnownJwksJsonResponseSuccess = (getWellKnownJwksJsonResponse200) & {
-  headers: Headers;
-};
-;
-
-export type getWellKnownJwksJsonResponse = (getWellKnownJwksJsonResponseSuccess)
-
-export const getGetWellKnownJwksJsonUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<JwkDtoListApiSuccessResponse>(
+      {url: `http://localhost:8000/.well-known/jwks.json`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/.well-known/jwks.json`
-}
-
-export const getWellKnownJwksJson = async ( options?: RequestInit): Promise<getWellKnownJwksJsonResponse> => {
-  
-  return customInstance<getWellKnownJwksJsonResponse>(getGetWellKnownJwksJsonUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -5614,7 +4361,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWellKnownJwksJson>>> = ({ signal }) => getWellKnownJwksJson({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWellKnownJwksJson>>> = ({ signal }) => getWellKnownJwksJson(requestOptions, signal);
 
       
 
@@ -5670,38 +4417,18 @@ export function useGetWellKnownJwksJson<TData = Awaited<ReturnType<typeof getWel
 
 
 
-export type getApiAuthJwksResponse200 = {
-  data: JwkDtoListApiSuccessResponse
-  status: 200
-}
+export const getApiAuthJwks = (
     
-export type getApiAuthJwksResponseSuccess = (getApiAuthJwksResponse200) & {
-  headers: Headers;
-};
-;
-
-export type getApiAuthJwksResponse = (getApiAuthJwksResponseSuccess)
-
-export const getGetApiAuthJwksUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<JwkDtoListApiSuccessResponse>(
+      {url: `http://localhost:8000/api/auth/jwks`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/auth/jwks`
-}
-
-export const getApiAuthJwks = async ( options?: RequestInit): Promise<getApiAuthJwksResponse> => {
-  
-  return customInstance<getApiAuthJwksResponse>(getGetApiAuthJwksUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -5721,7 +4448,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthJwks>>> = ({ signal }) => getApiAuthJwks({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthJwks>>> = ({ signal }) => getApiAuthJwks(requestOptions, signal);
 
       
 
@@ -5777,50 +4504,18 @@ export function useGetApiAuthJwks<TData = Awaited<ReturnType<typeof getApiAuthJw
 
 
 
-export type getApiAdminSigningKeysResponse200 = {
-  data: SigningKeyResponseIEnumerableApiSuccessResponse
-  status: 200
-}
-
-export type getApiAdminSigningKeysResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiAdminSigningKeysResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
+export const getApiAdminSigningKeys = (
     
-export type getApiAdminSigningKeysResponseSuccess = (getApiAdminSigningKeysResponse200) & {
-  headers: Headers;
-};
-export type getApiAdminSigningKeysResponseError = (getApiAdminSigningKeysResponse401 | getApiAdminSigningKeysResponse403) & {
-  headers: Headers;
-};
-
-export type getApiAdminSigningKeysResponse = (getApiAdminSigningKeysResponseSuccess | getApiAdminSigningKeysResponseError)
-
-export const getGetApiAdminSigningKeysUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<SigningKeyResponseIEnumerableApiSuccessResponse>(
+      {url: `http://localhost:8000/api/admin/signing-keys`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/admin/signing-keys`
-}
-
-export const getApiAdminSigningKeys = async ( options?: RequestInit): Promise<getApiAdminSigningKeysResponse> => {
-  
-  return customInstance<getApiAdminSigningKeysResponse>(getGetApiAdminSigningKeysUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -5840,7 +4535,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAdminSigningKeys>>> = ({ signal }) => getApiAdminSigningKeys({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAdminSigningKeys>>> = ({ signal }) => getApiAdminSigningKeys(requestOptions, signal);
 
       
 
@@ -5896,56 +4591,20 @@ export function useGetApiAdminSigningKeys<TData = Awaited<ReturnType<typeof getA
 
 
 
-export type postApiAdminSigningKeysResponse201 = {
-  data: SigningKeyResponseApiSuccessResponse
-  status: 201
-}
-
-export type postApiAdminSigningKeysResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAdminSigningKeysResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAdminSigningKeysResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-    
-export type postApiAdminSigningKeysResponseSuccess = (postApiAdminSigningKeysResponse201) & {
-  headers: Headers;
-};
-export type postApiAdminSigningKeysResponseError = (postApiAdminSigningKeysResponse400 | postApiAdminSigningKeysResponse401 | postApiAdminSigningKeysResponse403) & {
-  headers: Headers;
-};
-
-export type postApiAdminSigningKeysResponse = (postApiAdminSigningKeysResponseSuccess | postApiAdminSigningKeysResponseError)
-
-export const getPostApiAdminSigningKeysUrl = () => {
-
-
+export const postApiAdminSigningKeys = (
+    generateSigningKeyRequest: GenerateSigningKeyRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<SigningKeyResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/admin/signing-keys`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: generateSigningKeyRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/admin/signing-keys`
-}
-
-export const postApiAdminSigningKeys = async (generateSigningKeyRequest: GenerateSigningKeyRequest, options?: RequestInit): Promise<postApiAdminSigningKeysResponse> => {
-  
-  return customInstance<postApiAdminSigningKeysResponse>(getPostApiAdminSigningKeysUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      generateSigningKeyRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAdminSigningKeysMutationOptions = <TError = ApiErrorResponse,
@@ -5992,55 +4651,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiAdminSigningKeysIdResponse200 = {
-  data: SigningKeyResponseApiSuccessResponse
-  status: 200
-}
-
-export type getApiAdminSigningKeysIdResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiAdminSigningKeysIdResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-
-export type getApiAdminSigningKeysIdResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-    
-export type getApiAdminSigningKeysIdResponseSuccess = (getApiAdminSigningKeysIdResponse200) & {
-  headers: Headers;
-};
-export type getApiAdminSigningKeysIdResponseError = (getApiAdminSigningKeysIdResponse401 | getApiAdminSigningKeysIdResponse403 | getApiAdminSigningKeysIdResponse404) & {
-  headers: Headers;
-};
-
-export type getApiAdminSigningKeysIdResponse = (getApiAdminSigningKeysIdResponseSuccess | getApiAdminSigningKeysIdResponseError)
-
-export const getGetApiAdminSigningKeysIdUrl = (id: number,) => {
-
-
+export const getApiAdminSigningKeysId = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<SigningKeyResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/admin/signing-keys/${id}`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/admin/signing-keys/${id}`
-}
-
-export const getApiAdminSigningKeysId = async (id: number, options?: RequestInit): Promise<getApiAdminSigningKeysIdResponse> => {
-  
-  return customInstance<getApiAdminSigningKeysIdResponse>(getGetApiAdminSigningKeysIdUrl(id),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -6060,7 +4682,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAdminSigningKeysId>>> = ({ signal }) => getApiAdminSigningKeysId(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAdminSigningKeysId>>> = ({ signal }) => getApiAdminSigningKeysId(id, requestOptions, signal);
 
       
 
@@ -6116,60 +4738,17 @@ export function useGetApiAdminSigningKeysId<TData = Awaited<ReturnType<typeof ge
 
 
 
-export type deleteApiAdminSigningKeysIdResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type deleteApiAdminSigningKeysIdResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type deleteApiAdminSigningKeysIdResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type deleteApiAdminSigningKeysIdResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-
-export type deleteApiAdminSigningKeysIdResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-    
-export type deleteApiAdminSigningKeysIdResponseSuccess = (deleteApiAdminSigningKeysIdResponse200) & {
-  headers: Headers;
-};
-export type deleteApiAdminSigningKeysIdResponseError = (deleteApiAdminSigningKeysIdResponse400 | deleteApiAdminSigningKeysIdResponse401 | deleteApiAdminSigningKeysIdResponse403 | deleteApiAdminSigningKeysIdResponse404) & {
-  headers: Headers;
-};
-
-export type deleteApiAdminSigningKeysIdResponse = (deleteApiAdminSigningKeysIdResponseSuccess | deleteApiAdminSigningKeysIdResponseError)
-
-export const getDeleteApiAdminSigningKeysIdUrl = (id: number,) => {
-
-
+export const deleteApiAdminSigningKeysId = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/admin/signing-keys/${id}`, method: 'DELETE'
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/admin/signing-keys/${id}`
-}
-
-export const deleteApiAdminSigningKeysId = async (id: number, options?: RequestInit): Promise<deleteApiAdminSigningKeysIdResponse> => {
-  
-  return customInstance<deleteApiAdminSigningKeysIdResponse>(getDeleteApiAdminSigningKeysIdUrl(id),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
 
 
 export const getDeleteApiAdminSigningKeysIdMutationOptions = <TError = ApiErrorResponse,
@@ -6216,56 +4795,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAdminSigningKeysRotateResponse200 = {
-  data: SigningKeyResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiAdminSigningKeysRotateResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAdminSigningKeysRotateResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAdminSigningKeysRotateResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-    
-export type postApiAdminSigningKeysRotateResponseSuccess = (postApiAdminSigningKeysRotateResponse200) & {
-  headers: Headers;
-};
-export type postApiAdminSigningKeysRotateResponseError = (postApiAdminSigningKeysRotateResponse400 | postApiAdminSigningKeysRotateResponse401 | postApiAdminSigningKeysRotateResponse403) & {
-  headers: Headers;
-};
-
-export type postApiAdminSigningKeysRotateResponse = (postApiAdminSigningKeysRotateResponseSuccess | postApiAdminSigningKeysRotateResponseError)
-
-export const getPostApiAdminSigningKeysRotateUrl = () => {
-
-
+export const postApiAdminSigningKeysRotate = (
+    rotateKeyRequest: RotateKeyRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<SigningKeyResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/admin/signing-keys/rotate`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: rotateKeyRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/admin/signing-keys/rotate`
-}
-
-export const postApiAdminSigningKeysRotate = async (rotateKeyRequest: RotateKeyRequest, options?: RequestInit): Promise<postApiAdminSigningKeysRotateResponse> => {
-  
-  return customInstance<postApiAdminSigningKeysRotateResponse>(getPostApiAdminSigningKeysRotateUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      rotateKeyRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAdminSigningKeysRotateMutationOptions = <TError = ApiErrorResponse,
@@ -6312,60 +4855,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAdminSigningKeysIdActivateResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type postApiAdminSigningKeysIdActivateResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAdminSigningKeysIdActivateResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAdminSigningKeysIdActivateResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-
-export type postApiAdminSigningKeysIdActivateResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-    
-export type postApiAdminSigningKeysIdActivateResponseSuccess = (postApiAdminSigningKeysIdActivateResponse200) & {
-  headers: Headers;
-};
-export type postApiAdminSigningKeysIdActivateResponseError = (postApiAdminSigningKeysIdActivateResponse400 | postApiAdminSigningKeysIdActivateResponse401 | postApiAdminSigningKeysIdActivateResponse403 | postApiAdminSigningKeysIdActivateResponse404) & {
-  headers: Headers;
-};
-
-export type postApiAdminSigningKeysIdActivateResponse = (postApiAdminSigningKeysIdActivateResponseSuccess | postApiAdminSigningKeysIdActivateResponseError)
-
-export const getPostApiAdminSigningKeysIdActivateUrl = (id: number,) => {
-
-
+export const postApiAdminSigningKeysIdActivate = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/admin/signing-keys/${id}/activate`, method: 'POST', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/admin/signing-keys/${id}/activate`
-}
-
-export const postApiAdminSigningKeysIdActivate = async (id: number, options?: RequestInit): Promise<postApiAdminSigningKeysIdActivateResponse> => {
-  
-  return customInstance<postApiAdminSigningKeysIdActivateResponse>(getPostApiAdminSigningKeysIdActivateUrl(id),
-  {      
-    ...options,
-    method: 'POST'
-    
-    
-  }
-);}
-
-
 
 
 export const getPostApiAdminSigningKeysIdActivateMutationOptions = <TError = ApiErrorResponse,
@@ -6412,55 +4913,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAdminSigningKeysIdDeactivateResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type postApiAdminSigningKeysIdDeactivateResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAdminSigningKeysIdDeactivateResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-
-export type postApiAdminSigningKeysIdDeactivateResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-    
-export type postApiAdminSigningKeysIdDeactivateResponseSuccess = (postApiAdminSigningKeysIdDeactivateResponse200) & {
-  headers: Headers;
-};
-export type postApiAdminSigningKeysIdDeactivateResponseError = (postApiAdminSigningKeysIdDeactivateResponse401 | postApiAdminSigningKeysIdDeactivateResponse403 | postApiAdminSigningKeysIdDeactivateResponse404) & {
-  headers: Headers;
-};
-
-export type postApiAdminSigningKeysIdDeactivateResponse = (postApiAdminSigningKeysIdDeactivateResponseSuccess | postApiAdminSigningKeysIdDeactivateResponseError)
-
-export const getPostApiAdminSigningKeysIdDeactivateUrl = (id: number,) => {
-
-
+export const postApiAdminSigningKeysIdDeactivate = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/admin/signing-keys/${id}/deactivate`, method: 'POST', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/admin/signing-keys/${id}/deactivate`
-}
-
-export const postApiAdminSigningKeysIdDeactivate = async (id: number, options?: RequestInit): Promise<postApiAdminSigningKeysIdDeactivateResponse> => {
-  
-  return customInstance<postApiAdminSigningKeysIdDeactivateResponse>(getPostApiAdminSigningKeysIdDeactivateUrl(id),
-  {      
-    ...options,
-    method: 'POST'
-    
-    
-  }
-);}
-
-
 
 
 export const getPostApiAdminSigningKeysIdDeactivateMutationOptions = <TError = ApiErrorResponse,
@@ -6507,62 +4971,21 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiAdminSigningKeysIdRevokeResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type postApiAdminSigningKeysIdRevokeResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiAdminSigningKeysIdRevokeResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiAdminSigningKeysIdRevokeResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-
-export type postApiAdminSigningKeysIdRevokeResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-    
-export type postApiAdminSigningKeysIdRevokeResponseSuccess = (postApiAdminSigningKeysIdRevokeResponse200) & {
-  headers: Headers;
-};
-export type postApiAdminSigningKeysIdRevokeResponseError = (postApiAdminSigningKeysIdRevokeResponse400 | postApiAdminSigningKeysIdRevokeResponse401 | postApiAdminSigningKeysIdRevokeResponse403 | postApiAdminSigningKeysIdRevokeResponse404) & {
-  headers: Headers;
-};
-
-export type postApiAdminSigningKeysIdRevokeResponse = (postApiAdminSigningKeysIdRevokeResponseSuccess | postApiAdminSigningKeysIdRevokeResponseError)
-
-export const getPostApiAdminSigningKeysIdRevokeUrl = (id: number,) => {
-
-
+export const postApiAdminSigningKeysIdRevoke = (
+    id: number,
+    revokeSigningKeyRequest: RevokeSigningKeyRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/admin/signing-keys/${id}/revoke`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: revokeSigningKeyRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/admin/signing-keys/${id}/revoke`
-}
-
-export const postApiAdminSigningKeysIdRevoke = async (id: number,
-    revokeSigningKeyRequest: RevokeSigningKeyRequest, options?: RequestInit): Promise<postApiAdminSigningKeysIdRevokeResponse> => {
-  
-  return customInstance<postApiAdminSigningKeysIdRevokeResponse>(getPostApiAdminSigningKeysIdRevokeUrl(id),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      revokeSigningKeyRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiAdminSigningKeysIdRevokeMutationOptions = <TError = ApiErrorResponse,
@@ -6609,57 +5032,19 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiAdminSigningKeysExpiringResponse200 = {
-  data: SigningKeyResponseIEnumerableApiSuccessResponse
-  status: 200
-}
-
-export type getApiAdminSigningKeysExpiringResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiAdminSigningKeysExpiringResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-    
-export type getApiAdminSigningKeysExpiringResponseSuccess = (getApiAdminSigningKeysExpiringResponse200) & {
-  headers: Headers;
-};
-export type getApiAdminSigningKeysExpiringResponseError = (getApiAdminSigningKeysExpiringResponse401 | getApiAdminSigningKeysExpiringResponse403) & {
-  headers: Headers;
-};
-
-export type getApiAdminSigningKeysExpiringResponse = (getApiAdminSigningKeysExpiringResponseSuccess | getApiAdminSigningKeysExpiringResponseError)
-
-export const getGetApiAdminSigningKeysExpiringUrl = (params?: GetApiAdminSigningKeysExpiringParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const getApiAdminSigningKeysExpiring = (
+    params?: GetApiAdminSigningKeysExpiringParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<SigningKeyResponseIEnumerableApiSuccessResponse>(
+      {url: `http://localhost:8000/api/admin/signing-keys/expiring`, method: 'GET',
+        params, signal
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `http://localhost:8000/api/admin/signing-keys/expiring?${stringifiedParams}` : `http://localhost:8000/api/admin/signing-keys/expiring`
-}
-
-export const getApiAdminSigningKeysExpiring = async (params?: GetApiAdminSigningKeysExpiringParams, options?: RequestInit): Promise<getApiAdminSigningKeysExpiringResponse> => {
   
-  return customInstance<getApiAdminSigningKeysExpiringResponse>(getGetApiAdminSigningKeysExpiringUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -6679,7 +5064,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAdminSigningKeysExpiring>>> = ({ signal }) => getApiAdminSigningKeysExpiring(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAdminSigningKeysExpiring>>> = ({ signal }) => getApiAdminSigningKeysExpiring(params, requestOptions, signal);
 
       
 
@@ -6735,52 +5120,19 @@ export function useGetApiAdminSigningKeysExpiring<TData = Awaited<ReturnType<typ
 
 
 
-export type getApiMenusTreeResponse200 = {
-  data: MenuItemResponseIEnumerableApiSuccessResponse
-  status: 200
-}
-
-export type getApiMenusTreeResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type getApiMenusTreeResponseSuccess = (getApiMenusTreeResponse200) & {
-  headers: Headers;
-};
-export type getApiMenusTreeResponseError = (getApiMenusTreeResponse500) & {
-  headers: Headers;
-};
-
-export type getApiMenusTreeResponse = (getApiMenusTreeResponseSuccess | getApiMenusTreeResponseError)
-
-export const getGetApiMenusTreeUrl = (params?: GetApiMenusTreeParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const getApiMenusTree = (
+    params?: GetApiMenusTreeParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MenuItemResponseIEnumerableApiSuccessResponse>(
+      {url: `http://localhost:8000/api/menus/tree`, method: 'GET',
+        params, signal
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `http://localhost:8000/api/menus/tree?${stringifiedParams}` : `http://localhost:8000/api/menus/tree`
-}
-
-export const getApiMenusTree = async (params?: GetApiMenusTreeParams, options?: RequestInit): Promise<getApiMenusTreeResponse> => {
   
-  return customInstance<getApiMenusTreeResponse>(getGetApiMenusTreeUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -6800,7 +5152,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMenusTree>>> = ({ signal }) => getApiMenusTree(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMenusTree>>> = ({ signal }) => getApiMenusTree(params, requestOptions, signal);
 
       
 
@@ -6856,57 +5208,19 @@ export function useGetApiMenusTree<TData = Awaited<ReturnType<typeof getApiMenus
 
 
 
-export type getApiMenusTreeVisibleResponse200 = {
-  data: MenuItemResponseIEnumerableApiSuccessResponse
-  status: 200
-}
-
-export type getApiMenusTreeVisibleResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiMenusTreeVisibleResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type getApiMenusTreeVisibleResponseSuccess = (getApiMenusTreeVisibleResponse200) & {
-  headers: Headers;
-};
-export type getApiMenusTreeVisibleResponseError = (getApiMenusTreeVisibleResponse401 | getApiMenusTreeVisibleResponse500) & {
-  headers: Headers;
-};
-
-export type getApiMenusTreeVisibleResponse = (getApiMenusTreeVisibleResponseSuccess | getApiMenusTreeVisibleResponseError)
-
-export const getGetApiMenusTreeVisibleUrl = (params?: GetApiMenusTreeVisibleParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const getApiMenusTreeVisible = (
+    params?: GetApiMenusTreeVisibleParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MenuItemResponseIEnumerableApiSuccessResponse>(
+      {url: `http://localhost:8000/api/menus/tree/visible`, method: 'GET',
+        params, signal
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `http://localhost:8000/api/menus/tree/visible?${stringifiedParams}` : `http://localhost:8000/api/menus/tree/visible`
-}
-
-export const getApiMenusTreeVisible = async (params?: GetApiMenusTreeVisibleParams, options?: RequestInit): Promise<getApiMenusTreeVisibleResponse> => {
   
-  return customInstance<getApiMenusTreeVisibleResponse>(getGetApiMenusTreeVisibleUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -6926,7 +5240,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMenusTreeVisible>>> = ({ signal }) => getApiMenusTreeVisible(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMenusTreeVisible>>> = ({ signal }) => getApiMenusTreeVisible(params, requestOptions, signal);
 
       
 
@@ -6982,55 +5296,18 @@ export function useGetApiMenusTreeVisible<TData = Awaited<ReturnType<typeof getA
 
 
 
-export type getApiMenusResponse200 = {
-  data: MenuItemFlatResponseIEnumerableApiSuccessResponse
-  status: 200
-}
-
-export type getApiMenusResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiMenusResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-
-export type getApiMenusResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
+export const getApiMenus = (
     
-export type getApiMenusResponseSuccess = (getApiMenusResponse200) & {
-  headers: Headers;
-};
-export type getApiMenusResponseError = (getApiMenusResponse401 | getApiMenusResponse403 | getApiMenusResponse500) & {
-  headers: Headers;
-};
-
-export type getApiMenusResponse = (getApiMenusResponseSuccess | getApiMenusResponseError)
-
-export const getGetApiMenusUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MenuItemFlatResponseIEnumerableApiSuccessResponse>(
+      {url: `http://localhost:8000/api/menus`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/menus`
-}
-
-export const getApiMenus = async ( options?: RequestInit): Promise<getApiMenusResponse> => {
-  
-  return customInstance<getApiMenusResponse>(getGetApiMenusUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -7050,7 +5327,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMenus>>> = ({ signal }) => getApiMenus({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMenus>>> = ({ signal }) => getApiMenus(requestOptions, signal);
 
       
 
@@ -7106,61 +5383,20 @@ export function useGetApiMenus<TData = Awaited<ReturnType<typeof getApiMenus>>, 
 
 
 
-export type postApiMenusResponse201 = {
-  data: MenuItemResponseApiSuccessResponse
-  status: 201
-}
-
-export type postApiMenusResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiMenusResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiMenusResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-
-export type postApiMenusResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiMenusResponseSuccess = (postApiMenusResponse201) & {
-  headers: Headers;
-};
-export type postApiMenusResponseError = (postApiMenusResponse400 | postApiMenusResponse401 | postApiMenusResponse403 | postApiMenusResponse500) & {
-  headers: Headers;
-};
-
-export type postApiMenusResponse = (postApiMenusResponseSuccess | postApiMenusResponseError)
-
-export const getPostApiMenusUrl = () => {
-
-
+export const postApiMenus = (
+    createMenuItemRequest: CreateMenuItemRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MenuItemResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/menus`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createMenuItemRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/menus`
-}
-
-export const postApiMenus = async (createMenuItemRequest: CreateMenuItemRequest, options?: RequestInit): Promise<postApiMenusResponse> => {
-  
-  return customInstance<postApiMenusResponse>(getPostApiMenusUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      createMenuItemRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiMenusMutationOptions = <TError = ApiErrorResponse,
@@ -7207,60 +5443,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiMenusIdResponse200 = {
-  data: MenuItemResponseApiSuccessResponse
-  status: 200
-}
-
-export type getApiMenusIdResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiMenusIdResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-
-export type getApiMenusIdResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type getApiMenusIdResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type getApiMenusIdResponseSuccess = (getApiMenusIdResponse200) & {
-  headers: Headers;
-};
-export type getApiMenusIdResponseError = (getApiMenusIdResponse401 | getApiMenusIdResponse403 | getApiMenusIdResponse404 | getApiMenusIdResponse500) & {
-  headers: Headers;
-};
-
-export type getApiMenusIdResponse = (getApiMenusIdResponseSuccess | getApiMenusIdResponseError)
-
-export const getGetApiMenusIdUrl = (id: number,) => {
-
-
+export const getApiMenusId = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MenuItemResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/menus/${id}`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/menus/${id}`
-}
-
-export const getApiMenusId = async (id: number, options?: RequestInit): Promise<getApiMenusIdResponse> => {
-  
-  return customInstance<getApiMenusIdResponse>(getGetApiMenusIdUrl(id),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -7280,7 +5474,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMenusId>>> = ({ signal }) => getApiMenusId(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMenusId>>> = ({ signal }) => getApiMenusId(id, requestOptions, signal);
 
       
 
@@ -7336,67 +5530,20 @@ export function useGetApiMenusId<TData = Awaited<ReturnType<typeof getApiMenusId
 
 
 
-export type putApiMenusIdResponse200 = {
-  data: MenuItemResponseApiSuccessResponse
-  status: 200
-}
-
-export type putApiMenusIdResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type putApiMenusIdResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type putApiMenusIdResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-
-export type putApiMenusIdResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type putApiMenusIdResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type putApiMenusIdResponseSuccess = (putApiMenusIdResponse200) & {
-  headers: Headers;
-};
-export type putApiMenusIdResponseError = (putApiMenusIdResponse400 | putApiMenusIdResponse401 | putApiMenusIdResponse403 | putApiMenusIdResponse404 | putApiMenusIdResponse500) & {
-  headers: Headers;
-};
-
-export type putApiMenusIdResponse = (putApiMenusIdResponseSuccess | putApiMenusIdResponseError)
-
-export const getPutApiMenusIdUrl = (id: number,) => {
-
-
+export const putApiMenusId = (
+    id: number,
+    updateMenuItemRequest: UpdateMenuItemRequest,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<MenuItemResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/menus/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateMenuItemRequest
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/menus/${id}`
-}
-
-export const putApiMenusId = async (id: number,
-    updateMenuItemRequest: UpdateMenuItemRequest, options?: RequestInit): Promise<putApiMenusIdResponse> => {
-  
-  return customInstance<putApiMenusIdResponse>(getPutApiMenusIdUrl(id),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      updateMenuItemRequest,)
-  }
-);}
-
-
 
 
 export const getPutApiMenusIdMutationOptions = <TError = ApiErrorResponse,
@@ -7443,65 +5590,17 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type deleteApiMenusIdResponse204 = {
-  data: void
-  status: 204
-}
-
-export type deleteApiMenusIdResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type deleteApiMenusIdResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type deleteApiMenusIdResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-
-export type deleteApiMenusIdResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type deleteApiMenusIdResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type deleteApiMenusIdResponseSuccess = (deleteApiMenusIdResponse204) & {
-  headers: Headers;
-};
-export type deleteApiMenusIdResponseError = (deleteApiMenusIdResponse400 | deleteApiMenusIdResponse401 | deleteApiMenusIdResponse403 | deleteApiMenusIdResponse404 | deleteApiMenusIdResponse500) & {
-  headers: Headers;
-};
-
-export type deleteApiMenusIdResponse = (deleteApiMenusIdResponseSuccess | deleteApiMenusIdResponseError)
-
-export const getDeleteApiMenusIdUrl = (id: number,) => {
-
-
+export const deleteApiMenusId = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/menus/${id}`, method: 'DELETE'
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/menus/${id}`
-}
-
-export const deleteApiMenusId = async (id: number, options?: RequestInit): Promise<deleteApiMenusIdResponse> => {
-  
-  return customInstance<deleteApiMenusIdResponse>(getDeleteApiMenusIdUrl(id),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
 
 
 export const getDeleteApiMenusIdMutationOptions = <TError = ApiErrorResponse,
@@ -7548,60 +5647,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiMenusCodeCodeResponse200 = {
-  data: MenuItemResponseApiSuccessResponse
-  status: 200
-}
-
-export type getApiMenusCodeCodeResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiMenusCodeCodeResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-
-export type getApiMenusCodeCodeResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type getApiMenusCodeCodeResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type getApiMenusCodeCodeResponseSuccess = (getApiMenusCodeCodeResponse200) & {
-  headers: Headers;
-};
-export type getApiMenusCodeCodeResponseError = (getApiMenusCodeCodeResponse401 | getApiMenusCodeCodeResponse403 | getApiMenusCodeCodeResponse404 | getApiMenusCodeCodeResponse500) & {
-  headers: Headers;
-};
-
-export type getApiMenusCodeCodeResponse = (getApiMenusCodeCodeResponseSuccess | getApiMenusCodeCodeResponseError)
-
-export const getGetApiMenusCodeCodeUrl = (code: string,) => {
-
-
+export const getApiMenusCodeCode = (
+    code: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MenuItemResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/menus/code/${code}`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/menus/code/${code}`
-}
-
-export const getApiMenusCodeCode = async (code: string, options?: RequestInit): Promise<getApiMenusCodeCodeResponse> => {
-  
-  return customInstance<getApiMenusCodeCodeResponse>(getGetApiMenusCodeCodeUrl(code),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -7621,7 +5678,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMenusCodeCode>>> = ({ signal }) => getApiMenusCodeCode(code, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMenusCodeCode>>> = ({ signal }) => getApiMenusCodeCode(code, requestOptions, signal);
 
       
 
@@ -7677,61 +5734,19 @@ export function useGetApiMenusCodeCode<TData = Awaited<ReturnType<typeof getApiM
 
 
 
-export type putApiMenusSortOrdersResponse204 = {
-  data: void
-  status: 204
-}
-
-export type putApiMenusSortOrdersResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type putApiMenusSortOrdersResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type putApiMenusSortOrdersResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-
-export type putApiMenusSortOrdersResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type putApiMenusSortOrdersResponseSuccess = (putApiMenusSortOrdersResponse204) & {
-  headers: Headers;
-};
-export type putApiMenusSortOrdersResponseError = (putApiMenusSortOrdersResponse400 | putApiMenusSortOrdersResponse401 | putApiMenusSortOrdersResponse403 | putApiMenusSortOrdersResponse500) & {
-  headers: Headers;
-};
-
-export type putApiMenusSortOrdersResponse = (putApiMenusSortOrdersResponseSuccess | putApiMenusSortOrdersResponseError)
-
-export const getPutApiMenusSortOrdersUrl = () => {
-
-
+export const putApiMenusSortOrders = (
+    updateMenuSortOrdersRequest: UpdateMenuSortOrdersRequest,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/menus/sort-orders`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateMenuSortOrdersRequest
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/menus/sort-orders`
-}
-
-export const putApiMenusSortOrders = async (updateMenuSortOrdersRequest: UpdateMenuSortOrdersRequest, options?: RequestInit): Promise<putApiMenusSortOrdersResponse> => {
-  
-  return customInstance<putApiMenusSortOrdersResponse>(getPutApiMenusSortOrdersUrl(),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      updateMenuSortOrdersRequest,)
-  }
-);}
-
-
 
 
 export const getPutApiMenusSortOrdersMutationOptions = <TError = ApiErrorResponse,
@@ -7778,74 +5793,19 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type putApiMenusIdMoveResponse200 = {
-  data: MenuItemResponseApiSuccessResponse
-  status: 200
-}
-
-export type putApiMenusIdMoveResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type putApiMenusIdMoveResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type putApiMenusIdMoveResponse403 = {
-  data: ApiErrorResponse
-  status: 403
-}
-
-export type putApiMenusIdMoveResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type putApiMenusIdMoveResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type putApiMenusIdMoveResponseSuccess = (putApiMenusIdMoveResponse200) & {
-  headers: Headers;
-};
-export type putApiMenusIdMoveResponseError = (putApiMenusIdMoveResponse400 | putApiMenusIdMoveResponse401 | putApiMenusIdMoveResponse403 | putApiMenusIdMoveResponse404 | putApiMenusIdMoveResponse500) & {
-  headers: Headers;
-};
-
-export type putApiMenusIdMoveResponse = (putApiMenusIdMoveResponseSuccess | putApiMenusIdMoveResponseError)
-
-export const getPutApiMenusIdMoveUrl = (id: number,
-    params?: PutApiMenusIdMoveParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const putApiMenusIdMove = (
+    id: number,
+    params?: PutApiMenusIdMoveParams,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<MenuItemResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/menus/${id}/move`, method: 'PUT',
+        params
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `http://localhost:8000/api/menus/${id}/move?${stringifiedParams}` : `http://localhost:8000/api/menus/${id}/move`
-}
-
-export const putApiMenusIdMove = async (id: number,
-    params?: PutApiMenusIdMoveParams, options?: RequestInit): Promise<putApiMenusIdMoveResponse> => {
   
-  return customInstance<putApiMenusIdMoveResponse>(getPutApiMenusIdMoveUrl(id,params),
-  {      
-    ...options,
-    method: 'PUT'
-    
-    
-  }
-);}
-
-
 
 
 export const getPutApiMenusIdMoveMutationOptions = <TError = ApiErrorResponse,
@@ -7892,62 +5852,19 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiPermissionsResponse200 = {
-  data: StringObjectDictionaryPageResultApiSuccessResponse
-  status: 200
-}
-
-export type getApiPermissionsResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type getApiPermissionsResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiPermissionsResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type getApiPermissionsResponseSuccess = (getApiPermissionsResponse200) & {
-  headers: Headers;
-};
-export type getApiPermissionsResponseError = (getApiPermissionsResponse400 | getApiPermissionsResponse401 | getApiPermissionsResponse500) & {
-  headers: Headers;
-};
-
-export type getApiPermissionsResponse = (getApiPermissionsResponseSuccess | getApiPermissionsResponseError)
-
-export const getGetApiPermissionsUrl = (params?: GetApiPermissionsParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const getApiPermissions = (
+    params?: GetApiPermissionsParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<StringObjectDictionaryPageResultApiSuccessResponse>(
+      {url: `http://localhost:8000/api/permissions`, method: 'GET',
+        params, signal
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `http://localhost:8000/api/permissions?${stringifiedParams}` : `http://localhost:8000/api/permissions`
-}
-
-export const getApiPermissions = async (params?: GetApiPermissionsParams, options?: RequestInit): Promise<getApiPermissionsResponse> => {
   
-  return customInstance<getApiPermissionsResponse>(getGetApiPermissionsUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -7967,7 +5884,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiPermissions>>> = ({ signal }) => getApiPermissions(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiPermissions>>> = ({ signal }) => getApiPermissions(params, requestOptions, signal);
 
       
 
@@ -8023,50 +5940,18 @@ export function useGetApiPermissions<TData = Awaited<ReturnType<typeof getApiPer
 
 
 
-export type getApiPermissionsDefinitionsResponse200 = {
-  data: ObjectIReadOnlyListApiSuccessResponse
-  status: 200
-}
-
-export type getApiPermissionsDefinitionsResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiPermissionsDefinitionsResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
+export const getApiPermissionsDefinitions = (
     
-export type getApiPermissionsDefinitionsResponseSuccess = (getApiPermissionsDefinitionsResponse200) & {
-  headers: Headers;
-};
-export type getApiPermissionsDefinitionsResponseError = (getApiPermissionsDefinitionsResponse401 | getApiPermissionsDefinitionsResponse500) & {
-  headers: Headers;
-};
-
-export type getApiPermissionsDefinitionsResponse = (getApiPermissionsDefinitionsResponseSuccess | getApiPermissionsDefinitionsResponseError)
-
-export const getGetApiPermissionsDefinitionsUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ObjectIReadOnlyListApiSuccessResponse>(
+      {url: `http://localhost:8000/api/permissions/definitions`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/permissions/definitions`
-}
-
-export const getApiPermissionsDefinitions = async ( options?: RequestInit): Promise<getApiPermissionsDefinitionsResponse> => {
-  
-  return customInstance<getApiPermissionsDefinitionsResponse>(getGetApiPermissionsDefinitionsUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -8086,7 +5971,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiPermissionsDefinitions>>> = ({ signal }) => getApiPermissionsDefinitions({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiPermissionsDefinitions>>> = ({ signal }) => getApiPermissionsDefinitions(requestOptions, signal);
 
       
 
@@ -8142,50 +6027,18 @@ export function useGetApiPermissionsDefinitions<TData = Awaited<ReturnType<typeo
 
 
 
-export type getApiPermissionsResourcesResponse200 = {
-  data: StringIReadOnlyListApiSuccessResponse
-  status: 200
-}
-
-export type getApiPermissionsResourcesResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiPermissionsResourcesResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
+export const getApiPermissionsResources = (
     
-export type getApiPermissionsResourcesResponseSuccess = (getApiPermissionsResourcesResponse200) & {
-  headers: Headers;
-};
-export type getApiPermissionsResourcesResponseError = (getApiPermissionsResourcesResponse401 | getApiPermissionsResourcesResponse500) & {
-  headers: Headers;
-};
-
-export type getApiPermissionsResourcesResponse = (getApiPermissionsResourcesResponseSuccess | getApiPermissionsResourcesResponseError)
-
-export const getGetApiPermissionsResourcesUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<StringIReadOnlyListApiSuccessResponse>(
+      {url: `http://localhost:8000/api/permissions/resources`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/permissions/resources`
-}
-
-export const getApiPermissionsResources = async ( options?: RequestInit): Promise<getApiPermissionsResourcesResponse> => {
-  
-  return customInstance<getApiPermissionsResourcesResponse>(getGetApiPermissionsResourcesUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -8205,7 +6058,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiPermissionsResources>>> = ({ signal }) => getApiPermissionsResources({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiPermissionsResources>>> = ({ signal }) => getApiPermissionsResources(requestOptions, signal);
 
       
 
@@ -8261,50 +6114,18 @@ export function useGetApiPermissionsResources<TData = Awaited<ReturnType<typeof 
 
 
 
-export type getApiPermissionsActionsResponse200 = {
-  data: StringIReadOnlyListApiSuccessResponse
-  status: 200
-}
-
-export type getApiPermissionsActionsResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiPermissionsActionsResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
+export const getApiPermissionsActions = (
     
-export type getApiPermissionsActionsResponseSuccess = (getApiPermissionsActionsResponse200) & {
-  headers: Headers;
-};
-export type getApiPermissionsActionsResponseError = (getApiPermissionsActionsResponse401 | getApiPermissionsActionsResponse500) & {
-  headers: Headers;
-};
-
-export type getApiPermissionsActionsResponse = (getApiPermissionsActionsResponseSuccess | getApiPermissionsActionsResponseError)
-
-export const getGetApiPermissionsActionsUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<StringIReadOnlyListApiSuccessResponse>(
+      {url: `http://localhost:8000/api/permissions/actions`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/permissions/actions`
-}
-
-export const getApiPermissionsActions = async ( options?: RequestInit): Promise<getApiPermissionsActionsResponse> => {
-  
-  return customInstance<getApiPermissionsActionsResponse>(getGetApiPermissionsActionsUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -8324,7 +6145,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiPermissionsActions>>> = ({ signal }) => getApiPermissionsActions({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiPermissionsActions>>> = ({ signal }) => getApiPermissionsActions(requestOptions, signal);
 
       
 
@@ -8380,62 +6201,19 @@ export function useGetApiPermissionsActions<TData = Awaited<ReturnType<typeof ge
 
 
 
-export type getApiRolesResponse200 = {
-  data: StringObjectDictionaryPageResultApiSuccessResponse
-  status: 200
-}
-
-export type getApiRolesResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type getApiRolesResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiRolesResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type getApiRolesResponseSuccess = (getApiRolesResponse200) & {
-  headers: Headers;
-};
-export type getApiRolesResponseError = (getApiRolesResponse400 | getApiRolesResponse401 | getApiRolesResponse500) & {
-  headers: Headers;
-};
-
-export type getApiRolesResponse = (getApiRolesResponseSuccess | getApiRolesResponseError)
-
-export const getGetApiRolesUrl = (params?: GetApiRolesParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const getApiRoles = (
+    params?: GetApiRolesParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<StringObjectDictionaryPageResultApiSuccessResponse>(
+      {url: `http://localhost:8000/api/roles`, method: 'GET',
+        params, signal
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `http://localhost:8000/api/roles?${stringifiedParams}` : `http://localhost:8000/api/roles`
-}
-
-export const getApiRoles = async (params?: GetApiRolesParams, options?: RequestInit): Promise<getApiRolesResponse> => {
   
-  return customInstance<getApiRolesResponse>(getGetApiRolesUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -8455,7 +6233,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiRoles>>> = ({ signal }) => getApiRoles(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiRoles>>> = ({ signal }) => getApiRoles(params, requestOptions, signal);
 
       
 
@@ -8511,61 +6289,20 @@ export function useGetApiRoles<TData = Awaited<ReturnType<typeof getApiRoles>>, 
 
 
 
-export type postApiRolesResponse201 = {
-  data: Int64ApiSuccessResponse
-  status: 201
-}
-
-export type postApiRolesResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiRolesResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiRolesResponse409 = {
-  data: ApiErrorResponse
-  status: 409
-}
-
-export type postApiRolesResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiRolesResponseSuccess = (postApiRolesResponse201) & {
-  headers: Headers;
-};
-export type postApiRolesResponseError = (postApiRolesResponse400 | postApiRolesResponse401 | postApiRolesResponse409 | postApiRolesResponse500) & {
-  headers: Headers;
-};
-
-export type postApiRolesResponse = (postApiRolesResponseSuccess | postApiRolesResponseError)
-
-export const getPostApiRolesUrl = () => {
-
-
+export const postApiRoles = (
+    createRoleRequest: CreateRoleRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Int64ApiSuccessResponse>(
+      {url: `http://localhost:8000/api/roles`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createRoleRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/roles`
-}
-
-export const postApiRoles = async (createRoleRequest: CreateRoleRequest, options?: RequestInit): Promise<postApiRolesResponse> => {
-  
-  return customInstance<postApiRolesResponse>(getPostApiRolesUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      createRoleRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiRolesMutationOptions = <TError = ApiErrorResponse,
@@ -8612,55 +6349,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiRolesIdResponse200 = {
-  data: RoleWithPermissionsDtoApiSuccessResponse
-  status: 200
-}
-
-export type getApiRolesIdResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiRolesIdResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type getApiRolesIdResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type getApiRolesIdResponseSuccess = (getApiRolesIdResponse200) & {
-  headers: Headers;
-};
-export type getApiRolesIdResponseError = (getApiRolesIdResponse401 | getApiRolesIdResponse404 | getApiRolesIdResponse500) & {
-  headers: Headers;
-};
-
-export type getApiRolesIdResponse = (getApiRolesIdResponseSuccess | getApiRolesIdResponseError)
-
-export const getGetApiRolesIdUrl = (id: number,) => {
-
-
+export const getApiRolesId = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<RoleWithPermissionsDtoApiSuccessResponse>(
+      {url: `http://localhost:8000/api/roles/${id}`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/roles/${id}`
-}
-
-export const getApiRolesId = async (id: number, options?: RequestInit): Promise<getApiRolesIdResponse> => {
-  
-  return customInstance<getApiRolesIdResponse>(getGetApiRolesIdUrl(id),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -8680,7 +6380,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiRolesId>>> = ({ signal }) => getApiRolesId(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiRolesId>>> = ({ signal }) => getApiRolesId(id, requestOptions, signal);
 
       
 
@@ -8736,62 +6436,20 @@ export function useGetApiRolesId<TData = Awaited<ReturnType<typeof getApiRolesId
 
 
 
-export type patchApiRolesIdResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type patchApiRolesIdResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type patchApiRolesIdResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type patchApiRolesIdResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type patchApiRolesIdResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type patchApiRolesIdResponseSuccess = (patchApiRolesIdResponse200) & {
-  headers: Headers;
-};
-export type patchApiRolesIdResponseError = (patchApiRolesIdResponse400 | patchApiRolesIdResponse401 | patchApiRolesIdResponse404 | patchApiRolesIdResponse500) & {
-  headers: Headers;
-};
-
-export type patchApiRolesIdResponse = (patchApiRolesIdResponseSuccess | patchApiRolesIdResponseError)
-
-export const getPatchApiRolesIdUrl = (id: number,) => {
-
-
+export const patchApiRolesId = (
+    id: number,
+    updateRoleRequest: UpdateRoleRequest,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/roles/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateRoleRequest
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/roles/${id}`
-}
-
-export const patchApiRolesId = async (id: number,
-    updateRoleRequest: UpdateRoleRequest, options?: RequestInit): Promise<patchApiRolesIdResponse> => {
-  
-  return customInstance<patchApiRolesIdResponse>(getPatchApiRolesIdUrl(id),
-  {      
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      updateRoleRequest,)
-  }
-);}
-
-
 
 
 export const getPatchApiRolesIdMutationOptions = <TError = ApiErrorResponse,
@@ -8838,60 +6496,17 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type deleteApiRolesIdResponse204 = {
-  data: void
-  status: 204
-}
-
-export type deleteApiRolesIdResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type deleteApiRolesIdResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type deleteApiRolesIdResponse409 = {
-  data: ApiErrorResponse
-  status: 409
-}
-
-export type deleteApiRolesIdResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type deleteApiRolesIdResponseSuccess = (deleteApiRolesIdResponse204) & {
-  headers: Headers;
-};
-export type deleteApiRolesIdResponseError = (deleteApiRolesIdResponse401 | deleteApiRolesIdResponse404 | deleteApiRolesIdResponse409 | deleteApiRolesIdResponse500) & {
-  headers: Headers;
-};
-
-export type deleteApiRolesIdResponse = (deleteApiRolesIdResponseSuccess | deleteApiRolesIdResponseError)
-
-export const getDeleteApiRolesIdUrl = (id: number,) => {
-
-
+export const deleteApiRolesId = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/roles/${id}`, method: 'DELETE'
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/roles/${id}`
-}
-
-export const deleteApiRolesId = async (id: number, options?: RequestInit): Promise<deleteApiRolesIdResponse> => {
-  
-  return customInstance<deleteApiRolesIdResponse>(getDeleteApiRolesIdUrl(id),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
 
 
 export const getDeleteApiRolesIdMutationOptions = <TError = ApiErrorResponse,
@@ -8938,47 +6553,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type putApiRolesIdPermissionsResponse200 = {
-  data: void
-  status: 200
-}
-
-export type putApiRolesIdPermissionsResponse404 = {
-  data: ProblemDetails
-  status: 404
-}
-    
-export type putApiRolesIdPermissionsResponseSuccess = (putApiRolesIdPermissionsResponse200) & {
-  headers: Headers;
-};
-export type putApiRolesIdPermissionsResponseError = (putApiRolesIdPermissionsResponse404) & {
-  headers: Headers;
-};
-
-export type putApiRolesIdPermissionsResponse = (putApiRolesIdPermissionsResponseSuccess | putApiRolesIdPermissionsResponseError)
-
-export const getPutApiRolesIdPermissionsUrl = (id: number,) => {
-
-
+export const putApiRolesIdPermissions = (
+    id: number,
+    assignPermissionsRequest: AssignPermissionsRequest,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/roles/${id}/permissions`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: assignPermissionsRequest
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/roles/${id}/permissions`
-}
-
-export const putApiRolesIdPermissions = async (id: number,
-    assignPermissionsRequest: AssignPermissionsRequest, options?: RequestInit): Promise<putApiRolesIdPermissionsResponse> => {
-  
-  return customInstance<putApiRolesIdPermissionsResponse>(getPutApiRolesIdPermissionsUrl(id),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      assignPermissionsRequest,)
-  }
-);}
-
-
 
 
 export const getPutApiRolesIdPermissionsMutationOptions = <TError = ProblemDetails,
@@ -9025,47 +6613,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type deleteApiRolesIdPermissionsResponse200 = {
-  data: void
-  status: 200
-}
-
-export type deleteApiRolesIdPermissionsResponse404 = {
-  data: ProblemDetails
-  status: 404
-}
-    
-export type deleteApiRolesIdPermissionsResponseSuccess = (deleteApiRolesIdPermissionsResponse200) & {
-  headers: Headers;
-};
-export type deleteApiRolesIdPermissionsResponseError = (deleteApiRolesIdPermissionsResponse404) & {
-  headers: Headers;
-};
-
-export type deleteApiRolesIdPermissionsResponse = (deleteApiRolesIdPermissionsResponseSuccess | deleteApiRolesIdPermissionsResponseError)
-
-export const getDeleteApiRolesIdPermissionsUrl = (id: number,) => {
-
-
+export const deleteApiRolesIdPermissions = (
+    id: number,
+    assignPermissionsRequest: AssignPermissionsRequest,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/roles/${id}/permissions`, method: 'DELETE',
+      headers: {'Content-Type': 'application/json', },
+      data: assignPermissionsRequest
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/roles/${id}/permissions`
-}
-
-export const deleteApiRolesIdPermissions = async (id: number,
-    assignPermissionsRequest: AssignPermissionsRequest, options?: RequestInit): Promise<deleteApiRolesIdPermissionsResponse> => {
-  
-  return customInstance<deleteApiRolesIdPermissionsResponse>(getDeleteApiRolesIdPermissionsUrl(id),
-  {      
-    ...options,
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      assignPermissionsRequest,)
-  }
-);}
-
-
 
 
 export const getDeleteApiRolesIdPermissionsMutationOptions = <TError = ProblemDetails,
@@ -9112,52 +6673,21 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiRolesIdUsersResponse200 = {
-  data: number
-  status: 200
-}
-
-export type postApiRolesIdUsersResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type postApiRolesIdUsersResponse404 = {
-  data: ProblemDetails
-  status: 404
-}
-    
-export type postApiRolesIdUsersResponseSuccess = (postApiRolesIdUsersResponse200) & {
-  headers: Headers;
-};
-export type postApiRolesIdUsersResponseError = (postApiRolesIdUsersResponse400 | postApiRolesIdUsersResponse404) & {
-  headers: Headers;
-};
-
-export type postApiRolesIdUsersResponse = (postApiRolesIdUsersResponseSuccess | postApiRolesIdUsersResponseError)
-
-export const getPostApiRolesIdUsersUrl = (id: number,) => {
-
-
+export const postApiRolesIdUsers = (
+    id: number,
+    assignUsersToRoleRequest: AssignUsersToRoleRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<number>(
+      {url: `http://localhost:8000/api/roles/${id}/users`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: assignUsersToRoleRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/roles/${id}/users`
-}
-
-export const postApiRolesIdUsers = async (id: number,
-    assignUsersToRoleRequest: AssignUsersToRoleRequest, options?: RequestInit): Promise<postApiRolesIdUsersResponse> => {
-  
-  return customInstance<postApiRolesIdUsersResponse>(getPostApiRolesIdUsersUrl(id),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      assignUsersToRoleRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiRolesIdUsersMutationOptions = <TError = ProblemDetails,
@@ -9204,52 +6734,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type deleteApiRolesIdUsersResponse200 = {
-  data: number
-  status: 200
-}
-
-export type deleteApiRolesIdUsersResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type deleteApiRolesIdUsersResponse404 = {
-  data: ProblemDetails
-  status: 404
-}
-    
-export type deleteApiRolesIdUsersResponseSuccess = (deleteApiRolesIdUsersResponse200) & {
-  headers: Headers;
-};
-export type deleteApiRolesIdUsersResponseError = (deleteApiRolesIdUsersResponse400 | deleteApiRolesIdUsersResponse404) & {
-  headers: Headers;
-};
-
-export type deleteApiRolesIdUsersResponse = (deleteApiRolesIdUsersResponseSuccess | deleteApiRolesIdUsersResponseError)
-
-export const getDeleteApiRolesIdUsersUrl = (id: number,) => {
-
-
+export const deleteApiRolesIdUsers = (
+    id: number,
+    removeUsersFromRoleRequest: RemoveUsersFromRoleRequest,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<number>(
+      {url: `http://localhost:8000/api/roles/${id}/users`, method: 'DELETE',
+      headers: {'Content-Type': 'application/json', },
+      data: removeUsersFromRoleRequest
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/roles/${id}/users`
-}
-
-export const deleteApiRolesIdUsers = async (id: number,
-    removeUsersFromRoleRequest: RemoveUsersFromRoleRequest, options?: RequestInit): Promise<deleteApiRolesIdUsersResponse> => {
-  
-  return customInstance<deleteApiRolesIdUsersResponse>(getDeleteApiRolesIdUsersUrl(id),
-  {      
-    ...options,
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      removeUsersFromRoleRequest,)
-  }
-);}
-
-
 
 
 export const getDeleteApiRolesIdUsersMutationOptions = <TError = ProblemDetails,
@@ -9296,51 +6794,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiRolesAssignmentsResponse201 = {
-  data: number
-  status: 201
-}
-
-export type postApiRolesAssignmentsResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type postApiRolesAssignmentsResponse409 = {
-  data: ProblemDetails
-  status: 409
-}
-    
-export type postApiRolesAssignmentsResponseSuccess = (postApiRolesAssignmentsResponse201) & {
-  headers: Headers;
-};
-export type postApiRolesAssignmentsResponseError = (postApiRolesAssignmentsResponse400 | postApiRolesAssignmentsResponse409) & {
-  headers: Headers;
-};
-
-export type postApiRolesAssignmentsResponse = (postApiRolesAssignmentsResponseSuccess | postApiRolesAssignmentsResponseError)
-
-export const getPostApiRolesAssignmentsUrl = () => {
-
-
+export const postApiRolesAssignments = (
+    assignRoleToUserRequest: AssignRoleToUserRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<number>(
+      {url: `http://localhost:8000/api/roles/assignments`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: assignRoleToUserRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/roles/assignments`
-}
-
-export const postApiRolesAssignments = async (assignRoleToUserRequest: AssignRoleToUserRequest, options?: RequestInit): Promise<postApiRolesAssignmentsResponse> => {
-  
-  return customInstance<postApiRolesAssignmentsResponse>(getPostApiRolesAssignmentsUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      assignRoleToUserRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiRolesAssignmentsMutationOptions = <TError = ProblemDetails,
@@ -9387,49 +6854,19 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type deleteApiRolesAssignmentsUserIdNodeIdRoleIdResponse204 = {
-  data: void
-  status: 204
-}
-
-export type deleteApiRolesAssignmentsUserIdNodeIdRoleIdResponse404 = {
-  data: ProblemDetails
-  status: 404
-}
-    
-export type deleteApiRolesAssignmentsUserIdNodeIdRoleIdResponseSuccess = (deleteApiRolesAssignmentsUserIdNodeIdRoleIdResponse204) & {
-  headers: Headers;
-};
-export type deleteApiRolesAssignmentsUserIdNodeIdRoleIdResponseError = (deleteApiRolesAssignmentsUserIdNodeIdRoleIdResponse404) & {
-  headers: Headers;
-};
-
-export type deleteApiRolesAssignmentsUserIdNodeIdRoleIdResponse = (deleteApiRolesAssignmentsUserIdNodeIdRoleIdResponseSuccess | deleteApiRolesAssignmentsUserIdNodeIdRoleIdResponseError)
-
-export const getDeleteApiRolesAssignmentsUserIdNodeIdRoleIdUrl = (userId: number,
+export const deleteApiRolesAssignmentsUserIdNodeIdRoleId = (
+    userId: number,
     nodeId: number,
-    roleId: number,) => {
-
-
+    roleId: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/roles/assignments/${userId}/${nodeId}/${roleId}`, method: 'DELETE'
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/roles/assignments/${userId}/${nodeId}/${roleId}`
-}
-
-export const deleteApiRolesAssignmentsUserIdNodeIdRoleId = async (userId: number,
-    nodeId: number,
-    roleId: number, options?: RequestInit): Promise<deleteApiRolesAssignmentsUserIdNodeIdRoleIdResponse> => {
-  
-  return customInstance<deleteApiRolesAssignmentsUserIdNodeIdRoleIdResponse>(getDeleteApiRolesAssignmentsUserIdNodeIdRoleIdUrl(userId,nodeId,roleId),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
 
 
 export const getDeleteApiRolesAssignmentsUserIdNodeIdRoleIdMutationOptions = <TError = ProblemDetails,
@@ -9476,38 +6913,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiSettingsPublicResponse200 = {
-  data: PublicSettingDtoListApiSuccessResponse
-  status: 200
-}
+export const getApiSettingsPublic = (
     
-export type getApiSettingsPublicResponseSuccess = (getApiSettingsPublicResponse200) & {
-  headers: Headers;
-};
-;
-
-export type getApiSettingsPublicResponse = (getApiSettingsPublicResponseSuccess)
-
-export const getGetApiSettingsPublicUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<PublicSettingDtoListApiSuccessResponse>(
+      {url: `http://localhost:8000/api/settings/public`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/settings/public`
-}
-
-export const getApiSettingsPublic = async ( options?: RequestInit): Promise<getApiSettingsPublicResponse> => {
-  
-  return customInstance<getApiSettingsPublicResponse>(getGetApiSettingsPublicUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -9527,7 +6944,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiSettingsPublic>>> = ({ signal }) => getApiSettingsPublic({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiSettingsPublic>>> = ({ signal }) => getApiSettingsPublic(requestOptions, signal);
 
       
 
@@ -9583,54 +7000,19 @@ export function useGetApiSettingsPublic<TData = Awaited<ReturnType<typeof getApi
 
 
 
-export type getApiSettingsResponse200 = {
-  data: SystemSettingDtoPageResult
-  status: 200
-}
-    
-export type getApiSettingsResponseSuccess = (getApiSettingsResponse200) & {
-  headers: Headers;
-};
-;
-
-export type getApiSettingsResponse = (getApiSettingsResponseSuccess)
-
-export const getGetApiSettingsUrl = (params?: GetApiSettingsParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    const explodeParameters = ["Fields"];
-
-    if (Array.isArray(value) && explodeParameters.includes(key)) {
-      value.forEach((v) => {
-        normalizedParams.append(key, v === null ? 'null' : v.toString());
-      });
+export const getApiSettings = (
+    params?: GetApiSettingsParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
       
-return;
-    }
       
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+      return customInstance<SystemSettingDtoPageResult>(
+      {url: `http://localhost:8000/api/settings`, method: 'GET',
+        params, signal
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `http://localhost:8000/api/settings?${stringifiedParams}` : `http://localhost:8000/api/settings`
-}
-
-export const getApiSettings = async (params?: GetApiSettingsParams, options?: RequestInit): Promise<getApiSettingsResponse> => {
   
-  return customInstance<getApiSettingsResponse>(getGetApiSettingsUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -9650,7 +7032,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiSettings>>> = ({ signal }) => getApiSettings(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiSettings>>> = ({ signal }) => getApiSettings(params, requestOptions, signal);
 
       
 
@@ -9706,46 +7088,20 @@ export function useGetApiSettings<TData = Awaited<ReturnType<typeof getApiSettin
 
 
 
-export type postApiSettingsResponse201 = {
-  data: number
-  status: 201
-}
-
-export type postApiSettingsResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-    
-export type postApiSettingsResponseSuccess = (postApiSettingsResponse201) & {
-  headers: Headers;
-};
-export type postApiSettingsResponseError = (postApiSettingsResponse400) & {
-  headers: Headers;
-};
-
-export type postApiSettingsResponse = (postApiSettingsResponseSuccess | postApiSettingsResponseError)
-
-export const getPostApiSettingsUrl = () => {
-
-
+export const postApiSettings = (
+    createSystemSettingCommand: CreateSystemSettingCommand,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<number>(
+      {url: `http://localhost:8000/api/settings`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createSystemSettingCommand, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/settings`
-}
-
-export const postApiSettings = async (createSystemSettingCommand: CreateSystemSettingCommand, options?: RequestInit): Promise<postApiSettingsResponse> => {
-  
-  return customInstance<postApiSettingsResponse>(getPostApiSettingsUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      createSystemSettingCommand,)
-  }
-);}
-
-
 
 
 export const getPostApiSettingsMutationOptions = <TError = ProblemDetails,
@@ -9792,45 +7148,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiSettingsIdResponse200 = {
-  data: SystemSettingDto
-  status: 200
-}
-
-export type getApiSettingsIdResponse404 = {
-  data: ProblemDetails
-  status: 404
-}
-    
-export type getApiSettingsIdResponseSuccess = (getApiSettingsIdResponse200) & {
-  headers: Headers;
-};
-export type getApiSettingsIdResponseError = (getApiSettingsIdResponse404) & {
-  headers: Headers;
-};
-
-export type getApiSettingsIdResponse = (getApiSettingsIdResponseSuccess | getApiSettingsIdResponseError)
-
-export const getGetApiSettingsIdUrl = (id: number,) => {
-
-
+export const getApiSettingsId = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<SystemSettingDto>(
+      {url: `http://localhost:8000/api/settings/${id}`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/settings/${id}`
-}
-
-export const getApiSettingsId = async (id: number, options?: RequestInit): Promise<getApiSettingsIdResponse> => {
-  
-  return customInstance<getApiSettingsIdResponse>(getGetApiSettingsIdUrl(id),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -9850,7 +7179,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiSettingsId>>> = ({ signal }) => getApiSettingsId(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiSettingsId>>> = ({ signal }) => getApiSettingsId(id, requestOptions, signal);
 
       
 
@@ -9906,52 +7235,20 @@ export function useGetApiSettingsId<TData = Awaited<ReturnType<typeof getApiSett
 
 
 
-export type putApiSettingsIdResponse204 = {
-  data: void
-  status: 204
-}
-
-export type putApiSettingsIdResponse400 = {
-  data: ProblemDetails
-  status: 400
-}
-
-export type putApiSettingsIdResponse404 = {
-  data: ProblemDetails
-  status: 404
-}
-    
-export type putApiSettingsIdResponseSuccess = (putApiSettingsIdResponse204) & {
-  headers: Headers;
-};
-export type putApiSettingsIdResponseError = (putApiSettingsIdResponse400 | putApiSettingsIdResponse404) & {
-  headers: Headers;
-};
-
-export type putApiSettingsIdResponse = (putApiSettingsIdResponseSuccess | putApiSettingsIdResponseError)
-
-export const getPutApiSettingsIdUrl = (id: number,) => {
-
-
+export const putApiSettingsId = (
+    id: number,
+    updateSystemSettingCommand: UpdateSystemSettingCommand,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/settings/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateSystemSettingCommand
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/settings/${id}`
-}
-
-export const putApiSettingsId = async (id: number,
-    updateSystemSettingCommand: UpdateSystemSettingCommand, options?: RequestInit): Promise<putApiSettingsIdResponse> => {
-  
-  return customInstance<putApiSettingsIdResponse>(getPutApiSettingsIdUrl(id),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      updateSystemSettingCommand,)
-  }
-);}
-
-
 
 
 export const getPutApiSettingsIdMutationOptions = <TError = ProblemDetails,
@@ -9998,45 +7295,17 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type deleteApiSettingsIdResponse204 = {
-  data: void
-  status: 204
-}
-
-export type deleteApiSettingsIdResponse404 = {
-  data: ProblemDetails
-  status: 404
-}
-    
-export type deleteApiSettingsIdResponseSuccess = (deleteApiSettingsIdResponse204) & {
-  headers: Headers;
-};
-export type deleteApiSettingsIdResponseError = (deleteApiSettingsIdResponse404) & {
-  headers: Headers;
-};
-
-export type deleteApiSettingsIdResponse = (deleteApiSettingsIdResponseSuccess | deleteApiSettingsIdResponseError)
-
-export const getDeleteApiSettingsIdUrl = (id: number,) => {
-
-
+export const deleteApiSettingsId = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/settings/${id}`, method: 'DELETE'
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/settings/${id}`
-}
-
-export const deleteApiSettingsId = async (id: number, options?: RequestInit): Promise<deleteApiSettingsIdResponse> => {
-  
-  return customInstance<deleteApiSettingsIdResponse>(getDeleteApiSettingsIdUrl(id),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
 
 
 export const getDeleteApiSettingsIdMutationOptions = <TError = ProblemDetails,
@@ -10083,56 +7352,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiStorageSessionsInitResponse200 = {
-  data: InitUploadSessionResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiStorageSessionsInitResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiStorageSessionsInitResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiStorageSessionsInitResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiStorageSessionsInitResponseSuccess = (postApiStorageSessionsInitResponse200) & {
-  headers: Headers;
-};
-export type postApiStorageSessionsInitResponseError = (postApiStorageSessionsInitResponse400 | postApiStorageSessionsInitResponse401 | postApiStorageSessionsInitResponse500) & {
-  headers: Headers;
-};
-
-export type postApiStorageSessionsInitResponse = (postApiStorageSessionsInitResponseSuccess | postApiStorageSessionsInitResponseError)
-
-export const getPostApiStorageSessionsInitUrl = () => {
-
-
+export const postApiStorageSessionsInit = (
+    initUploadSessionRequest: InitUploadSessionRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<InitUploadSessionResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/storage/sessions/init`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: initUploadSessionRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/storage/sessions/init`
-}
-
-export const postApiStorageSessionsInit = async (initUploadSessionRequest: InitUploadSessionRequest, options?: RequestInit): Promise<postApiStorageSessionsInitResponse> => {
-  
-  return customInstance<postApiStorageSessionsInitResponse>(getPostApiStorageSessionsInitUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      initUploadSessionRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiStorageSessionsInitMutationOptions = <TError = ApiErrorResponse,
@@ -10179,61 +7412,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiStorageUploadResponse200 = {
-  data: UploadFileResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiStorageUploadResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiStorageUploadResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiStorageUploadResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiStorageUploadResponseSuccess = (postApiStorageUploadResponse200) & {
-  headers: Headers;
-};
-export type postApiStorageUploadResponseError = (postApiStorageUploadResponse400 | postApiStorageUploadResponse401 | postApiStorageUploadResponse500) & {
-  headers: Headers;
-};
-
-export type postApiStorageUploadResponse = (postApiStorageUploadResponseSuccess | postApiStorageUploadResponseError)
-
-export const getPostApiStorageUploadUrl = () => {
-
-
-  
-
-  return `http://localhost:8000/api/storage/upload`
-}
-
-export const postApiStorageUpload = async (postApiStorageUploadBody: PostApiStorageUploadBody, options?: RequestInit): Promise<postApiStorageUploadResponse> => {
-    const formData = new FormData();
+export const postApiStorageUpload = (
+    postApiStorageUploadBody: PostApiStorageUploadBody,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      const formData = new FormData();
 
 if(postApiStorageUploadBody.file !== undefined) {
  formData.append(`file`, postApiStorageUploadBody.file)
  }
 
-  return customInstance<postApiStorageUploadResponse>(getPostApiStorageUploadUrl(),
-  {      
-    ...options,
-    method: 'POST'
-    ,
-    body: 
-      formData,
-  }
-);}
-
-
+      return customInstance<UploadFileResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/storage/upload`, method: 'POST',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
+    },
+      options);
+    }
+  
 
 
 export const getPostApiStorageUploadMutationOptions = <TError = ApiErrorResponse,
@@ -10280,56 +7477,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiStorageMultipartInitiateResponse200 = {
-  data: InitiateMultipartUploadResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiStorageMultipartInitiateResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiStorageMultipartInitiateResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiStorageMultipartInitiateResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiStorageMultipartInitiateResponseSuccess = (postApiStorageMultipartInitiateResponse200) & {
-  headers: Headers;
-};
-export type postApiStorageMultipartInitiateResponseError = (postApiStorageMultipartInitiateResponse400 | postApiStorageMultipartInitiateResponse401 | postApiStorageMultipartInitiateResponse500) & {
-  headers: Headers;
-};
-
-export type postApiStorageMultipartInitiateResponse = (postApiStorageMultipartInitiateResponseSuccess | postApiStorageMultipartInitiateResponseError)
-
-export const getPostApiStorageMultipartInitiateUrl = () => {
-
-
+export const postApiStorageMultipartInitiate = (
+    initiateMultipartUploadRequest: InitiateMultipartUploadRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<InitiateMultipartUploadResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/storage/multipart/initiate`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: initiateMultipartUploadRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/storage/multipart/initiate`
-}
-
-export const postApiStorageMultipartInitiate = async (initiateMultipartUploadRequest: InitiateMultipartUploadRequest, options?: RequestInit): Promise<postApiStorageMultipartInitiateResponse> => {
-  
-  return customInstance<postApiStorageMultipartInitiateResponse>(getPostApiStorageMultipartInitiateUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      initiateMultipartUploadRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiStorageMultipartInitiateMutationOptions = <TError = ApiErrorResponse,
@@ -10376,45 +7537,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiStorageMultipartUploadPartResponse200 = {
-  data: UploadPartResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiStorageMultipartUploadPartResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiStorageMultipartUploadPartResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiStorageMultipartUploadPartResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiStorageMultipartUploadPartResponseSuccess = (postApiStorageMultipartUploadPartResponse200) & {
-  headers: Headers;
-};
-export type postApiStorageMultipartUploadPartResponseError = (postApiStorageMultipartUploadPartResponse400 | postApiStorageMultipartUploadPartResponse401 | postApiStorageMultipartUploadPartResponse500) & {
-  headers: Headers;
-};
-
-export type postApiStorageMultipartUploadPartResponse = (postApiStorageMultipartUploadPartResponseSuccess | postApiStorageMultipartUploadPartResponseError)
-
-export const getPostApiStorageMultipartUploadPartUrl = () => {
-
-
-  
-
-  return `http://localhost:8000/api/storage/multipart/upload-part`
-}
-
-export const postApiStorageMultipartUploadPart = async (postApiStorageMultipartUploadPartBody: PostApiStorageMultipartUploadPartBody, options?: RequestInit): Promise<postApiStorageMultipartUploadPartResponse> => {
-    const formData = new FormData();
+export const postApiStorageMultipartUploadPart = (
+    postApiStorageMultipartUploadPartBody: PostApiStorageMultipartUploadPartBody,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      const formData = new FormData();
 
 if(postApiStorageMultipartUploadPartBody.file !== undefined) {
  formData.append(`file`, postApiStorageMultipartUploadPartBody.file)
@@ -10432,17 +7560,14 @@ if(postApiStorageMultipartUploadPartBody.fileName !== undefined) {
  formData.append(`fileName`, postApiStorageMultipartUploadPartBody.fileName)
  }
 
-  return customInstance<postApiStorageMultipartUploadPartResponse>(getPostApiStorageMultipartUploadPartUrl(),
-  {      
-    ...options,
-    method: 'POST'
-    ,
-    body: 
-      formData,
-  }
-);}
-
-
+      return customInstance<UploadPartResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/storage/multipart/upload-part`, method: 'POST',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
+    },
+      options);
+    }
+  
 
 
 export const getPostApiStorageMultipartUploadPartMutationOptions = <TError = ApiErrorResponse,
@@ -10489,56 +7614,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiStorageMultipartCompleteResponse200 = {
-  data: UploadFileResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiStorageMultipartCompleteResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiStorageMultipartCompleteResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiStorageMultipartCompleteResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiStorageMultipartCompleteResponseSuccess = (postApiStorageMultipartCompleteResponse200) & {
-  headers: Headers;
-};
-export type postApiStorageMultipartCompleteResponseError = (postApiStorageMultipartCompleteResponse400 | postApiStorageMultipartCompleteResponse401 | postApiStorageMultipartCompleteResponse500) & {
-  headers: Headers;
-};
-
-export type postApiStorageMultipartCompleteResponse = (postApiStorageMultipartCompleteResponseSuccess | postApiStorageMultipartCompleteResponseError)
-
-export const getPostApiStorageMultipartCompleteUrl = () => {
-
-
+export const postApiStorageMultipartComplete = (
+    completeMultipartUploadRequest: CompleteMultipartUploadRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<UploadFileResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/storage/multipart/complete`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: completeMultipartUploadRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/storage/multipart/complete`
-}
-
-export const postApiStorageMultipartComplete = async (completeMultipartUploadRequest: CompleteMultipartUploadRequest, options?: RequestInit): Promise<postApiStorageMultipartCompleteResponse> => {
-  
-  return customInstance<postApiStorageMultipartCompleteResponse>(getPostApiStorageMultipartCompleteUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      completeMultipartUploadRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiStorageMultipartCompleteMutationOptions = <TError = ApiErrorResponse,
@@ -10585,56 +7674,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiStorageMultipartAbortResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type postApiStorageMultipartAbortResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiStorageMultipartAbortResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiStorageMultipartAbortResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiStorageMultipartAbortResponseSuccess = (postApiStorageMultipartAbortResponse200) & {
-  headers: Headers;
-};
-export type postApiStorageMultipartAbortResponseError = (postApiStorageMultipartAbortResponse400 | postApiStorageMultipartAbortResponse401 | postApiStorageMultipartAbortResponse500) & {
-  headers: Headers;
-};
-
-export type postApiStorageMultipartAbortResponse = (postApiStorageMultipartAbortResponseSuccess | postApiStorageMultipartAbortResponseError)
-
-export const getPostApiStorageMultipartAbortUrl = () => {
-
-
+export const postApiStorageMultipartAbort = (
+    completeMultipartUploadRequest: CompleteMultipartUploadRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/storage/multipart/abort`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: completeMultipartUploadRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/storage/multipart/abort`
-}
-
-export const postApiStorageMultipartAbort = async (completeMultipartUploadRequest: CompleteMultipartUploadRequest, options?: RequestInit): Promise<postApiStorageMultipartAbortResponse> => {
-  
-  return customInstance<postApiStorageMultipartAbortResponse>(getPostApiStorageMultipartAbortUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      completeMultipartUploadRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiStorageMultipartAbortMutationOptions = <TError = ApiErrorResponse,
@@ -10681,56 +7734,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiStoragePresignedUrlResponse200 = {
-  data: GetPresignedUrlResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiStoragePresignedUrlResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type postApiStoragePresignedUrlResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type postApiStoragePresignedUrlResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type postApiStoragePresignedUrlResponseSuccess = (postApiStoragePresignedUrlResponse200) & {
-  headers: Headers;
-};
-export type postApiStoragePresignedUrlResponseError = (postApiStoragePresignedUrlResponse401 | postApiStoragePresignedUrlResponse404 | postApiStoragePresignedUrlResponse500) & {
-  headers: Headers;
-};
-
-export type postApiStoragePresignedUrlResponse = (postApiStoragePresignedUrlResponseSuccess | postApiStoragePresignedUrlResponseError)
-
-export const getPostApiStoragePresignedUrlUrl = () => {
-
-
+export const postApiStoragePresignedUrl = (
+    getPresignedUrlRequest: GetPresignedUrlRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<GetPresignedUrlResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/storage/presigned-url`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: getPresignedUrlRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/storage/presigned-url`
-}
-
-export const postApiStoragePresignedUrl = async (getPresignedUrlRequest: GetPresignedUrlRequest, options?: RequestInit): Promise<postApiStoragePresignedUrlResponse> => {
-  
-  return customInstance<postApiStoragePresignedUrlResponse>(getPostApiStoragePresignedUrlUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      getPresignedUrlRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiStoragePresignedUrlMutationOptions = <TError = ApiErrorResponse,
@@ -10777,55 +7794,17 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type deleteApiStorageFilePathResponse204 = {
-  data: void
-  status: 204
-}
-
-export type deleteApiStorageFilePathResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type deleteApiStorageFilePathResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type deleteApiStorageFilePathResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type deleteApiStorageFilePathResponseSuccess = (deleteApiStorageFilePathResponse204) & {
-  headers: Headers;
-};
-export type deleteApiStorageFilePathResponseError = (deleteApiStorageFilePathResponse401 | deleteApiStorageFilePathResponse404 | deleteApiStorageFilePathResponse500) & {
-  headers: Headers;
-};
-
-export type deleteApiStorageFilePathResponse = (deleteApiStorageFilePathResponseSuccess | deleteApiStorageFilePathResponseError)
-
-export const getDeleteApiStorageFilePathUrl = (filePath: string,) => {
-
-
+export const deleteApiStorageFilePath = (
+    filePath: string,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/storage/${filePath}`, method: 'DELETE'
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/storage/${filePath}`
-}
-
-export const deleteApiStorageFilePath = async (filePath: string, options?: RequestInit): Promise<deleteApiStorageFilePathResponse> => {
-  
-  return customInstance<deleteApiStorageFilePathResponse>(getDeleteApiStorageFilePathUrl(filePath),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
 
 
 export const getDeleteApiStorageFilePathMutationOptions = <TError = ApiErrorResponse,
@@ -10872,55 +7851,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiStorageInfoFilePathResponse200 = {
-  data: FileInfoApiSuccessResponse
-  status: 200
-}
-
-export type getApiStorageInfoFilePathResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
-
-export type getApiStorageInfoFilePathResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type getApiStorageInfoFilePathResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-    
-export type getApiStorageInfoFilePathResponseSuccess = (getApiStorageInfoFilePathResponse200) & {
-  headers: Headers;
-};
-export type getApiStorageInfoFilePathResponseError = (getApiStorageInfoFilePathResponse401 | getApiStorageInfoFilePathResponse404 | getApiStorageInfoFilePathResponse500) & {
-  headers: Headers;
-};
-
-export type getApiStorageInfoFilePathResponse = (getApiStorageInfoFilePathResponseSuccess | getApiStorageInfoFilePathResponseError)
-
-export const getGetApiStorageInfoFilePathUrl = (filePath: string,) => {
-
-
+export const getApiStorageInfoFilePath = (
+    filePath: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<FileInfoApiSuccessResponse>(
+      {url: `http://localhost:8000/api/storage/info/${filePath}`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/storage/info/${filePath}`
-}
-
-export const getApiStorageInfoFilePath = async (filePath: string, options?: RequestInit): Promise<getApiStorageInfoFilePathResponse> => {
-  
-  return customInstance<getApiStorageInfoFilePathResponse>(getGetApiStorageInfoFilePathUrl(filePath),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -10940,7 +7882,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiStorageInfoFilePath>>> = ({ signal }) => getApiStorageInfoFilePath(filePath, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiStorageInfoFilePath>>> = ({ signal }) => getApiStorageInfoFilePath(filePath, requestOptions, signal);
 
       
 
@@ -10996,52 +7938,19 @@ export function useGetApiStorageInfoFilePath<TData = Awaited<ReturnType<typeof g
 
 
 
-export type getApiUsersResponse200 = {
-  data: StringObjectDictionaryPageResultApiSuccessResponse
-  status: 200
-}
-
-export type getApiUsersResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-    
-export type getApiUsersResponseSuccess = (getApiUsersResponse200) & {
-  headers: Headers;
-};
-export type getApiUsersResponseError = (getApiUsersResponse400) & {
-  headers: Headers;
-};
-
-export type getApiUsersResponse = (getApiUsersResponseSuccess | getApiUsersResponseError)
-
-export const getGetApiUsersUrl = (params?: GetApiUsersParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const getApiUsers = (
+    params?: GetApiUsersParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<StringObjectDictionaryPageResultApiSuccessResponse>(
+      {url: `http://localhost:8000/api/users`, method: 'GET',
+        params, signal
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `http://localhost:8000/api/users?${stringifiedParams}` : `http://localhost:8000/api/users`
-}
-
-export const getApiUsers = async (params?: GetApiUsersParams, options?: RequestInit): Promise<getApiUsersResponse> => {
   
-  return customInstance<getApiUsersResponse>(getGetApiUsersUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -11061,7 +7970,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiUsers>>> = ({ signal }) => getApiUsers(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiUsers>>> = ({ signal }) => getApiUsers(params, requestOptions, signal);
 
       
 
@@ -11117,56 +8026,20 @@ export function useGetApiUsers<TData = Awaited<ReturnType<typeof getApiUsers>>, 
 
 
 
-export type postApiUsersResponse201 = {
-  data: UserResponseApiSuccessResponse
-  status: 201
-}
-
-export type postApiUsersResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiUsersResponse409 = {
-  data: ApiErrorResponse
-  status: 409
-}
-
-export type postApiUsersResponse422 = {
-  data: ProblemDetails
-  status: 422
-}
-    
-export type postApiUsersResponseSuccess = (postApiUsersResponse201) & {
-  headers: Headers;
-};
-export type postApiUsersResponseError = (postApiUsersResponse400 | postApiUsersResponse409 | postApiUsersResponse422) & {
-  headers: Headers;
-};
-
-export type postApiUsersResponse = (postApiUsersResponseSuccess | postApiUsersResponseError)
-
-export const getPostApiUsersUrl = () => {
-
-
+export const postApiUsers = (
+    createUserRequest: CreateUserRequest,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<UserResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/users`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createUserRequest, signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/users`
-}
-
-export const postApiUsers = async (createUserRequest: CreateUserRequest, options?: RequestInit): Promise<postApiUsersResponse> => {
-  
-  return customInstance<postApiUsersResponse>(getPostApiUsersUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      createUserRequest,)
-  }
-);}
-
-
 
 
 export const getPostApiUsersMutationOptions = <TError = ApiErrorResponse | ProblemDetails,
@@ -11213,54 +8086,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiUsersIdResponse200 = {
-  data: UserResponseApiSuccessResponse
-  status: 200
-}
-
-export type getApiUsersIdResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-    
-export type getApiUsersIdResponseSuccess = (getApiUsersIdResponse200) & {
-  headers: Headers;
-};
-export type getApiUsersIdResponseError = (getApiUsersIdResponse404) & {
-  headers: Headers;
-};
-
-export type getApiUsersIdResponse = (getApiUsersIdResponseSuccess | getApiUsersIdResponseError)
-
-export const getGetApiUsersIdUrl = (id: number,
-    params?: GetApiUsersIdParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const getApiUsersId = (
+    id: number,
+    params?: GetApiUsersIdParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<UserResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/users/${id}`, method: 'GET',
+        params, signal
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `http://localhost:8000/api/users/${id}?${stringifiedParams}` : `http://localhost:8000/api/users/${id}`
-}
-
-export const getApiUsersId = async (id: number,
-    params?: GetApiUsersIdParams, options?: RequestInit): Promise<getApiUsersIdResponse> => {
   
-  return customInstance<getApiUsersIdResponse>(getGetApiUsersIdUrl(id,params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -11282,7 +8121,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiUsersId>>> = ({ signal }) => getApiUsersId(id,params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiUsersId>>> = ({ signal }) => getApiUsersId(id,params, requestOptions, signal);
 
       
 
@@ -11342,62 +8181,20 @@ export function useGetApiUsersId<TData = Awaited<ReturnType<typeof getApiUsersId
 
 
 
-export type putApiUsersIdResponse200 = {
-  data: UserResponseApiSuccessResponse
-  status: 200
-}
-
-export type putApiUsersIdResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type putApiUsersIdResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-
-export type putApiUsersIdResponse409 = {
-  data: ApiErrorResponse
-  status: 409
-}
-
-export type putApiUsersIdResponse422 = {
-  data: ProblemDetails
-  status: 422
-}
-    
-export type putApiUsersIdResponseSuccess = (putApiUsersIdResponse200) & {
-  headers: Headers;
-};
-export type putApiUsersIdResponseError = (putApiUsersIdResponse400 | putApiUsersIdResponse404 | putApiUsersIdResponse409 | putApiUsersIdResponse422) & {
-  headers: Headers;
-};
-
-export type putApiUsersIdResponse = (putApiUsersIdResponseSuccess | putApiUsersIdResponseError)
-
-export const getPutApiUsersIdUrl = (id: number,) => {
-
-
+export const putApiUsersId = (
+    id: number,
+    updateUserRequest: UpdateUserRequest,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<UserResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/users/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateUserRequest
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/users/${id}`
-}
-
-export const putApiUsersId = async (id: number,
-    updateUserRequest: UpdateUserRequest, options?: RequestInit): Promise<putApiUsersIdResponse> => {
-  
-  return customInstance<putApiUsersIdResponse>(getPutApiUsersIdUrl(id),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      updateUserRequest,)
-  }
-);}
-
-
 
 
 export const getPutApiUsersIdMutationOptions = <TError = ApiErrorResponse | ProblemDetails,
@@ -11444,45 +8241,17 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type deleteApiUsersIdResponse204 = {
-  data: void
-  status: 204
-}
-
-export type deleteApiUsersIdResponse404 = {
-  data: ProblemDetails
-  status: 404
-}
-    
-export type deleteApiUsersIdResponseSuccess = (deleteApiUsersIdResponse204) & {
-  headers: Headers;
-};
-export type deleteApiUsersIdResponseError = (deleteApiUsersIdResponse404) & {
-  headers: Headers;
-};
-
-export type deleteApiUsersIdResponse = (deleteApiUsersIdResponseSuccess | deleteApiUsersIdResponseError)
-
-export const getDeleteApiUsersIdUrl = (id: number,) => {
-
-
+export const deleteApiUsersId = (
+    id: number,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/users/${id}`, method: 'DELETE'
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/users/${id}`
-}
-
-export const deleteApiUsersId = async (id: number, options?: RequestInit): Promise<deleteApiUsersIdResponse> => {
-  
-  return customInstance<deleteApiUsersIdResponse>(getDeleteApiUsersIdUrl(id),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
 
 
 export const getDeleteApiUsersIdMutationOptions = <TError = ProblemDetails,
@@ -11529,52 +8298,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type putApiUsersIdAvatarResponse200 = {
-  data: UpdateAvatarResponseApiSuccessResponse
-  status: 200
-}
-
-export type putApiUsersIdAvatarResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type putApiUsersIdAvatarResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-    
-export type putApiUsersIdAvatarResponseSuccess = (putApiUsersIdAvatarResponse200) & {
-  headers: Headers;
-};
-export type putApiUsersIdAvatarResponseError = (putApiUsersIdAvatarResponse400 | putApiUsersIdAvatarResponse404) & {
-  headers: Headers;
-};
-
-export type putApiUsersIdAvatarResponse = (putApiUsersIdAvatarResponseSuccess | putApiUsersIdAvatarResponseError)
-
-export const getPutApiUsersIdAvatarUrl = (id: number,) => {
-
-
+export const putApiUsersIdAvatar = (
+    id: number,
+    updateAvatarRequest: UpdateAvatarRequest,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<UpdateAvatarResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/users/${id}/avatar`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateAvatarRequest
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/users/${id}/avatar`
-}
-
-export const putApiUsersIdAvatar = async (id: number,
-    updateAvatarRequest: UpdateAvatarRequest, options?: RequestInit): Promise<putApiUsersIdAvatarResponse> => {
-  
-  return customInstance<putApiUsersIdAvatarResponse>(getPutApiUsersIdAvatarUrl(id),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      updateAvatarRequest,)
-  }
-);}
-
-
 
 
 export const getPutApiUsersIdAvatarMutationOptions = <TError = ApiErrorResponse,
@@ -11621,57 +8358,26 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type postApiUsersIdAvatarUploadResponse200 = {
-  data: UploadAvatarDirectResponseApiSuccessResponse
-  status: 200
-}
-
-export type postApiUsersIdAvatarUploadResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type postApiUsersIdAvatarUploadResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-    
-export type postApiUsersIdAvatarUploadResponseSuccess = (postApiUsersIdAvatarUploadResponse200) & {
-  headers: Headers;
-};
-export type postApiUsersIdAvatarUploadResponseError = (postApiUsersIdAvatarUploadResponse400 | postApiUsersIdAvatarUploadResponse404) & {
-  headers: Headers;
-};
-
-export type postApiUsersIdAvatarUploadResponse = (postApiUsersIdAvatarUploadResponseSuccess | postApiUsersIdAvatarUploadResponseError)
-
-export const getPostApiUsersIdAvatarUploadUrl = (id: number,) => {
-
-
-  
-
-  return `http://localhost:8000/api/users/${id}/avatar/upload`
-}
-
-export const postApiUsersIdAvatarUpload = async (id: number,
-    postApiUsersIdAvatarUploadBody: PostApiUsersIdAvatarUploadBody, options?: RequestInit): Promise<postApiUsersIdAvatarUploadResponse> => {
-    const formData = new FormData();
+export const postApiUsersIdAvatarUpload = (
+    id: number,
+    postApiUsersIdAvatarUploadBody: PostApiUsersIdAvatarUploadBody,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      const formData = new FormData();
 
 if(postApiUsersIdAvatarUploadBody.file !== undefined) {
  formData.append(`file`, postApiUsersIdAvatarUploadBody.file)
  }
 
-  return customInstance<postApiUsersIdAvatarUploadResponse>(getPostApiUsersIdAvatarUploadUrl(id),
-  {      
-    ...options,
-    method: 'POST'
-    ,
-    body: 
-      formData,
-  }
-);}
-
-
+      return customInstance<UploadAvatarDirectResponseApiSuccessResponse>(
+      {url: `http://localhost:8000/api/users/${id}/avatar/upload`, method: 'POST',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
+    },
+      options);
+    }
+  
 
 
 export const getPostApiUsersIdAvatarUploadMutationOptions = <TError = ApiErrorResponse,
@@ -11718,52 +8424,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type putApiUsersIdRolesResponse200 = {
-  data: ObjectApiSuccessResponse
-  status: 200
-}
-
-export type putApiUsersIdRolesResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
-
-export type putApiUsersIdRolesResponse404 = {
-  data: ApiErrorResponse
-  status: 404
-}
-    
-export type putApiUsersIdRolesResponseSuccess = (putApiUsersIdRolesResponse200) & {
-  headers: Headers;
-};
-export type putApiUsersIdRolesResponseError = (putApiUsersIdRolesResponse400 | putApiUsersIdRolesResponse404) & {
-  headers: Headers;
-};
-
-export type putApiUsersIdRolesResponse = (putApiUsersIdRolesResponseSuccess | putApiUsersIdRolesResponseError)
-
-export const getPutApiUsersIdRolesUrl = (id: number,) => {
-
-
+export const putApiUsersIdRoles = (
+    id: number,
+    replaceUserRolesRequest: ReplaceUserRolesRequest,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<ObjectApiSuccessResponse>(
+      {url: `http://localhost:8000/api/users/${id}/roles`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: replaceUserRolesRequest
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/users/${id}/roles`
-}
-
-export const putApiUsersIdRoles = async (id: number,
-    replaceUserRolesRequest: ReplaceUserRolesRequest, options?: RequestInit): Promise<putApiUsersIdRolesResponse> => {
-  
-  return customInstance<putApiUsersIdRolesResponse>(getPutApiUsersIdRolesUrl(id),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      replaceUserRolesRequest,)
-  }
-);}
-
-
 
 
 export const getPutApiUsersIdRolesMutationOptions = <TError = ApiErrorResponse,
@@ -11810,38 +8484,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type getApiValidationRulesResponse200 = {
-  data: void
-  status: 200
-}
+export const getApiValidationRules = (
     
-export type getApiValidationRulesResponseSuccess = (getApiValidationRulesResponse200) & {
-  headers: Headers;
-};
-;
-
-export type getApiValidationRulesResponse = (getApiValidationRulesResponseSuccess)
-
-export const getGetApiValidationRulesUrl = () => {
-
-
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/validation-rules`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/validation-rules`
-}
-
-export const getApiValidationRules = async ( options?: RequestInit): Promise<getApiValidationRulesResponse> => {
-  
-  return customInstance<getApiValidationRulesResponse>(getGetApiValidationRulesUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -11861,7 +8515,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiValidationRules>>> = ({ signal }) => getApiValidationRules({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiValidationRules>>> = ({ signal }) => getApiValidationRules(requestOptions, signal);
 
       
 
@@ -11917,38 +8571,18 @@ export function useGetApiValidationRules<TData = Awaited<ReturnType<typeof getAp
 
 
 
-export type getApiValidationRulesDomainResponse200 = {
-  data: void
-  status: 200
-}
-    
-export type getApiValidationRulesDomainResponseSuccess = (getApiValidationRulesDomainResponse200) & {
-  headers: Headers;
-};
-;
-
-export type getApiValidationRulesDomainResponse = (getApiValidationRulesDomainResponseSuccess)
-
-export const getGetApiValidationRulesDomainUrl = (domain: string,) => {
-
-
+export const getApiValidationRulesDomain = (
+    domain: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `http://localhost:8000/api/validation-rules/${domain}`, method: 'GET', signal
+    },
+      options);
+    }
   
-
-  return `http://localhost:8000/api/validation-rules/${domain}`
-}
-
-export const getApiValidationRulesDomain = async (domain: string, options?: RequestInit): Promise<getApiValidationRulesDomainResponse> => {
-  
-  return customInstance<getApiValidationRulesDomainResponse>(getGetApiValidationRulesDomainUrl(domain),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
 
 
 
@@ -11968,7 +8602,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiValidationRulesDomain>>> = ({ signal }) => getApiValidationRulesDomain(domain, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiValidationRulesDomain>>> = ({ signal }) => getApiValidationRulesDomain(domain, requestOptions, signal);
 
       
 

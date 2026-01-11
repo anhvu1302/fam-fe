@@ -2,16 +2,16 @@ import { defineConfig } from 'orval'
 
 export default defineConfig({
     api: {
-        input: `${process.env.BACKEND_URL}/swagger/v1/swagger.json`,
+        input: `${process.env.NEXT_PUBLIC_BACKEND_URL}/swagger/v1/swagger.json`,
         output: {
             mode: 'single', // Gộp tất cả vào 1 file
             target: 'src/generated/api.ts',
             client: 'react-query',
-            httpClient: 'fetch',
-            baseUrl: process.env.BACKEND_URL,
+            httpClient: 'axios',
+            baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
             override: {
                 mutator: {
-                    path: 'src/lib/api/custom-instance.ts',
+                    path: 'src/libs/custom-instance.ts',
                     name: 'customInstance'
                 },
                 query: {

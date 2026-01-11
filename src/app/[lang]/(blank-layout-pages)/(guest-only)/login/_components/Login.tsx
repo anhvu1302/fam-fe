@@ -22,7 +22,8 @@ import Divider from '@mui/material/Divider'
 import { signIn } from 'next-auth/react'
 import { Controller, useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
-import { email, object, minLength, string, pipe, nonEmpty } from 'valibot'
+import { object, minLength, string, pipe, nonEmpty } from 'valibot'
+import { toast } from 'react-toastify'
 import type { SubmitHandler } from 'react-hook-form'
 import type { InferInput } from 'valibot'
 import classnames from 'classnames'
@@ -69,14 +70,10 @@ const MaskImg = styled('img')({
   zIndex: -1
 })
 
-type ErrorType = {
-  message: string[]
-}
-
 type FormData = InferInput<typeof schema>
 
 const schema = object({
-  email: pipe(string(), minLength(1, 'This field is required'), email('Email is invalid')),
+  identity: pipe(string(), minLength(1, 'This field is required')),
   password: pipe(
     string(),
     nonEmpty('This field is required'),
@@ -87,7 +84,6 @@ const schema = object({
 const Login = ({ mode }: { mode: SystemMode }) => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
-  const [errorState, setErrorState] = useState<ErrorType | null>(null)
 
   // Vars
   const darkImg = '/images/pages/auth-mask-dark.png'
@@ -113,8 +109,8 @@ const Login = ({ mode }: { mode: SystemMode }) => {
   } = useForm<FormData>({
     resolver: valibotResolver(schema),
     defaultValues: {
-      email: 'admin@gmail.com',
-      password: 'Admin@123'
+      identity: '',
+      password: ''
     }
   })
 
@@ -130,8 +126,9 @@ const Login = ({ mode }: { mode: SystemMode }) => {
 
   const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
     const res = await signIn('credentials', {
-      email: data.email,
+      identity: data.identity,
       password: data.password,
+      rememberMe: true,
       redirect: false
     })
 
@@ -142,9 +139,14 @@ const Login = ({ mode }: { mode: SystemMode }) => {
       router.replace(getLocalizedUrl(redirectURL, locale as Locale))
     } else {
       if (res?.error) {
-        const error = JSON.parse(res.error)
+        try {
+          const error = JSON.parse(res.error)
+          const errorMessage = error?.message?.[0] || 'Login failed'
 
-        setErrorState(error)
+          toast.error(errorMessage)
+        } catch {
+          toast.error('An unexpected error occurred')
+        }
       }
     }
   }
@@ -179,7 +181,7 @@ const Login = ({ mode }: { mode: SystemMode }) => {
             className='flex flex-col gap-6'
           >
             <Controller
-              name='email'
+              name='identity'
               control={control}
               rules={{ required: true }}
               render={({ field }) => (
@@ -187,16 +189,12 @@ const Login = ({ mode }: { mode: SystemMode }) => {
                   {...field}
                   autoFocus
                   fullWidth
-                  type='email'
-                  label='Email'
-                  placeholder='Enter your email'
-                  onChange={e => {
-                    field.onChange(e.target.value)
-                    errorState !== null && setErrorState(null)
-                  }}
-                  {...((errors.email || errorState !== null) && {
+                  type='text'
+                  label='Email or Username'
+                  placeholder='Enter your email or username'
+                  {...(errors.identity && {
                     error: true,
-                    helperText: errors?.email?.message || errorState?.message[0]
+                    helperText: errors.identity.message
                   })}
                 />
               )}
@@ -213,10 +211,6 @@ const Login = ({ mode }: { mode: SystemMode }) => {
                   placeholder='············'
                   id='login-password'
                   type={isPasswordShown ? 'text' : 'password'}
-                  onChange={e => {
-                    field.onChange(e.target.value)
-                    errorState !== null && setErrorState(null)
-                  }}
                   slotProps={{
                     input: {
                       endAdornment: (
